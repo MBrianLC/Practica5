@@ -2,15 +2,19 @@ package es.ucm.fdi.model.Simulator;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.SwingUtilities;
 
 import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.model.Events.Event;
 import es.ucm.fdi.model.SimulatedObjects.Junction;
 import es.ucm.fdi.model.SimulatedObjects.Road;
 import es.ucm.fdi.model.SimulatedObjects.SimObject;
+import es.ucm.fdi.model.Simulator.Listener;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.util.MultiTreeMap;
@@ -24,6 +28,7 @@ public class TrafficSimulator {
 	private int contadorTiempo;
 	private MultiTreeMap<Integer, Event> eventos;
 	private RoadMap SimObjects;
+	private List<Listener> listeners = new ArrayList<>();
 	
 	/** 
 	 * Constructor de la clase TrafficSimulator.
@@ -42,6 +47,24 @@ public class TrafficSimulator {
 		if (e.getTime() < contadorTiempo)
 			throw new IllegalArgumentException("Invalid time");
 		eventos.putValue(e.getTime(), e);
+	}
+	
+	public void addSimulatorListener(Listener l) {
+		listeners.add(l);
+		UpdateEvent ue = new UpdateEvent(EventType.REGISTERED);
+		// evita pseudo-recursividad
+		SwingUtilities.invokeLater(()->l.update(ue, "ERROR"));
+	}
+	
+	public void removeListener(Listener l) {
+		listeners.remove(l);
+	}
+	
+	// uso interno, evita tener que escribir el mismo bucle muchas veces
+	private void fireUpdateEvent(EventType type, String error) {
+		// envia un evento apropiado a todos los listeners
+		UpdateEvent ue = new UpdateEvent(type);
+		for (Listener l : listeners) l.update(ue, "ERROR");
 	}
 	
 	/** 
@@ -87,4 +110,33 @@ public class TrafficSimulator {
 		}
 	}
 
+
+	public enum EventType {
+		REGISTERED, RESET, NEWEVENT, ADVANCED, ERROR;
+	}
+
+	// clase interna en el simulador
+	public class UpdateEvent {
+		EventType type;
+		
+		public UpdateEvent(EventType type) {
+			this.type = type;
+		}
+		
+		public EventType getEvent() {
+			return type;
+		}
+		
+		public RoadMap getRoadMap() {
+			return SimObjects;
+		}
+
+		public List<Event> getEvenQueue() {
+			return eventos.get(contadorTiempo);
+		}
+		
+		public int getCurrentTime() {
+			return contadorTiempo;
+		}
+	}
 }
