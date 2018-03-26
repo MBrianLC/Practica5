@@ -1,4 +1,4 @@
-package es.ucm.fdi.Events;
+package es.ucm.fdi.model.Events;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import es.ucm.fdi.Exceptions.SimulatorException;
-import es.ucm.fdi.SimulatedObjects.Junction;
-import es.ucm.fdi.SimulatedObjects.Vehicle;
-import es.ucm.fdi.Simulator.RoadMap;
+import es.ucm.fdi.model.Exceptions.SimulatorException;
+import es.ucm.fdi.model.SimulatedObjects.Junction;
+import es.ucm.fdi.model.SimulatedObjects.Vehicle;
+import es.ucm.fdi.model.Simulator.RoadMap;
 
 /** 
  * La clase VehicleFaultyEventTest se encarga de probar que VehicleFaultyEvent funciona correctamente.

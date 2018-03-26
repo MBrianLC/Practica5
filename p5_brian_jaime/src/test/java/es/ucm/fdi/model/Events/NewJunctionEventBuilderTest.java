@@ -1,4 +1,4 @@
-package es.ucm.fdi.Events;
+package es.ucm.fdi.model.Events;
 
 import org.junit.Assert;
 import org.junit.Test;

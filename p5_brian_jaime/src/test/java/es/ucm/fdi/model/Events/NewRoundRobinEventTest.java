@@ -1,11 +1,11 @@
-package es.ucm.fdi.Events;
+package es.ucm.fdi.model.Events;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import es.ucm.fdi.Exceptions.SimulatorException;
-import es.ucm.fdi.SimulatedObjects.Junction;
-import es.ucm.fdi.Simulator.RoadMap;
+import es.ucm.fdi.model.Exceptions.SimulatorException;
+import es.ucm.fdi.model.SimulatedObjects.Junction;
+import es.ucm.fdi.model.Simulator.RoadMap;
 
 /** 
  * La clase NewRoundRobinEventTest se encarga de probar que NewRoundRobinEvent funciona correctamente.

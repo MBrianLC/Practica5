@@ -1,11 +1,11 @@
-package es.ucm.fdi.AdvancedObjects;
+package es.ucm.fdi.model.AdvancedObjects;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
 
-import es.ucm.fdi.SimulatedObjects.Junction;
-import es.ucm.fdi.SimulatedObjects.Road;
+import es.ucm.fdi.model.SimulatedObjects.Junction;
+import es.ucm.fdi.model.SimulatedObjects.Road;
 
 import java.util.List;
 import static org.junit.Assert.*;

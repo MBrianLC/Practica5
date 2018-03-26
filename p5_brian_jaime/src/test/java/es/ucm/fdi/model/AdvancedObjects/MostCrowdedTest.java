@@ -1,4 +1,4 @@
-package es.ucm.fdi.AdvancedObjects;
+package es.ucm.fdi.model.AdvancedObjects;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import es.ucm.fdi.SimulatedObjects.Junction;
-import es.ucm.fdi.SimulatedObjects.Road;
-import es.ucm.fdi.SimulatedObjects.Vehicle;
+import es.ucm.fdi.model.SimulatedObjects.Junction;
+import es.ucm.fdi.model.SimulatedObjects.Road;
+import es.ucm.fdi.model.SimulatedObjects.Vehicle;
 
 /** 
  * La clase MostCrowdedTest se encarga de probar que MostCrowded funciona correctamente.

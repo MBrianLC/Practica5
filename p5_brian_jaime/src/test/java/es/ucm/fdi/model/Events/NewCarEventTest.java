@@ -1,13 +1,13 @@
-package es.ucm.fdi.Events;
+package es.ucm.fdi.model.Events;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import es.ucm.fdi.Exceptions.SimulatorException;
-import es.ucm.fdi.SimulatedObjects.Junction;
-import es.ucm.fdi.SimulatedObjects.Road;
-import es.ucm.fdi.SimulatedObjects.Vehicle;
-import es.ucm.fdi.Simulator.RoadMap;
+import es.ucm.fdi.model.Exceptions.SimulatorException;
+import es.ucm.fdi.model.SimulatedObjects.Junction;
+import es.ucm.fdi.model.SimulatedObjects.Road;
+import es.ucm.fdi.model.SimulatedObjects.Vehicle;
+import es.ucm.fdi.model.Simulator.RoadMap;
 
 /** 
  * La clase NewCarEventTest se encarga de probar que NewCarEvent funciona correctamente.

@@ -1,4 +1,4 @@
-package es.ucm.fdi.SimulatedObjects;
+package es.ucm.fdi.model.SimulatedObjects;
 
 import java.util.ArrayList;
 
