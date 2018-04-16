@@ -6,7 +6,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -15,47 +14,41 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
 import es.ucm.fdi.model.Simulator.Listener;
 import es.ucm.fdi.model.Simulator.TrafficSimulator.EventType;
 import es.ucm.fdi.model.Simulator.TrafficSimulator.UpdateEvent;
 
 @SuppressWarnings("serial")
-public class TextComponentSim extends JFrame implements ActionListener,Listener {
+public class TextComponentSim extends JPanel implements ActionListener,Listener {
 
 	private final String LOAD = "load";
 	private final String SAVE = "save";
 	private final String CLEAR = "clear";
 	private final String QUIT = "quit";
 
-	private JPanel mainPanel;
 	private JFileChooser fc;
 	private JTextArea textArea;
 
 	public TextComponentSim(String title, Boolean editable) {
-		super(title);
+		super(new BorderLayout());
+		this.setBorder(BorderFactory.createTitledBorder(title));
 		initGUI(editable);
 	}
 
 	private void initGUI(Boolean editable) {
-
-		mainPanel = new JPanel(new BorderLayout());
-		this.setContentPane(mainPanel);
 
 		// text area
 		textArea = new JTextArea("");
@@ -64,70 +57,16 @@ public class TextComponentSim extends JFrame implements ActionListener,Listener 
 		textArea.setWrapStyleWord(true);
 		JScrollPane area = new JScrollPane(textArea);
 		area.setPreferredSize(new Dimension(500, 500));
-		mainPanel.add(area);
+		this.add(area);
 		
 		addEditor();
 
 		// tool bar
-		mainPanel.add(createJTolBar(), BorderLayout.PAGE_START);
-
-		// menu bar
-		this.setJMenuBar(createMenuBar());
+		this.add(createJTolBar(), BorderLayout.PAGE_START);
 
 		// we create the file chooser only once
 		fc = new JFileChooser();
 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.pack();
-		this.setVisible(true);
-
-	}
-
-	public JMenuBar createMenuBar() {
-		JMenuItem load, save, clear, quit;
-
-		JMenuBar menuBar = new JMenuBar();
-
-		JMenu file = new JMenu("File");
-		menuBar.add(file);
-		file.setMnemonic(KeyEvent.VK_F);
-
-		load = new JMenuItem("Load");
-		load.setActionCommand(LOAD);
-		load.addActionListener(this);
-		load.setMnemonic(KeyEvent.VK_L);
-		load.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
-				ActionEvent.ALT_MASK));
-
-		save = new JMenuItem("Save");
-		save.setActionCommand(SAVE);
-		save.addActionListener(this);
-		save.setMnemonic(KeyEvent.VK_S);
-		save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-				ActionEvent.ALT_MASK));
-
-		clear = new JMenuItem("Clear");
-		clear.setActionCommand(CLEAR);
-		clear.addActionListener(this);
-		clear.setMnemonic(KeyEvent.VK_C);
-		clear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
-				ActionEvent.ALT_MASK));
-
-		quit = new JMenuItem("Quit");
-		quit.setActionCommand(QUIT);
-		quit.addActionListener(this);
-		quit.setMnemonic(KeyEvent.VK_Q);
-		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-				ActionEvent.ALT_MASK));
-
-		file.add(load);
-		file.add(save);
-		file.addSeparator();
-		file.add(clear);
-		file.addSeparator();
-		file.add(quit);
-
-		return menuBar;
 	}
 
 	public JToolBar createJTolBar() {
@@ -158,7 +97,7 @@ public class TextComponentSim extends JFrame implements ActionListener,Listener 
 	}
 	
 	private void addEditor() {
-		mainPanel.add(new JLabel("Right click over the text-area to get the popup menu."),BorderLayout.PAGE_START);
+		this.add(new JLabel("Right click over the text-area to get the popup menu."),BorderLayout.PAGE_START);
 
 		
 		// create the events pop-up menu
@@ -288,14 +227,6 @@ public class TextComponentSim extends JFrame implements ActionListener,Listener 
 
 	private static Image loadImage(String path) {
 		return Toolkit.getDefaultToolkit().createImage(path);
-	}
-
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				new TextComponentSim("Events", true);
-			}
-		});
 	}
 
 	public void update(UpdateEvent ue, String error) {
