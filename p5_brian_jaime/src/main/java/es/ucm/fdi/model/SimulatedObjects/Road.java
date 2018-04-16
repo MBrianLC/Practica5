@@ -76,6 +76,14 @@ public class Road extends SimObject {
 	}
 	
 	/** 
+	 * Método get para la lista de vehículos.
+	 * @return Mapa con los vehículos asociados a su posición
+	*/
+	public MultiTreeMap<Integer, Vehicle> getVehicles(){
+		return vehiculos;
+	}
+	
+	/** 
 	 * Método set para semaforo.
 	 * @param b: Nuevo estado del semáforo (true: verde, false: rojo)
 	*/
