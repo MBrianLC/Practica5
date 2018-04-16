@@ -31,8 +31,12 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import es.ucm.fdi.model.Simulator.Listener;
+import es.ucm.fdi.model.Simulator.TrafficSimulator.EventType;
+import es.ucm.fdi.model.Simulator.TrafficSimulator.UpdateEvent;
+
 @SuppressWarnings("serial")
-public class TextComponentSim extends JFrame implements ActionListener {
+public class TextComponentSim extends JFrame implements ActionListener,Listener {
 
 	private final String LOAD = "load";
 	private final String SAVE = "save";
@@ -292,5 +296,11 @@ public class TextComponentSim extends JFrame implements ActionListener {
 				new TextComponentSim("Events", true);
 			}
 		});
+	}
+
+	public void update(UpdateEvent ue, String error) {
+		if (ue.getEvent().equals(EventType.ADVANCED)){
+			// work in progress
+		}
 	}
 }
