@@ -97,9 +97,6 @@ public class TextComponentSim extends JPanel implements ActionListener,Listener 
 	}
 	
 	private void addEditor() {
-		this.add(new JLabel("Right click over the text-area to get the popup menu."),BorderLayout.PAGE_START);
-
-		
 		// create the events pop-up menu
 		JPopupMenu _editorPopupMenu = new JPopupMenu();
 		

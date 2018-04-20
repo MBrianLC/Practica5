@@ -1,23 +1,19 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
-import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.model.Events.Event;
@@ -42,15 +38,9 @@ public class MainWindowSim extends JFrame implements Listener {
 	private JPanel contentPanel5;
 	private JPanel contentPanel6;
 	private JPanel contentPanel7;
-	private JMenu fileMenu;
 	private JMenu simulatorMenu;
 	private JMenu reportsMenu;
 	private JToolBar toolBar;
-	private JFileChooser fc;
-	private File currentFile;
-	private JButton loadButton;
-	private JButton saveButton;
-	private JButton clearEventsButton;
 	private JButton checkInEventsButton;
 	private JButton runButton;
 	private JButton stopButton;
@@ -61,17 +51,17 @@ public class MainWindowSim extends JFrame implements Listener {
 	private JButton clearReportsButton;
 	private JButton saveReportsButton;
 	private JButton quitButton;
-	private JTextArea eventsEditor; // editor de eventos
 	private JTable eventsTable; // cola de eventos
 	private JTextArea reportsArea; // zona de informes
 	private JTable vehiclesTable; // tabla de vehiculos
 	private JTable roadsTable; // tabla de carreteras
 	private JTable junctionsTable; // tabla de cruces
 	
+	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr)
+	
 	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr){
 		super("Traffic Simulator");
 		this.contr = contr;
-		currentFile = inFileName != null ? new File(inFileName) : null;
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
 		initGUI();
@@ -81,30 +71,49 @@ public class MainWindowSim extends JFrame implements Listener {
 	public void initGUI(){
 		mainPanel = new JPanel(new BorderLayout());
 		this.setContentPane(mainPanel);
-		contentPanel1 = new JPanel();
-		contentPanel1.setLayout(new BoxLayout(contentPanel1, BoxLayout.Y_AXIS));
-		contentPanel2 = new JPanel();
-		contentPanel2.setLayout(new BoxLayout(contentPanel2,BoxLayout.X_AXIS));
 		
 		//addMenuBar(); // barra de menus
 		//addToolBar(); // barra de herramientas
 		contentPanel1 = new TextComponentSim("Events", true);
 		//addEventsView(); // cola de eventos
-		contentPanel2 = new TextComponentSim("Reports", false);
+		contentPanel2 = new TextComponentSim("Events Queue", false);
+		contentPanel3 = new TextComponentSim("Reports", false);
+		contentPanel4 = new TextComponentSim("Vehicles", false);
+		contentPanel5 = new TextComponentSim("Roads", false);
+		contentPanel6 = new TextComponentSim("Junctions", false);
+		contentPanel7 = new TextComponentSim("Test", false);
 		//addVehiclesTable(); // tabla de vehiculos
 		//addRoadsTable(); // tabla de carreteras
 		//addJunctionsTable(); // tabla de cruces
 		//addMap(); // mapa de carreteras
 		//addStatusBar(); // barra de estado
 		
-		JSplitPane bottomSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, contentPanel1, contentPanel2);
-		mainPanel.add(bottomSplit);
+		JPanel panel1 = new JPanel();
+		panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
+		JPanel panel2 = new JPanel();
+		panel2.setLayout(new BoxLayout(panel2,BoxLayout.X_AXIS));
+		JPanel panel3 = new JPanel();
+		panel3.setLayout(new BoxLayout(panel3,BoxLayout.X_AXIS));
+		JPanel panel4 = new JPanel();
+		panel4.setLayout(new BoxLayout(panel4,BoxLayout.Y_AXIS));
+		
+		panel1.add(panel2);
+		panel1.add(panel3);
+		panel2.add(contentPanel1);
+		panel2.add(contentPanel2);
+		panel2.add(contentPanel3);
+		panel3.add(panel4);
+		panel3.add(contentPanel7);
+		panel4.add(contentPanel4);
+		panel4.add(contentPanel5);
+		panel4.add(contentPanel6);
+		
+		mainPanel.add(panel1);
 		
 		this.setContentPane(mainPanel);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(500, 500);
+		this.setSize(1000, 1000);
 		this.setVisible(true);
-		bottomSplit.setDividerLocation(.5);
 	}
 	
 	/*public static void main(String[] args) {
