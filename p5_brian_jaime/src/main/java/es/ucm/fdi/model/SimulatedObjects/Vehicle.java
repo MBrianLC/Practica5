@@ -130,6 +130,26 @@ public class Vehicle extends SimObject {
 	}
 	
 	/** 
+	 * Tabla de Vehicle.
+	 * @param out : Mapa para salida de datos
+	*/
+	public void fillTableDetails(Map<String, String> out){
+		String s = "[";
+		out.put("ID", id);
+		out.put("Road", roadActual.getID());
+		out.put("Location", String.valueOf(localizacion));
+		out.put("Speed", String.valueOf(velActual));
+		out.put("Km", String.valueOf(distTotal));
+		out.put("Faulty Units", String.valueOf(tiempoAveria));
+		for (int i = 0; i < itinerario.size(); ++i) {
+			s += itinerario.get(i).getID() + ",";
+		}
+		s = s.substring(0, s.length() - 1);
+		s += "]";
+		out.put("Itinerary", s);
+	}
+	
+	/** 
 	 * Método avanza para Vehicle.
 	*/
 	public void avanza(){

@@ -96,6 +96,41 @@ public class Junction extends SimObject {
 	}
 	
 	/** 
+	 * Tabla de Junction.
+	 * @param out : Mapa para salida de datos
+	*/
+	public void fillTableDetails(Map<String, String> out){
+		String g = "[", r = g;
+		out.put("ID", id);
+		if (!entrantes.isEmpty()) {
+			for (int i = 0; i < entrantes.size(); ++i){
+				String aux = "";
+				Boolean b = false;
+				aux += "(" + entrantes.get(i).getID() + ",";
+				if (entrantes.get(i).getSemaforo()) {
+					b = true;
+					g += "green,[";
+				}
+				else aux += "red,[";
+				if (!entrantes.get(i).getQueue().isEmpty()) {
+					for (Vehicle v : entrantes.get(i).getQueue())
+						aux += v.getID() + ",";
+					aux = aux.substring(0, aux.length() - 1);
+				}
+				aux += "]),";
+				if (b) g += aux;
+				else r += aux;
+			}
+			if (g.endsWith(",")) g = g.substring(0, g.length() - 1);
+			if (r.endsWith(",")) r = r.substring(0, r.length() - 1);
+		}
+		g += "]";
+		r += "]";
+		out.put("Green", g);
+		out.put("Red", r);
+	}
+	
+	/** 
 	 * Método avanza para Junction.
 	*/
 	public void avanza(){

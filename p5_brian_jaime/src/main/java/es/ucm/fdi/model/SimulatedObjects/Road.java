@@ -134,6 +134,28 @@ public class Road extends SimObject {
 	}
 	
 	/** 
+	 * Tabla de Road.
+	 * @param out : Mapa para salida de datos
+	*/
+	public void fillTableDetails(Map<String, String> out){
+		String s = "[";
+		out.put("ID", id);
+		out.put("Source", ini.getID());
+		out.put("Target", fin.getID());
+		out.put("Length", String.valueOf(longitud));
+		out.put("Max Speed", String.valueOf(maxVel));
+		for (int i = longitud; i >= 0; --i){
+			if (vehiculos.containsKey(i)){
+				for(Vehicle v: vehiculos.get(i))
+					s += v.getID() + ",";
+			}
+		}
+		s = s.substring(0, s.length() - 1);
+		s += "]";
+		out.put("Vehicles", s);
+	}
+	
+	/** 
 	 * Método avanza para Road.
 	*/
 	public void avanza (){ // ***
