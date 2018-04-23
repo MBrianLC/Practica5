@@ -17,6 +17,7 @@ public class NewVehicleEvent extends Event{
 	protected String id;
 	protected String[] cruces;
 	protected int max;
+	private String type;
 	
 	/** 
 	 * Constructor de la clase NewVehicleEvent
@@ -31,8 +32,17 @@ public class NewVehicleEvent extends Event{
 		this.id = id;
 		this.max = max;
 		this.cruces = cruces;
+		type = "New Vehicle " + id;
 	}
 	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public String getType() {
+		return type;
+	}	
 	/** 
 	 * Método que ejecuta el evento de creación de un nuevo vehículo.
 	 * @param map El mapa de carreteras e intersecciones.

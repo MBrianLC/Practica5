@@ -11,6 +11,7 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class NewRoundRobinEvent extends NewJunctionEvent{
 	private int max_time_slice, min_time_slice;
+	private String type;
 	
 	
 	/** 
@@ -25,6 +26,16 @@ public class NewRoundRobinEvent extends NewJunctionEvent{
 		super(time, id);
 		this.max_time_slice = max_time_slice;
 		this.min_time_slice = min_time_slice;
+		type = "New RoundRobin " + id;
+	}
+	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public String getType() {
+		return type;
 	}
 	
 	/** 

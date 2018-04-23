@@ -12,6 +12,7 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class NewRoadEvent extends Event{
 	protected String id, sr, dest;
+	private String type;
 	protected int max, length;
 	
 	/** 
@@ -31,6 +32,16 @@ public class NewRoadEvent extends Event{
 		this.dest = dest;
 		this.max = max;
 		this.length = length;
+		type = "New Road " + id;
+	}
+	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public String getType() {
+		return type;
 	}
 	
 	/** 

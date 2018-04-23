@@ -19,6 +19,7 @@ public class NewCarEvent extends NewVehicleEvent{
 	private int resistance, max_fault_duration;
 	private double fault_probability;
 	private long seed;
+	private String type;
 	
 	/** 
 	 * Constructor de la clase NewCarEvent
@@ -38,6 +39,16 @@ public class NewCarEvent extends NewVehicleEvent{
 		this.fault_probability = fault_probability;
 		this.max_fault_duration = max_fault_duration;
 		this.seed = seed;
+		type = "New Car " + id;
+	}
+	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public String getType() {
+		return type;
 	}
 	
 	/** 

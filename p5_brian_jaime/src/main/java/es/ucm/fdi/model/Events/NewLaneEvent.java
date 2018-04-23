@@ -14,6 +14,7 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 public class NewLaneEvent extends NewRoadEvent {
 	
 	private int lanes;
+	private String type;
 	
 	/** 
 	 * Constructor de la clase NewLanedEvent
@@ -28,6 +29,16 @@ public class NewLaneEvent extends NewRoadEvent {
 	public NewLaneEvent(int time, String id, String sr, String dest, int max, int length, int lanes) {
 		super(time, id, sr, dest, max, length);
 		this.lanes = lanes;
+		type = "New Lane " + id;
+	}
+	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public String getType() {
+		return type;
 	}
 	
 	/** 

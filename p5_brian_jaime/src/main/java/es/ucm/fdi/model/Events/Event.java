@@ -27,6 +27,13 @@ public abstract class Event {
 	}
 	
 	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public abstract String getType();
+	
+	/** 
 	 * Método abstracto que ejecuta el evento
 	 * @param map El mapa de carreteras e intersecciones.
 	 * @throws SimulatorException 

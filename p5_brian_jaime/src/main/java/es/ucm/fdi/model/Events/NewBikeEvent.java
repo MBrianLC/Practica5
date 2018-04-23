@@ -16,6 +16,8 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class NewBikeEvent extends NewVehicleEvent{
 	
+	String type;
+	
 	/** 
 	 * Constructor de la clase NewBikeEvent
 	 * @param time Entero que representa el momento en el que ocurrirá el evento.
@@ -25,6 +27,16 @@ public class NewBikeEvent extends NewVehicleEvent{
 	*/
 	public NewBikeEvent(int time, String id, int max, String[] cruces) {
 		super(time, id, max, cruces);
+		type = "New Bike " + id;
+	}
+	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/
+	
+	public String getType() {
+		return type;
 	}
 	
 	/** 

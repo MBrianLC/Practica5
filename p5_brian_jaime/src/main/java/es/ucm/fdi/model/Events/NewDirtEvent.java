@@ -13,6 +13,8 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class NewDirtEvent extends NewRoadEvent{
 	
+	String type;
+	
 	/** 
 	 * Constructor de la clase NewDirtEvent
 	 * @param time Entero que representa el momento en el que ocurrirá el evento.
@@ -25,6 +27,16 @@ public class NewDirtEvent extends NewRoadEvent{
 
 	public NewDirtEvent(int time, String id, String sr, String dest, int max, int length) {
 		super(time, id, sr, dest, max, length);
+		type = "New Dirt " + id;
+	}
+	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public String getType() {
+		return type;
 	}
 	
 	/** 

@@ -11,6 +11,7 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 public class VehicleFaultyEvent extends Event{
 	private int duration;
 	private String[] vehicles;
+	private String type;
 	
 	/** 
 	 * Constructor de la clase VehicleFaultyEvent
@@ -23,6 +24,20 @@ public class VehicleFaultyEvent extends Event{
 		super(t);
 		this.duration = duration;
 		this.vehicles = vehicles;
+		type = "Break Vehicles [";
+		for (int i = 0; i < vehicles.length; ++i)
+			type += vehicles[i] + ",";
+		type = type.substring(0, type.length() - 1);
+		type += "]";
+	}
+	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public String getType() {
+		return type;
 	}
 	
 	/** 

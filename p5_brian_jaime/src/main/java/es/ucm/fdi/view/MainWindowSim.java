@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.BoxLayout;
@@ -92,6 +94,8 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr){
 		super("Traffic Simulator");
 		this.contr = contr;
+		map = tsim.getMap();
+		events = tsim.getEvents().valuesList();
 		currentFile = inFileName != null ? new File(inFileName) : null;
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
@@ -316,39 +320,31 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 	
 	private void addEventsQueue() {
-		if (events != null) {
-			List<Object> objectList = new ArrayList<Object>(events);
-			String[] fieldNames = {"#", "Time", "Type"};
-			ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-			addTableView(tableMaps);
-		}
+		List<Object> objectList = new ArrayList<Object>(events);
+		String[] fieldNames = {"#", "Time", "Type"};
+		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+		addTableView(tableMaps);
 	}
 	
 	private void addVehiclesTable() {
-		if (map.getVehicles() != null) {
-			List<Object> objectList = new ArrayList<Object>(map.getVehicles());
-			String[] fieldNames = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
-			ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-			addTableView(tableMaps);
-		}
+		List<Object> objectList = new ArrayList<Object>(map.getVehicles());
+		String[] fieldNames = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
+		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+		addTableView(tableMaps);
 	}
 	
 	private void addRoadsTable() {
-		if (map.getRoads() != null) {
-			List<Object> objectList = new ArrayList<Object>(map.getRoads());
-			String[] fieldNames = {"ID", "Source", "Target", "Length", "Max Speed", "Vehicles"};
-			ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-			addTableView(tableMaps);
-		}
+		List<Object> objectList = new ArrayList<Object>(map.getRoads());
+		String[] fieldNames = {"ID", "Source", "Target", "Length", "Max Speed", "Vehicles"};
+		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+		addTableView(tableMaps);
 	}
 	
 	private void addJunctionsTable() {
-		if (map.getJunctions() != null) {
-			List<Object> objectList = new ArrayList<Object>(map.getJunctions());
-			String[] fieldNames = {"ID", "Green", "Red"};
-			ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-			addTableView(tableMaps);
-		}
+		List<Object> objectList = new ArrayList<Object>(map.getJunctions());
+		String[] fieldNames = {"ID", "Green", "Red"};
+		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+		addTableView(tableMaps);
 	}
 	
 	private void addStatusBar() {  

@@ -11,6 +11,7 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class NewJunctionEvent extends Event{
 	protected String id;
+	private String type;
 	
 	/** 
 	 * Constructor de la clase NewJunctionEvent
@@ -21,6 +22,16 @@ public class NewJunctionEvent extends Event{
 	public NewJunctionEvent(int time, String id) {
 		super(time);
 		this.id = id;
+		type = "New Junction " + id;
+	}
+	
+	/** 
+	 * Método que devuelve un String con el tipo de evento (Cola de eventos)
+	 * @return El tipo de evento 
+	*/	
+	
+	public String getType() {
+		return type;
 	}
 	
 	/** 

@@ -109,6 +109,14 @@ public class TrafficSimulator {
 			report().store(o);
 		}
 	}
+	
+	public RoadMap getMap() {
+		return SimObjects;
+	}
+	
+	public MultiTreeMap<Integer, Event> getEvents(){
+		return eventos;
+	}
 
 
 	public enum EventType {
