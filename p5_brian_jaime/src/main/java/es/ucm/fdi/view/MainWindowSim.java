@@ -59,6 +59,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private final String QUIT = "quit";
 	
 	private JPanel mainPanel;
+	private JPanel eventsQueue;
+	private JPanel vehiclesTable;
+	private JPanel roadsTable;
+	private JPanel junctionsTable;
+	private JPanel stateBar;
 	private JPanel contentPanel1;
 	private JPanel contentPanel2;
 	private JPanel contentPanel3;
@@ -69,6 +74,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JMenu fileMenu;
 	private JMenu simulatorMenu;
 	private JMenu reportsMenu;
+	private JLabel statusBarText;
 	private JToolBar toolBar;
 	private JFileChooser fc;
 	private File currentFile;
@@ -247,48 +253,72 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 
 	private void saveFile() {
+		stateBar.remove(statusBarText);
 		int returnVal = fc.showSaveDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			writeFile(file, eventsEditor.getText());
+			try {
+				writeFile(file, eventsEditor.getText());
+			} catch (IOException e) {
+				statusBarText.setToolTipText("ERROR: The reports have not been saved");    
+			}
 		}
+		statusBarText.setToolTipText("All reports have been saved!");    
+		stateBar.add(statusBarText);
 	}
 	
 	private void saveReport() {
 		int returnVal = fc.showSaveDialog(null);
+		stateBar.remove(statusBarText);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			writeFile(file, reportsArea.getText());
+			try {
+				writeFile(file, reportsArea.getText());
+			} catch (IOException e) {
+				statusBarText.setToolTipText("ERROR: The report has not been saved");    
+			}
 		}
+		statusBarText.setToolTipText("The report has been saved!");    
+		stateBar.add(statusBarText);
 	}
 
 	private void loadFile() {
 		int returnVal = fc.showOpenDialog(null);
+		stateBar.remove(statusBarText);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			String s = readFile(file);
-			eventsEditor.setText(s);
+			String s;
+			try {
+				s = readFile(file);
+				eventsEditor.setText(s);
+				statusBarText.setToolTipText("ERROR: File not found");    
+			} catch (IOException e) {
+				e.printStackTrace();
+				statusBarText.setToolTipText("Events have been loaded to the simulator!");    
+			}
 		}
+		stateBar.add(statusBarText);
 	}
 	
-	public static String readFile(File file) {
+	public static String readFile(File file) throws IOException {
 		String s = "";
 		try {
-			s = new Scanner(file).useDelimiter("\\A").next();
+			Scanner sc = new Scanner(file);
+			s = sc.useDelimiter("\\A").next();
+			sc.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			throw new IOException();
 		}
-
 		return s;
 	}
 
-	public static void writeFile(File file, String content) {
+	public static void writeFile(File file, String content) throws IOException {
 		try {
 			PrintWriter pw = new PrintWriter(file);
 			pw.print(content);
 			pw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new IOException();
 		}
 	}
 
@@ -320,47 +350,55 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		}
 	}
 	
-	private void addTableView(ListOfMapsTableModel tableMaps) {
-		JPanel tablePanel = new JPanel(new BorderLayout());
-		elementsTable = new JTable(tableMaps); 
-		tablePanel.add(elementsTable);
-		tablePanel.add(new JScrollPane());
-		mainPanel.add(tablePanel);
-	}
-	
 	private void addEventsQueue() {
+		eventsQueue = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(events);
 		String[] fieldNames = {"#", "Time", "Type"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		addTableView(tableMaps);
+		elementsTable = new JTable(tableMaps); 
+		eventsQueue.add(elementsTable);
+		eventsQueue.add(new JScrollPane());
+		mainPanel.add(eventsQueue);
 	}
 	
 	private void addVehiclesTable() {
+		vehiclesTable = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getVehicles());
 		String[] fieldNames = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		addTableView(tableMaps);
+		elementsTable = new JTable(tableMaps); 
+		vehiclesTable.add(elementsTable);
+		vehiclesTable.add(new JScrollPane());
+		mainPanel.add(vehiclesTable);	
 	}
 	
 	private void addRoadsTable() {
+		roadsTable = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getRoads());
 		String[] fieldNames = {"ID", "Source", "Target", "Length", "Max Speed", "Vehicles"};
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		addTableView(tableMaps);
+		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames);
+		elementsTable = new JTable(tableMaps); 
+		roadsTable.add(elementsTable);
+		roadsTable.add(new JScrollPane());
+		mainPanel.add(roadsTable);
 	}
 	
 	private void addJunctionsTable() {
+		junctionsTable = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getJunctions());
 		String[] fieldNames = {"ID", "Green", "Red"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		addTableView(tableMaps);
+		elementsTable = new JTable(tableMaps); 
+		junctionsTable.add(elementsTable);
+		junctionsTable.add(new JScrollPane());
+		mainPanel.add(junctionsTable);
 	}
 	
 	private void addStatusBar() {  
-		JPanel tablePanel = new JPanel(new BorderLayout());
-		JLabel statusBarText = new JLabel("Welcome to the simulator!");    
-		tablePanel.add(statusBarText);
-		mainPanel.add(tablePanel);
+		stateBar = new JPanel(new BorderLayout());
+		statusBarText = new JLabel("Welcome to the simulator!");    
+		stateBar.add(statusBarText);
+		mainPanel.add(stateBar);
 	}
 	
 	private void addMap() {  
