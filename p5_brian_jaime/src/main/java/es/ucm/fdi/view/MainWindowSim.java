@@ -226,12 +226,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		genRep.setActionCommand(GEN_REPORT);
 		genRep.setToolTipText("Generate reports");
 		genRep.addActionListener(this);
-		simulatorMenu.add(genRep);
+		reportsMenu.add(genRep);
 		JMenuItem clearRep = new JMenuItem("Clear");
 		clearRep.setActionCommand(CLEAR_REPORT);
 		clearRep.setToolTipText("Clear reports");
 		clearRep.addActionListener(this);
-		simulatorMenu.add(clearRep);
+		reportsMenu.add(clearRep);
 		
 		this.setJMenuBar(menuBar);
 	}
