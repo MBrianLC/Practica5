@@ -1,24 +1,23 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -40,8 +39,9 @@ import javax.swing.table.AbstractTableModel;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.extra.graphlayout.GraphLayout;
-import es.ucm.fdi.model.Events.Event;
+import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.Exceptions.SimulatorException;
+import es.ucm.fdi.model.SimulatedObjects.SimObject;
 import es.ucm.fdi.model.Simulator.Listener;
 import es.ucm.fdi.model.Simulator.RoadMap;
 import es.ucm.fdi.model.Simulator.TrafficSimulator;
@@ -222,6 +222,16 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 		reportsMenu = new JMenu("Reports");
 		menuBar.add(reportsMenu);
+		JMenuItem genRep = new JMenuItem("Generate");
+		genRep.setActionCommand(GEN_REPORT);
+		genRep.setToolTipText("Generate reports");
+		genRep.addActionListener(this);
+		simulatorMenu.add(genRep);
+		JMenuItem clearRep = new JMenuItem("Clear");
+		clearRep.setActionCommand(CLEAR_REPORT);
+		clearRep.setToolTipText("Clear reports");
+		clearRep.addActionListener(this);
+		simulatorMenu.add(clearRep);
 		
 		this.setJMenuBar(menuBar);
 	}
@@ -367,22 +377,16 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			saveFile();
 		else if (SAVE_REPORT.equals(e.getActionCommand()))
 			saveReport();
+		else if (CLEAR_REPORT.equals(e.getActionCommand()))
+			reportsArea.setText("");
 		else if (RUN.equals(e.getActionCommand())){
-			
+			runSim();
 		}
 		else if (RESET.equals(e.getActionCommand())){
-			try {
-				contr.execute(new TrafficSimulator());
-			} 
-			catch (IOException ex) {
-				ex.printStackTrace();
-			} 
-			catch (SimulatorException ex) {
-				ex.printStackTrace();
-			}
+			resetSim();
 		}
 		else if (GEN_REPORT.equals(e.getActionCommand())) {
-			//genReport();
+			genReport();
 		}
 		else if (STOP.equals(e.getActionCommand())) {
 			//stop();
@@ -439,6 +443,40 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			}
 		}
 		stateBar.add(statusBarText);
+	}
+	
+	private void runSim(){
+		try {
+			InputStream in = new FileInputStream(eventsEditor.getText());
+			contr.setIni(new Ini(in));
+			contr.execute(new TrafficSimulator());
+		} 
+		catch (IOException ex) {
+			ex.printStackTrace();
+		} 
+		catch (SimulatorException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	private void resetSim(){
+		time = 0;
+		reportsArea.setText("");
+		// resetear el resto de componentes también (excepto eventsEditor)
+	}
+	
+	private void genReport(){
+		Map<String, String> m = new LinkedHashMap<>();
+		String reporte = "";
+		for (SimObject sim : map.getSimObjects()) {
+			sim.report(time, m);
+			reporte += "[" + m.get("") + "]\n";
+			for (String key : m.keySet()){
+				reporte += key + " = " + m.get(key) + '\n';
+			}
+			reporte += '\n';
+		}
+		reportsArea.setText(reporte);
 	}
 	
 	public static String readFile(File file) throws IOException {
