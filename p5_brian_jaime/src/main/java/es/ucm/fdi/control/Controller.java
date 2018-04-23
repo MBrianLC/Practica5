@@ -38,6 +38,14 @@ public class Controller {
 		this.timeLimit = timeLimit;
 	}
 	
+	public void setIni (Ini ini){
+		this.ini = ini;
+	}
+	
+	public void setTime (Integer timeLimit){
+		this.timeLimit = timeLimit;
+	}
+	
 	/** 
 	 * Método que lee las secciones de eventos, les asigna el builder correspondiente a cada una, y ejecuta la simulación.
 	 * @param sim : La simulación de tráfico
