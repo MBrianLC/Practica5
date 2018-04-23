@@ -25,9 +25,11 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.model.Events.Event;
+import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.model.Simulator.Listener;
 import es.ucm.fdi.model.Simulator.RoadMap;
 import es.ucm.fdi.model.Simulator.TrafficSimulator;
@@ -44,6 +46,8 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private final String LOAD = "load";
 	private final String SAVE = "save";
 	private final String SAVE_REPORT = "savereport";
+	private final String RUN = "run";
+	private final String RESET = "reset";
 	private final String CLEAR = "clear";
 	private final String QUIT = "quit";
 	
@@ -94,6 +98,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 	
 	public void initGUI(){
+		fc = new JFileChooser();
 		mainPanel = new JPanel(new BorderLayout());
 		this.setContentPane(mainPanel);
 		
@@ -174,6 +179,16 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 		simulatorMenu = new JMenu("Simulator");
 		menuBar.add(simulatorMenu);
+		JMenuItem run = new JMenuItem("Run");
+		run.setActionCommand(RUN);
+		run.setToolTipText("Run simulation");
+		run.addActionListener(this);
+		simulatorMenu.add(run);
+		JMenuItem reset = new JMenuItem("Reset");
+		reset.setActionCommand(RESET);
+		reset.setToolTipText("Reset simulation");
+		reset.addActionListener(this);
+		simulatorMenu.add(reset);
 		
 		reportsMenu = new JMenu("Reports");
 		menuBar.add(reportsMenu);
@@ -194,6 +209,22 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			loadFile();
 		else if (SAVE.equals(e.getActionCommand()))
 			saveFile();
+		else if (SAVE_REPORT.equals(e.getActionCommand()))
+			saveReport();
+		else if (RUN.equals(e.getActionCommand())){
+			
+		}
+		else if (RESET.equals(e.getActionCommand())){
+			try {
+				contr.execute(new TrafficSimulator());
+			} 
+			catch (IOException ex) {
+				ex.printStackTrace();
+			} 
+			catch (SimulatorException ex) {
+				ex.printStackTrace();
+			}
+		}
 		else if (CLEAR.equals(e.getActionCommand()))
 			eventsEditor.setText("");
 		else if (QUIT.equals(e.getActionCommand()))
@@ -205,6 +236,14 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			writeFile(file, eventsEditor.getText());
+		}
+	}
+	
+	private void saveReport() {
+		int returnVal = fc.showSaveDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			writeFile(file, reportsArea.getText());
 		}
 	}
 
