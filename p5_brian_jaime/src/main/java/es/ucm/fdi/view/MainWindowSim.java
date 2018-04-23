@@ -46,7 +46,7 @@ import es.ucm.fdi.model.Simulator.TrafficSimulator.UpdateEvent;
 public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private Controller contr;
 	private RoadMap map;
-	private List<Event> events;
+	private List<EventIndex> events;
 	private int time;
 	private OutputStream reportsOutputStream;
 	
@@ -95,7 +95,16 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		super("Traffic Simulator");
 		this.contr = contr;
 		map = tsim.getMap();
-		events = tsim.getEvents().valuesList();
+		int cont = 0;
+		for (int i = 0; i < contr.getTime(); ++i) {
+			List<Event> eventsMismoTiempo = tsim.getEvents().get(i);
+			if (eventsMismoTiempo != null) {
+				for (Event e : eventsMismoTiempo) {
+					events.add(new EventIndex(cont, e));
+					++cont;
+				}
+			}
+		}
 		currentFile = inFileName != null ? new File(inFileName) : null;
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8

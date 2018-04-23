@@ -38,12 +38,31 @@ public class Controller {
 		this.timeLimit = timeLimit;
 	}
 	
+	/** 
+	 * Método set para ini.
+	 * @param ini : Nuevo texto en formato Ini
+	*/
+	
 	public void setIni (Ini ini){
 		this.ini = ini;
 	}
 	
-	public void setTime (Integer timeLimit){
+	/** 
+	 * Método set para timeLimit.
+	 * @param ini : Nuevo límite de tiempo
+	*/
+	
+	public void setTime (int timeLimit){
 		this.timeLimit = timeLimit;
+	}
+	
+	/** 
+	 * Método get para timeLimit.
+	 * @return Límite de tiempo (pasos de simulación)
+	*/
+	
+	public int getTime (){
+		return timeLimit;
 	}
 	
 	/** 
