@@ -1,6 +1,7 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,7 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -30,6 +34,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -52,17 +57,17 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private final String LOAD = "load";
 	private final String SAVE = "save";
-	private final String SAVE_REPORT = "savereport";
+	private final String SAVE_REPORT = "saveReport";
+	private final String GEN_REPORT = "genReport";
+	private final String CLEAR_REPORT = "clearReport";
+	private final String CHECK = "check";
 	private final String RUN = "run";
+	private final String STOP = "stop";
 	private final String RESET = "reset";
 	private final String CLEAR = "clear";
 	private final String QUIT = "quit";
 	
 	private JPanel mainPanel;
-	private JPanel eventsQueue;
-	private JPanel vehiclesTable;
-	private JPanel roadsTable;
-	private JPanel junctionsTable;
 	private JPanel stateBar;
 	private JPanel contentPanel1;
 	private JPanel contentPanel2;
@@ -92,14 +97,17 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JButton saveReportsButton;
 	private JButton quitButton;
 	private JTextArea eventsEditor; // editor de eventos
-	private JTable elementsTable; // tabla de elementos
+	private JTable eventsQueue; // tabla de eventos
+	private JTable vehiclesTable; // tabla de vehículos
+	private JTable roadsTable; // tabla de carreteras
+	private JTable junctionsTable; // tabla de cruces
 	private JTextArea reportsArea; // zona de informes
 	
-	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr)
+	public MainWindowSim() {
 	
-	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr){
+	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr){
 		super("Traffic Simulator");
-		this.contr = contr;
+		/*this.contr = contr;
 		map = tsim.getMap();
 		int cont = 0;
 		for (int i = 0; i < contr.getTime(); ++i) {
@@ -112,10 +120,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			}
 		}
 		currentFile = inFileName != null ? new File(inFileName) : null;
+		*/
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
 		initGUI();
-		tsim.addSimulatorListener(this);
+		//tsim.addSimulatorListener(this);
 	}
 	
 	public void initGUI(){
@@ -124,7 +133,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		this.setContentPane(mainPanel);
 		
 		addMenuBar(); // barra de menus
-		//addToolBar(); // barra de herramientas
+		addToolBar(); // barra de herramientas
 		addEventsEditor();
 		//addEventsView(); // cola de eventos
 		//addReportsArea(); // zona de informes
@@ -217,13 +226,139 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		this.setJMenuBar(menuBar);
 	}
 	
-	/*public static void main(String[] args) {
+	private void addToolBar() {   
+		toolBar = new JToolBar();    
+		mainPanel.add(toolBar, BorderLayout.PAGE_START);   
+		loadButton = new JButton();   
+		  try {
+		    loadButton.setIcon(new ImageIcon("src/main/resources/icons/open.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		loadButton.setActionCommand(LOAD);
+		loadButton.setToolTipText("Load a file");
+		loadButton.addActionListener(this);	
+		toolBar.add(loadButton);
+		saveButton = new JButton();  
+		 try {
+			 saveButton.setIcon(new ImageIcon("src/main/resources/icons/save.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		saveButton.setActionCommand(SAVE);
+		saveButton.setToolTipText("Save a file");
+		saveButton.addActionListener(this);
+		toolBar.add(saveButton);
+		clearEventsButton = new JButton(); 
+		try {
+			clearEventsButton.setIcon(new ImageIcon("src/main/resources/icons/clear.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		clearEventsButton.setActionCommand(CLEAR);
+		clearEventsButton.setToolTipText("Clear events");
+		clearEventsButton.addActionListener(this);
+		toolBar.add(clearEventsButton);
+		checkInEventsButton = new JButton();
+		try {
+			checkInEventsButton.setIcon(new ImageIcon("src/main/resources/icons/events.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		checkInEventsButton.setActionCommand(CHECK);
+		checkInEventsButton.setToolTipText("Check events");
+		checkInEventsButton.addActionListener(this);
+		toolBar.add(checkInEventsButton);
+		runButton = new JButton(); 
+		try {
+			runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		runButton.setActionCommand(RUN);
+		runButton.setToolTipText("Run simulation");
+		runButton.addActionListener(this);
+		toolBar.add(runButton);
+		stopButton = new JButton();
+		try {
+			stopButton.setIcon(new ImageIcon("src/main/resources/icons/stop.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		stopButton.setActionCommand(STOP);
+		stopButton.setToolTipText("Stop simulation");
+		stopButton.addActionListener(this);
+		toolBar.add(stopButton);
+		resetButton = new JButton();
+		try {
+			resetButton.setIcon(new ImageIcon("src/main/resources/icons/reset.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		resetButton.setActionCommand(RESET);
+		resetButton.setToolTipText("Reset simulation");
+		resetButton.addActionListener(this);
+		toolBar.add(resetButton);
+		toolBar.add(new JLabel(" Steps: "));   
+		stepsSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 1000, 1)); 
+		// Configurar stepsSpinner  
+		toolBar.add(stepsSpinner);
+		toolBar.add(new JLabel(" Time: "));
+		timeViewer = new JTextField("0", 5);  
+		// Configurar timeViewer    
+		toolBar.add(timeViewer);
+		toolBar.addSeparator(); 
+		genReportsButton = new JButton(); 
+		try {
+			genReportsButton.setIcon(new ImageIcon("src/main/resources/icons/report.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		genReportsButton.setActionCommand(GEN_REPORT);
+		genReportsButton.setToolTipText("Generate reports");
+		genReportsButton.addActionListener(this);
+		toolBar.add(genReportsButton);
+		clearReportsButton = new JButton();
+		try {
+			clearReportsButton.setIcon(new ImageIcon("src/main/resources/icons/delete_report.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		clearReportsButton.setActionCommand(CLEAR_REPORT);
+		clearReportsButton.setToolTipText("Clear reports");
+		clearReportsButton.addActionListener(this);
+		toolBar.add(clearReportsButton);
+		saveReportsButton = new JButton();  
+		try {
+			saveReportsButton.setIcon(new ImageIcon("src/main/resources/icons/save_report.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		saveReportsButton.setActionCommand(SAVE_REPORT);
+		saveReportsButton.setToolTipText("Save reports");
+		saveReportsButton.addActionListener(this);
+		toolBar.add(saveReportsButton);
+		toolBar.addSeparator();   
+		quitButton = new JButton(); 
+		try {
+			quitButton.setIcon(new ImageIcon("src/main/resources/icons/exit.png"));
+		  } catch (Exception e) {
+		    e.printStackTrace();
+		  }
+		quitButton.setActionCommand(QUIT);
+		quitButton.setToolTipText("Exit");
+		quitButton.addActionListener(this);
+		toolBar.add(quitButton);
+		
+	}
+	
+	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new MainWindowSim();
 			}
 		});
-	}*/
+	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if (LOAD.equals(e.getActionCommand()))
@@ -246,6 +381,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 				ex.printStackTrace();
 			}
 		}
+		else if (GEN_REPORT.equals(e.getActionCommand())) {
+			//genReport();
+		}
+		else if (STOP.equals(e.getActionCommand())) {
+			//stop();
+		}
 		else if (CLEAR.equals(e.getActionCommand()))
 			eventsEditor.setText("");
 		else if (QUIT.equals(e.getActionCommand()))
@@ -260,10 +401,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			try {
 				writeFile(file, eventsEditor.getText());
 			} catch (IOException e) {
-				statusBarText.setToolTipText("ERROR: The reports have not been saved");    
+				statusBarText.setText("ERROR: The file has not been saved");    
 			}
 		}
-		statusBarText.setToolTipText("All reports have been saved!");    
+		statusBarText.setText("The file have been saved!");    
 		stateBar.add(statusBarText);
 	}
 	
@@ -275,10 +416,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			try {
 				writeFile(file, reportsArea.getText());
 			} catch (IOException e) {
-				statusBarText.setToolTipText("ERROR: The report has not been saved");    
+				statusBarText.setText("ERROR: The reports have not been saved");    
 			}
 		}
-		statusBarText.setToolTipText("The report has been saved!");    
+		statusBarText.setText("All reports have been saved!");    
 		stateBar.add(statusBarText);
 	}
 
@@ -291,10 +432,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			try {
 				s = readFile(file);
 				eventsEditor.setText(s);
-				statusBarText.setToolTipText("ERROR: File not found");    
+				statusBarText.setText("ERROR: File not found");    
 			} catch (IOException e) {
 				e.printStackTrace();
-				statusBarText.setToolTipText("Events have been loaded to the simulator!");    
+				statusBarText.setText("Events have been loaded to the simulator!");    
 			}
 		}
 		stateBar.add(statusBarText);
@@ -351,47 +492,47 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 	
 	private void addEventsQueue() {
-		eventsQueue = new JPanel(new BorderLayout());
+		JPanel tablePanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(events);
 		String[] fieldNames = {"#", "Time", "Type"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		elementsTable = new JTable(tableMaps); 
-		eventsQueue.add(elementsTable);
-		eventsQueue.add(new JScrollPane());
-		mainPanel.add(eventsQueue);
+		eventsQueue = new JTable(tableMaps); 
+		tablePanel.add(eventsQueue);
+		tablePanel.add(new JScrollPane());
+		mainPanel.add(tablePanel);
 	}
 	
 	private void addVehiclesTable() {
-		vehiclesTable = new JPanel(new BorderLayout());
+		JPanel tablePanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getVehicles());
 		String[] fieldNames = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		elementsTable = new JTable(tableMaps); 
-		vehiclesTable.add(elementsTable);
-		vehiclesTable.add(new JScrollPane());
-		mainPanel.add(vehiclesTable);	
+		vehiclesTable = new JTable(tableMaps); 
+		tablePanel.add(vehiclesTable);
+		tablePanel.add(new JScrollPane());
+		mainPanel.add(tablePanel);	
 	}
 	
 	private void addRoadsTable() {
-		roadsTable = new JPanel(new BorderLayout());
+		JPanel tablePanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getRoads());
 		String[] fieldNames = {"ID", "Source", "Target", "Length", "Max Speed", "Vehicles"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames);
-		elementsTable = new JTable(tableMaps); 
-		roadsTable.add(elementsTable);
-		roadsTable.add(new JScrollPane());
-		mainPanel.add(roadsTable);
+		roadsTable = new JTable(tableMaps); 
+		tablePanel.add(roadsTable);
+		tablePanel.add(new JScrollPane());
+		mainPanel.add(tablePanel);
 	}
 	
 	private void addJunctionsTable() {
-		junctionsTable = new JPanel(new BorderLayout());
+		JPanel tablePanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getJunctions());
 		String[] fieldNames = {"ID", "Green", "Red"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		elementsTable = new JTable(tableMaps); 
-		junctionsTable.add(elementsTable);
-		junctionsTable.add(new JScrollPane());
-		mainPanel.add(junctionsTable);
+		junctionsTable = new JTable(tableMaps); 
+		tablePanel.add(junctionsTable);
+		tablePanel.add(new JScrollPane());
+		mainPanel.add(tablePanel);
 	}
 	
 	private void addStatusBar() {  

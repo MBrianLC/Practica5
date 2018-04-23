@@ -23,6 +23,7 @@ import org.apache.commons.cli.ParseException;
 import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.model.Simulator.TrafficSimulator;
+import es.ucm.fdi.view.MainWindowSim;
 import es.ucm.fdi.ini.Ini;
 
 public class Main {
