@@ -1,9 +1,12 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -27,6 +31,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
@@ -60,7 +65,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private final String SAVE_REPORT = "saveReport";
 	private final String GEN_REPORT = "genReport";
 	private final String CLEAR_REPORT = "clearReport";
-	private final String CHECK = "check";
+	private final String CHECK_IN = "checkIn";
 	private final String RUN = "run";
 	private final String STOP = "stop";
 	private final String RESET = "reset";
@@ -137,7 +142,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addEventsEditor();
 		//addEventsView(); // cola de eventos
 		//addReportsArea(); // zona de informes
-		contentPanel2 = new TextComponentSim("Events Queue", false);
+		addEventsEditor();
 		contentPanel3 = new TextComponentSim("Reports", false);
 		contentPanel4 = new TextComponentSim("Vehicles", false);
 		contentPanel5 = new TextComponentSim("Roads", false);
@@ -174,10 +179,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(1000, 1000);
 		this.setVisible(true);
-	}
-	
-	private void addEventsEditor(){
-		contentPanel1 = new TextComponentSim("Events", true);
 	}
 	
 	private void addMenuBar(){
@@ -275,7 +276,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		  } catch (Exception e) {
 		    e.printStackTrace();
 		  }
-		checkInEventsButton.setActionCommand(CHECK);
+		checkInEventsButton.setActionCommand(CHECK_IN);
 		checkInEventsButton.setToolTipText("Check events");
 		checkInEventsButton.addActionListener(this);
 		toolBar.add(checkInEventsButton);
@@ -436,10 +437,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			try {
 				s = readFile(file);
 				eventsEditor.setText(s);
-				statusBarText.setText("ERROR: File not found");    
+				statusBarText.setText("Events have been loaded to the simulator!"); 
+				currentFile = file;
+				contentPanel2.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
+				
 			} catch (IOException e) {
 				e.printStackTrace();
-				statusBarText.setText("Events have been loaded to the simulator!");    
+				statusBarText.setText("ERROR: File not found");    
 			}
 		}
 		stateBar.add(statusBarText);
@@ -529,6 +533,20 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		}
 	}
 	
+	private void addEventsEditor(){
+		contentPanel2 = new JPanel(new BorderLayout());
+		contentPanel2.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
+		eventsEditor = new JTextArea("");
+		eventsEditor.setEditable(true);
+		eventsEditor.setLineWrap(true);
+		eventsEditor.setWrapStyleWord(true);
+		JScrollPane area = new JScrollPane(eventsEditor);
+		area.setPreferredSize(new Dimension(500, 500));
+		this.add(area);
+		
+		addEditor(eventsEditor);
+	}
+	
 	private void addEventsQueue() {
 		JPanel tablePanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(events);
@@ -582,6 +600,83 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private void addMap() {  
 		mainPanel.add(new GraphLayout());
+	}
+	
+	private void addEditor(JTextArea textArea) {
+		// create the events pop-up menu
+		JPopupMenu _editorPopupMenu = new JPopupMenu();
+		
+		JMenuItem clearOption = new JMenuItem("Clear");
+		clearOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textArea.setText("");
+			}
+		});
+
+		JMenuItem exitOption = new JMenuItem("Exit");
+		exitOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+
+		JMenu subMenu = new JMenu("Insert");
+
+		String[] greetings = { "Hola!", "Hello!", "Ciao!" };
+		for (String s : greetings) {
+			JMenuItem menuItem = new JMenuItem(s);
+			menuItem.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					textArea.insert(s, textArea.getCaretPosition());
+				}
+			});
+			subMenu.add(menuItem);
+		}
+
+		
+		_editorPopupMenu.add(subMenu);
+		_editorPopupMenu.addSeparator();
+		_editorPopupMenu.add(clearOption);
+		_editorPopupMenu.add(exitOption);
+
+		// connect the popup menu to the text area _editor
+		textArea.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				showPopup(e);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				showPopup(e);
+			}
+
+			private void showPopup(MouseEvent e) {
+				if (e.isPopupTrigger() && _editorPopupMenu.isEnabled()) {
+					_editorPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+
 	}
 
 	public void update(UpdateEvent ue, String error) {
