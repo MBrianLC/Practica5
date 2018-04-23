@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import es.ucm.fdi.view.Describable;
+
 /** 
  * La clase Junction representa un cruce del simulador.
  * @author Jaime Fernández y Brian Leiva
 */
 
-public class Junction extends SimObject {
+public class Junction extends SimObject implements Describable{
 	protected int k; //***
 	protected List<Road> entrantes;
 	protected List<Road> salientes;
@@ -97,9 +99,10 @@ public class Junction extends SimObject {
 	
 	/** 
 	 * Tabla de Junction.
-	 * @param out : Mapa para salida de datos
+	 * @return Mapa para salida de datos
 	*/
-	public void fillTableDetails(Map<String, String> out){
+	public Map<String, String> describe(){
+		Map<String, String> out = new HashMap<>();
 		String g = "[", r = g;
 		out.put("ID", id);
 		if (!entrantes.isEmpty()) {
@@ -128,6 +131,7 @@ public class Junction extends SimObject {
 		r += "]";
 		out.put("Green", g);
 		out.put("Red", r);
+		return out;
 	}
 	
 	/** 

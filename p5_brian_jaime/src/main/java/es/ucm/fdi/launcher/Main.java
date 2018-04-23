@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -29,6 +31,7 @@ public class Main {
 	private static Integer _timeLimit = null;
 	private static String _inFile = null;
 	private static String _outFile = null;
+	private static boolean mode = true;
 
 	private static void parseArgs(String[] args) {
 
@@ -45,6 +48,7 @@ public class Main {
 			parseInFileOption(line);
 			parseOutFileOption(line);
 			parseStepsOption(line);
+			parseModeOption(line);
 
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
@@ -70,6 +74,8 @@ public class Main {
 
 		cmdLineOptions.addOption(Option.builder("h").longOpt("help").desc("Print this message").build());
 		cmdLineOptions.addOption(Option.builder("i").longOpt("input").hasArg().desc("Events input file").build());
+		cmdLineOptions.addOption(Option.builder("m").longOpt("mode").hasArg()
+				.desc("’batch’ for batch mode and ’gui’ for GUI mode (default value is ’batch’)").build());
 		cmdLineOptions.addOption(
 				Option.builder("o").longOpt("output").hasArg().desc("Output file, where reports are written.").build());
 		cmdLineOptions.addOption(Option.builder("t").longOpt("ticks").hasArg()
@@ -105,6 +111,16 @@ public class Main {
 			assert (_timeLimit < 0);
 		} catch (Exception e) {
 			throw new ParseException("Invalid value for time limit: " + t);
+		}
+	}
+	
+	private static void parseModeOption(CommandLine line) throws ParseException {
+		String s = line.getOptionValue("m");
+		if (s != null && (s == "batch" || s == "GUI")) {
+			if (s == "GUI") mode = false;
+		}	
+		else {
+			throw new ParseException("An events file is missing");
 		}
 	}
 
@@ -161,11 +177,33 @@ public class Main {
 		Controller c = new Controller(new Ini(in), out, _timeLimit);
 		c.execute(new TrafficSimulator());
 	}
+	
+	/**
+	 * Run the simulator in GUI mode
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException 
+	 * @throws InvocationTargetException 
+	 */
+	private static void startGUIMode() throws IOException, SimulatorException, InvocationTargetException, InterruptedException {
+		OutputStream out;
+		out = System.out;
+		if(_timeLimit == null) _timeLimit = _timeLimitDefaultValue;
+		InputStream in = new FileInputStream(_inFile);
+		Controller c = new Controller(new Ini(in), out, _timeLimit);
+		c.execute(new TrafficSimulator());
+		SwingUtilities.invokeAndWait(new Runnable() {
+			public void run() {
+				new MainWindowSim(new TrafficSimulator(), in, c);
+			}   
+		}); 
+	}
 
-	private static void start(String[] args) throws IOException {
+	private static void start(String[] args) throws IOException, InvocationTargetException, InterruptedException {
 		parseArgs(args);
 		try {
-			startBatchMode();
+			if (mode) startBatchMode();
+			else startGUIMode();
 		}
 		catch(SimulatorException e) {
 			System.err.println(e.getMessage());

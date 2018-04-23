@@ -1,14 +1,17 @@
 package es.ucm.fdi.model.SimulatedObjects;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import es.ucm.fdi.view.Describable;
 
 /** 
  * La clase Vehicle representa un vehículo del simulador.
  * @author Jaime Fernández y Brian Leiva
 */
 
-public class Vehicle extends SimObject {
+public class Vehicle extends SimObject implements Describable{
 	protected int velMaxima, velActual, distTotal;
 	private int localizacion, k, tiempoAveria;
 	private Road roadActual;
@@ -131,9 +134,10 @@ public class Vehicle extends SimObject {
 	
 	/** 
 	 * Tabla de Vehicle.
-	 * @param out : Mapa para salida de datos
+	 * @return Mapa para salida de datos
 	*/
-	public void fillTableDetails(Map<String, String> out){
+	public Map<String, String> describe(){
+		Map<String, String> out = new HashMap<>();
 		String s = "[";
 		out.put("ID", id);
 		out.put("Road", roadActual.getID());
@@ -147,6 +151,7 @@ public class Vehicle extends SimObject {
 		s = s.substring(0, s.length() - 1);
 		s += "]";
 		out.put("Itinerary", s);
+		return out;
 	}
 	
 	/** 

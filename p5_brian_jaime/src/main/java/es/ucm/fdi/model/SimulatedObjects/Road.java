@@ -1,16 +1,18 @@
 package es.ucm.fdi.model.SimulatedObjects;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.Map;
 
 import es.ucm.fdi.util.MultiTreeMap;
+import es.ucm.fdi.view.Describable;
 
 /** 
  * La clase Road representa una carretera del simulador.
  * @author Jaime Fernández y Brian Leiva
 */
 
-public class Road extends SimObject {
+public class Road extends SimObject implements Describable{
 	protected int longitud, maxVel;
 	protected MultiTreeMap<Integer, Vehicle> vehiculos;
 	private boolean semaforo;
@@ -135,9 +137,10 @@ public class Road extends SimObject {
 	
 	/** 
 	 * Tabla de Road.
-	 * @param out : Mapa para salida de datos
+	 * @return Mapa para salida de datos
 	*/
-	public void fillTableDetails(Map<String, String> out){
+	public Map<String, String> describe(){
+		Map<String, String> out = new HashMap<>();
 		String s = "[";
 		out.put("ID", id);
 		out.put("Source", ini.getID());
@@ -153,6 +156,7 @@ public class Road extends SimObject {
 		s = s.substring(0, s.length() - 1);
 		s += "]";
 		out.put("Vehicles", s);
+		return out;
 	}
 	
 	/** 

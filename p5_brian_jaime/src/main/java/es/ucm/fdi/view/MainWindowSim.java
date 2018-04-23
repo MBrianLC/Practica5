@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,18 +17,22 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
 
 import es.ucm.fdi.control.Controller;
+import es.ucm.fdi.extra.graphlayout.GraphLayout;
 import es.ucm.fdi.model.Events.Event;
 import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.model.Simulator.Listener;
@@ -79,11 +84,8 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JButton saveReportsButton;
 	private JButton quitButton;
 	private JTextArea eventsEditor; // editor de eventos
-	private JTable eventsTable; // cola de eventos
+	private JTable elementsTable; // tabla de elementos
 	private JTextArea reportsArea; // zona de informes
-	private JTable vehiclesTable; // tabla de vehiculos
-	private JTable roadsTable; // tabla de carreteras
-	private JTable junctionsTable; // tabla de cruces
 	
 	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr)
 	
@@ -277,6 +279,88 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		}
 	}
 
+	private class ListOfMapsTableModel extends AbstractTableModel {
+
+		private List<Object> elements;
+		private String[] fieldNames;
+		
+		public ListOfMapsTableModel(List<Object> objectList, String[] names) {
+			elements = objectList;
+			fieldNames = names;
+		}
+		
+		@Override // fieldNames es un String[] con nombrs de col.
+		public String getColumnName(int columnIndex) {
+			return fieldNames[columnIndex];
+		}
+		@Override // elements contiene la lista de elementos
+		public int getRowCount() {
+			return elements.size();
+		}
+		@Override
+		public int getColumnCount() {
+			return fieldNames.length;
+		}
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			return ((Describable) elements.get(rowIndex)).describe().get(fieldNames[columnIndex]);
+		}
+	}
+	
+	private void addTableView(ListOfMapsTableModel tableMaps) {
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		elementsTable = new JTable(tableMaps); 
+		tablePanel.add(elementsTable);
+		tablePanel.add(new JScrollPane());
+		mainPanel.add(tablePanel);
+	}
+	
+	private void addEventsQueue() {
+		if (events != null) {
+			List<Object> objectList = new ArrayList<Object>(events);
+			String[] fieldNames = {"#", "Time", "Type"};
+			ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+			addTableView(tableMaps);
+		}
+	}
+	
+	private void addVehiclesTable() {
+		if (map.getVehicles() != null) {
+			List<Object> objectList = new ArrayList<Object>(map.getVehicles());
+			String[] fieldNames = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
+			ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+			addTableView(tableMaps);
+		}
+	}
+	
+	private void addRoadsTable() {
+		if (map.getRoads() != null) {
+			List<Object> objectList = new ArrayList<Object>(map.getRoads());
+			String[] fieldNames = {"ID", "Source", "Target", "Length", "Max Speed", "Vehicles"};
+			ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+			addTableView(tableMaps);
+		}
+	}
+	
+	private void addJunctionsTable() {
+		if (map.getJunctions() != null) {
+			List<Object> objectList = new ArrayList<Object>(map.getJunctions());
+			String[] fieldNames = {"ID", "Green", "Red"};
+			ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+			addTableView(tableMaps);
+		}
+	}
+	
+	private void addStatusBar() {  
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		JLabel statusBarText = new JLabel("Welcome to the simulator!");    
+		tablePanel.add(statusBarText);
+		mainPanel.add(tablePanel);
+	}
+	
+	private void addMap() {  
+		mainPanel.add(new GraphLayout());
+	}
 
 	public void update(UpdateEvent ue, String error) {
 		
