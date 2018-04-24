@@ -33,6 +33,7 @@ public class TrafficSimulator {
 	/** 
 	 * Constructor de la clase TrafficSimulator.
 	*/
+	
 	public TrafficSimulator() {
 		this.SimObjects = new RoadMap();
 		this.eventos = new MultiTreeMap<>();
@@ -43,26 +44,33 @@ public class TrafficSimulator {
 	 * Añade un evento a la lista de eventos.
 	 * @param e : Evento
 	*/
+	
 	public void insertaEvento(Event e) {
-		if (e.getTime() < contadorTiempo)
+		if (e.getTime() < contadorTiempo) {
+			fireUpdateEvent(EventType.ERROR, "ERROR: Invalid time");
 			throw new IllegalArgumentException("Invalid time");
+		}
 		eventos.putValue(e.getTime(), e);
+		fireUpdateEvent(EventType.NEWEVENT, "");
 	}
 	
 	public void addSimulatorListener(Listener l) {
 		listeners.add(l);
 		UpdateEvent ue = new UpdateEvent(EventType.REGISTERED);
-		// evita pseudo-recursividad
-		SwingUtilities.invokeLater(()->l.update(ue, "ERROR"));
+		SwingUtilities.invokeLater(()->l.update(ue, ""));
 	}
 	
 	public void removeListener(Listener l) {
 		listeners.remove(l);
 	}
 	
-	// uso interno, evita tener que escribir el mismo bucle muchas veces
+	/** 
+	 * Envía un evento apropiado a todos los listeners.
+	 * @param type : Tipo de evento
+	 * @param error : String que detalla el error (evento tipo ERROR)
+	*/	
+	
 	private void fireUpdateEvent(EventType type, String error) {
-		// envia un evento apropiado a todos los listeners
 		UpdateEvent ue = new UpdateEvent(type);
 		for (Listener l : listeners) l.update(ue, "ERROR");
 	}
@@ -71,6 +79,7 @@ public class TrafficSimulator {
 	 * Devuelve el informe de salida en formato Ini.
 	 * @return salida : Informe del simulador
 	*/
+	
 	public Ini report() {
 		Map<String, String> m = new LinkedHashMap<>();
 		Ini salida = new Ini();
@@ -93,6 +102,7 @@ public class TrafficSimulator {
 	 * @throws IOException 
 	 * @throws SimulatorException 
 	*/
+	
 	public void execute(int pasosSimulacion, OutputStream o) throws IOException, SimulatorException {
 		int limiteTiempo = this.contadorTiempo + pasosSimulacion - 1;
 		while (this.contadorTiempo <= limiteTiempo) {
@@ -106,24 +116,41 @@ public class TrafficSimulator {
 			for (Junction j : SimObjects.getJunctions())
 				j.avanza();
 			this.contadorTiempo++;
+			fireUpdateEvent(EventType.ADVANCED, "");
 			report().store(o);
 		}
 	}
+	
+	/** 
+	 * Devuelve el mapa de objetos simulados.
+	 * @return RoadMap con los SimObjects de la simulación
+	*/
 	
 	public RoadMap getMap() {
 		return SimObjects;
 	}
 	
+	/** 
+	 * Devuelve los eventos de la simulación.
+	 * @return MultiTreMap que relaciona los eventos con su tiempo de ejecución
+	*/
+	
 	public MultiTreeMap<Integer, Event> getEvents(){
 		return eventos;
 	}
 
-
+	/** 
+	 * Enumerado con el tipo de evento.
+	*/
+	
 	public enum EventType {
 		REGISTERED, RESET, NEWEVENT, ADVANCED, ERROR;
 	}
 
-	// clase interna en el simulador
+	/** 
+	 * Clase interna en el simulador para los posibles eventos.
+	*/
+	
 	public class UpdateEvent {
 		EventType type;
 		

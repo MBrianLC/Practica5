@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -239,126 +240,97 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private void addToolBar() {   
 		toolBar = new JToolBar();    
-		mainPanel.add(toolBar, BorderLayout.PAGE_START);   
-		loadButton = new JButton();   
-		  try {
-		    loadButton.setIcon(new ImageIcon("src/main/resources/icons/open.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
+		mainPanel.add(toolBar, BorderLayout.PAGE_START);  
+		
+		loadButton = new JButton();
 		loadButton.setActionCommand(LOAD);
 		loadButton.setToolTipText("Load a file");
 		loadButton.addActionListener(this);	
+	    loadButton.setIcon(new ImageIcon("src/main/resources/icons/open.png"));
 		toolBar.add(loadButton);
-		saveButton = new JButton();  
-		 try {
-			 saveButton.setIcon(new ImageIcon("src/main/resources/icons/save.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
+		
+		saveButton = new JButton();
 		saveButton.setActionCommand(SAVE);
 		saveButton.setToolTipText("Save a file");
 		saveButton.addActionListener(this);
+		saveButton.setIcon(new ImageIcon("src/main/resources/icons/save.png"));
 		toolBar.add(saveButton);
+		
 		clearEventsButton = new JButton(); 
-		try {
-			clearEventsButton.setIcon(new ImageIcon("src/main/resources/icons/clear.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
 		clearEventsButton.setActionCommand(CLEAR);
 		clearEventsButton.setToolTipText("Clear events");
 		clearEventsButton.addActionListener(this);
+		clearEventsButton.setIcon(new ImageIcon("src/main/resources/icons/clear.png"));
 		toolBar.add(clearEventsButton);
+		
 		checkInEventsButton = new JButton();
-		try {
-			checkInEventsButton.setIcon(new ImageIcon("src/main/resources/icons/events.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
 		checkInEventsButton.setActionCommand(CHECK_IN);
-		checkInEventsButton.setToolTipText("Check events");
+		checkInEventsButton.setToolTipText("Insert an event");
 		checkInEventsButton.addActionListener(this);
+		checkInEventsButton.setIcon(new ImageIcon("src/main/resources/icons/events.png"));
 		toolBar.add(checkInEventsButton);
+		
 		runButton = new JButton(); 
-		try {
-			runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
 		runButton.setActionCommand(RUN);
 		runButton.setToolTipText("Run simulation");
 		runButton.addActionListener(this);
+		runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
 		toolBar.add(runButton);
+		
 		stopButton = new JButton();
-		try {
-			stopButton.setIcon(new ImageIcon("src/main/resources/icons/stop.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
 		stopButton.setActionCommand(STOP);
 		stopButton.setToolTipText("Stop simulation");
 		stopButton.addActionListener(this);
+		stopButton.setIcon(new ImageIcon("src/main/resources/icons/stop.png"));
 		toolBar.add(stopButton);
+		
 		resetButton = new JButton();
-		try {
-			resetButton.setIcon(new ImageIcon("src/main/resources/icons/reset.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
 		resetButton.setActionCommand(RESET);
 		resetButton.setToolTipText("Reset simulation");
 		resetButton.addActionListener(this);
+		resetButton.setIcon(new ImageIcon("src/main/resources/icons/reset.png"));
 		toolBar.add(resetButton);
+		
 		toolBar.add(new JLabel(" Steps: "));   
 		stepsSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 1000, 1)); 
 		// Configurar stepsSpinner  
 		toolBar.add(stepsSpinner);
+		
 		toolBar.add(new JLabel(" Time: "));
 		timeViewer = new JTextField("0", 5);  
 		// Configurar timeViewer    
 		toolBar.add(timeViewer);
+		
 		toolBar.addSeparator(); 
-		genReportsButton = new JButton(); 
-		try {
-			genReportsButton.setIcon(new ImageIcon("src/main/resources/icons/report.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
+		
+		genReportsButton = new JButton();
 		genReportsButton.setActionCommand(GEN_REPORT);
 		genReportsButton.setToolTipText("Generate reports");
 		genReportsButton.addActionListener(this);
+		genReportsButton.setIcon(new ImageIcon("src/main/resources/icons/report.png"));
 		toolBar.add(genReportsButton);
+		
 		clearReportsButton = new JButton();
-		try {
-			clearReportsButton.setIcon(new ImageIcon("src/main/resources/icons/delete_report.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
 		clearReportsButton.setActionCommand(CLEAR_REPORT);
 		clearReportsButton.setToolTipText("Clear reports");
 		clearReportsButton.addActionListener(this);
+		clearReportsButton.setIcon(new ImageIcon("src/main/resources/icons/delete_report.png"));
 		toolBar.add(clearReportsButton);
-		saveReportsButton = new JButton();  
-		try {
-			saveReportsButton.setIcon(new ImageIcon("src/main/resources/icons/save_report.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
+		
+		saveReportsButton = new JButton();
 		saveReportsButton.setActionCommand(SAVE_REPORT);
 		saveReportsButton.setToolTipText("Save reports");
 		saveReportsButton.addActionListener(this);
+		saveReportsButton.setIcon(new ImageIcon("src/main/resources/icons/save_report.png"));
 		toolBar.add(saveReportsButton);
-		toolBar.addSeparator();   
-		quitButton = new JButton(); 
-		try {
-			quitButton.setIcon(new ImageIcon("src/main/resources/icons/exit.png"));
-		  } catch (Exception e) {
-		    e.printStackTrace();
-		  }
+		
+		toolBar.addSeparator(); 
+		
+		quitButton = new JButton();
 		quitButton.setActionCommand(QUIT);
 		quitButton.setToolTipText("Exit");
 		quitButton.addActionListener(this);
+		quitButton.setIcon(new ImageIcon("src/main/resources/icons/exit.png"));
 		toolBar.add(quitButton);
 		
 	}
@@ -394,6 +366,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		}
 		else if (CLEAR.equals(e.getActionCommand()))
 			eventsEditor.setText("");
+		else if (CHECK_IN.equals(e.getActionCommand()))
+			try {
+				checkInEvent();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		else if (QUIT.equals(e.getActionCommand()))
 			System.exit(0);
 	}
@@ -461,6 +439,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		catch (SimulatorException ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	private void checkInEvent() throws IOException {
+		contr.loadEvents(new ByteArrayInputStream(eventsEditor.getText().getBytes())); 
 	}
 	
 	private void resetSim(){
@@ -680,6 +662,25 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 
 	public void update(UpdateEvent ue, String error) {
-		
+		switch (ue.getEvent()) {
+			case ADVANCED:{
+				timeViewer.setText(String.valueOf(ue.getCurrentTime()));
+				break;
+			}
+			case RESET:{
+				timeViewer.setText("0");
+				break;
+			}
+			case NEWEVENT:{
+				statusBarText.setText("New event inserted");
+				break;
+			}
+			case ERROR:{
+				statusBarText.setText(error);
+				break;
+			}
+		default:
+			break;
+		}
 	}
 }

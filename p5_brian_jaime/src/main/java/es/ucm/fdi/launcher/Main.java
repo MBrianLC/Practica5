@@ -195,7 +195,7 @@ public class Main {
 		c.execute(new TrafficSimulator());
 		SwingUtilities.invokeAndWait(new Runnable() {
 			public void run() {
-				new MainWindowSim(new TrafficSimulator(), in, c);
+				new MainWindowSim(new TrafficSimulator(), _inFile, c);
 			}   
 		}); 
 	}
