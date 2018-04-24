@@ -48,6 +48,7 @@ import javax.swing.table.AbstractTableModel;
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.extra.graphlayout.GraphLayout;
 import es.ucm.fdi.ini.Ini;
+import es.ucm.fdi.model.Events.Event;
 import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.model.SimulatedObjects.SimObject;
 import es.ucm.fdi.model.Simulator.Listener;
@@ -110,12 +111,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JTable roadsTable; // tabla de carreteras
 	private JTable junctionsTable; // tabla de cruces
 	private JTextArea reportsArea; // zona de informes
-	
-	public MainWindowSim() {
-	
-	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr){
+		
+	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr){
 		super("Traffic Simulator");
-		/*this.contr = contr;
+		this.contr = contr;
 		map = tsim.getMap();
 		int cont = 0;
 		for (int i = 0; i < contr.getTime(); ++i) {
@@ -128,7 +127,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			}
 		}
 		currentFile = inFileName != null ? new File(inFileName) : null;
-		*/
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
 		initGUI();
@@ -334,13 +332,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new MainWindowSim();
 			}
 		});
-	}
+	}*/
 	
 	public void actionPerformed(ActionEvent e) {
 		if (LOAD.equals(e.getActionCommand()))
@@ -356,7 +354,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			runButton.setToolTipText("Stop simulation");
 			runButton.addActionListener(this);
 			runButton.setIcon(new ImageIcon("src/main/resources/icons/stop.png"));
-			runSim();
+			try {
+				runSim();
+			} catch (InterruptedException e1) {
+				contr.notify();
+			}
 		}
 		else if (RESET.equals(e.getActionCommand())){
 			resetSim();
@@ -438,7 +440,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		stateBar.add(statusBarText);
 	}
 	
-	private void runSim(){
+	private void runSim() throws InterruptedException{
 		try {
 			InputStream in = new FileInputStream(eventsEditor.getText());
 			contr.setIni(new Ini(in));
