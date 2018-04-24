@@ -46,7 +46,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 
 import es.ucm.fdi.control.Controller;
-import es.ucm.fdi.extra.graphlayout.GraphLayout;
+import es.ucm.fdi.extra.graphlayout.RoadMapGraph;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.Events.Event;
 import es.ucm.fdi.model.Exceptions.SimulatorException;
@@ -78,13 +78,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private JPanel mainPanel;
 	private JPanel stateBar;
-	private JPanel contentPanel1;
-	private JPanel contentPanel2;
-	private JPanel contentPanel3;
-	private JPanel contentPanel4;
-	private JPanel contentPanel5;
-	private JPanel contentPanel6;
-	private JPanel contentPanel7;
+	private JPanel editorPanel;
+	private JPanel eventsPanel;
+	private JPanel reportsPanel;
+	private JPanel vehiclesPanel;
+	private JPanel roadsPanel;
+	private JPanel junctionsPanel;
+	private JPanel mapPanel;
 	private JMenu fileMenu;
 	private JMenu simulatorMenu;
 	private JMenu reportsMenu;
@@ -111,12 +111,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JTable junctionsTable; // tabla de cruces
 	private JTextArea reportsArea; // zona de informes
 	
-	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr) {
+	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr) {
 		
-	public MainWindowSim(String inFileName){
+	//public MainWindowSim(String inFileName){
 		super("Traffic Simulator");
-		/*this.contr = contr;
+		this.contr = contr;
 		map = tsim.getMap();
+		events = new ArrayList<>();
 		int cont = 0;
 		for (int i = 0; i < contr.getTime(); ++i) {
 			List<Event> eventsMismoTiempo = tsim.getEvents().get(i);
@@ -126,12 +127,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 					++cont;
 				}
 			}
-		}*/
+		}
 		currentFile = inFileName != null ? new File(inFileName) : null;
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
 		initGUI();
-		//tsim.addSimulatorListener(this);
+		tsim.addSimulatorListener(this);
 	}
 	
 	public void initGUI(){
@@ -142,17 +143,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addMenuBar(); // barra de menus
 		addToolBar(); // barra de herramientas
 		addEventsEditor();
-		//addEventsView(); // cola de eventos
-		contentPanel2 = addPanel("Table");
+		addEventsQueue(); // cola de eventos
 		addReportsArea(); // zona de informes
-		contentPanel4 = addPanel("Vehicles");
-		contentPanel5 = addPanel("Roads");
-		contentPanel6 = addPanel("Junctions");
-		contentPanel7 = addPanel("");
-		//addVehiclesTable(); // tabla de vehiculos
-		//addRoadsTable(); // tabla de carreteras
-		//addJunctionsTable(); // tabla de cruces
-		//addMap(); // mapa de carreteras
+		addVehiclesTable(); // tabla de vehiculos
+		addRoadsTable(); // tabla de carreteras
+		addJunctionsTable(); // tabla de cruces
+		addMap(); // mapa de carreteras
+		addStatusBar(); // barra de estado
 		
 		JPanel panel1 = new JPanel();
 		panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
@@ -165,34 +162,32 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 		panel1.add(panel2);
 		panel1.add(panel3);
-		panel2.add(contentPanel1);
-		panel2.add(contentPanel2);
-		panel2.add(contentPanel3);
+		panel1.add(stateBar);
+		panel2.add(editorPanel);
+		panel2.add(eventsPanel);
+		panel2.add(reportsPanel);
 		panel3.add(panel4);
-		panel3.add(contentPanel7);
-		panel4.add(contentPanel4);
-		panel4.add(contentPanel5);
-		panel4.add(contentPanel6);
+		panel3.add(mapPanel);
+		panel4.add(vehiclesPanel);
+		panel4.add(roadsPanel);
+		panel4.add(junctionsPanel);
 		
 		mainPanel.add(panel1);
+		if (currentFile != null) {
+			try {
+				String s = readFile(currentFile);
+				eventsEditor.setText(s);
+				editorPanel.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
+			} 
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		this.setContentPane(mainPanel);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(1000, 1000);
 		this.setVisible(true);
-	}
-	
-	private JPanel addPanel(String text) {
-		JTextArea textArea = new JTextArea("");
-		textArea.setEditable(false);
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		JScrollPane area = new JScrollPane(textArea);
-		area.setPreferredSize(new Dimension(500, 500));
-		JPanel panel = new JPanel(new BorderLayout());
-		if (text != "") panel.setBorder(BorderFactory.createTitledBorder(text));
-		panel.add(area);
-		return panel;
 	}
 	
 	private void addMenuBar(){
@@ -344,14 +339,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 	}
 	
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				new MainWindowSim("test.txt");
-			}
-		});
-	}
-	
 	public void actionPerformed(ActionEvent e) {
 		if (LOAD.equals(e.getActionCommand()))
 			loadFile();
@@ -437,9 +424,9 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			try {
 				s = readFile(file);
 				eventsEditor.setText(s);
-				//statusBarText.setText("Events have been loaded to the simulator!"); 
+				statusBarText.setText("Events have been loaded to the simulator!"); 
 				currentFile = file;
-				contentPanel1.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
+				editorPanel.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -542,73 +529,77 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 	
 	private void addEventsEditor(){
-		contentPanel1 = new JPanel(new BorderLayout());
-		contentPanel1.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
+		editorPanel = new JPanel(new BorderLayout());
+		editorPanel.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
 		eventsEditor = new JTextArea("");
 		eventsEditor.setEditable(true);
 		eventsEditor.setLineWrap(true);
 		eventsEditor.setWrapStyleWord(true);
 		JScrollPane area = new JScrollPane(eventsEditor);
 		area.setPreferredSize(new Dimension(500, 500));
-		contentPanel1.add(area);
+		editorPanel.add(area);
 		
 		addEditor(eventsEditor);
 	}
 	
+	private void addEventsQueue() {
+		eventsPanel = new JPanel(new BorderLayout());
+		List<Object> objectList = new ArrayList<Object>(events);
+		String[] fieldNames = {"#", "Time", "Type"};
+		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
+		eventsQueue = new JTable(tableMaps); 
+		JScrollPane sp = new JScrollPane(eventsQueue);
+		sp.setPreferredSize(new Dimension(500, 500));
+		eventsPanel.setBorder(BorderFactory.createTitledBorder("Events Queue"));
+		eventsPanel.add(sp);
+	}
+	
 	private void addReportsArea(){
-		contentPanel3 = new JPanel(new BorderLayout());
-		contentPanel3.setBorder(BorderFactory.createTitledBorder("Reports"));
+		reportsPanel = new JPanel(new BorderLayout());
+		reportsPanel.setBorder(BorderFactory.createTitledBorder("Reports"));
 		reportsArea = new JTextArea("");
 		reportsArea.setEditable(false);
 		reportsArea.setLineWrap(true);
 		reportsArea.setWrapStyleWord(true);
 		JScrollPane area = new JScrollPane(reportsArea);
 		area.setPreferredSize(new Dimension(500, 500));
-		contentPanel3.add(area);
-	}
-	
-	private void addEventsQueue() {
-		JPanel tablePanel = new JPanel(new BorderLayout());
-		List<Object> objectList = new ArrayList<Object>(events);
-		String[] fieldNames = {"#", "Time", "Type"};
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		eventsQueue = new JTable(tableMaps); 
-		tablePanel.add(eventsQueue);
-		tablePanel.add(new JScrollPane());
-		mainPanel.add(tablePanel);
+		reportsPanel.add(area);
 	}
 	
 	private void addVehiclesTable() {
-		JPanel tablePanel = new JPanel(new BorderLayout());
+		vehiclesPanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getVehicles());
 		String[] fieldNames = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
 		vehiclesTable = new JTable(tableMaps); 
-		tablePanel.add(vehiclesTable);
-		tablePanel.add(new JScrollPane());
-		mainPanel.add(tablePanel);	
+		JScrollPane sp = new JScrollPane(vehiclesTable);
+		sp.setPreferredSize(new Dimension(500, 500));
+		vehiclesPanel.setBorder(BorderFactory.createTitledBorder("Vehicles"));
+		vehiclesPanel.add(sp);	
 	}
 	
 	private void addRoadsTable() {
-		JPanel tablePanel = new JPanel(new BorderLayout());
+		roadsPanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getRoads());
 		String[] fieldNames = {"ID", "Source", "Target", "Length", "Max Speed", "Vehicles"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames);
-		roadsTable = new JTable(tableMaps); 
-		tablePanel.add(roadsTable);
-		tablePanel.add(new JScrollPane());
-		mainPanel.add(tablePanel);
+		roadsTable = new JTable(tableMaps);
+		JScrollPane sp = new JScrollPane(roadsTable);
+		sp.setPreferredSize(new Dimension(500, 500));
+		roadsPanel.setBorder(BorderFactory.createTitledBorder("Roads"));
+		roadsPanel.add(sp);
 	}
 	
 	private void addJunctionsTable() {
-		JPanel tablePanel = new JPanel(new BorderLayout());
+		junctionsPanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(map.getJunctions());
 		String[] fieldNames = {"ID", "Green", "Red"};
 		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
 		junctionsTable = new JTable(tableMaps); 
-		tablePanel.add(junctionsTable);
-		tablePanel.add(new JScrollPane());
-		mainPanel.add(tablePanel);
+		JScrollPane sp = new JScrollPane(junctionsTable);
+		sp.setPreferredSize(new Dimension(500, 500));
+		junctionsPanel.setBorder(BorderFactory.createTitledBorder("Junctions"));
+		junctionsPanel.add(sp);
 	}
 	
 	private void addStatusBar() {  
@@ -619,7 +610,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 	
 	private void addMap() {  
-		mainPanel.add(new GraphLayout());
+		mapPanel = new JPanel(new BorderLayout());
+		RoadMapGraph roadMap = new RoadMapGraph(new RoadMap());
+		JScrollPane sp = new JScrollPane(roadMap._graphComp);
+		sp.setPreferredSize(new Dimension(500, 500));
+		mapPanel.add(sp);
 	}
 	
 	private void addEditor(JTextArea textArea) {

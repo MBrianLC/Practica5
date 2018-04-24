@@ -119,9 +119,6 @@ public class Main {
 		String s = line.getOptionValue("m");
 		if (s != null && (s.equals("batch") || s.equals("GUI"))) {
 			if (s.equals("GUI")) mode = false;
-		}	
-		else {
-			throw new ParseException("An events file is missing");
 		}
 	}
 
@@ -191,17 +188,9 @@ public class Main {
 	 * @throws InvocationTargetException 
 	 */
 	private static void startGUIMode() throws IOException, SimulatorException, InvocationTargetException, InterruptedException {
-		OutputStream out;
-		out = System.out;
-		if(_timeLimit == null) _timeLimit = _timeLimitDefaultValue;
-		InputStream in = new FileInputStream(_inFile);
-		Controller c = new Controller(new Ini(in), out, _timeLimit);
-		c.execute(new TrafficSimulator());
-		SwingUtilities.invokeAndWait(new Runnable() {
-			public void run() {
-				new MainWindowSim(new TrafficSimulator(), _inFile, c);
-			}   
-		}); 
+		InputStream in = new FileInputStream(_inFile);		
+		Controller c = new Controller(new Ini(in), System.out, _timeLimit);
+		SwingUtilities.invokeLater(() -> new MainWindowSim(new TrafficSimulator(), _inFile, c));
 	}
 
 	private static void start(String[] args) throws IOException, InvocationTargetException, InterruptedException {
