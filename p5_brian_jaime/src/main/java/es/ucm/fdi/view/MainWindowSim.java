@@ -111,11 +111,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JTable junctionsTable; // tabla de cruces
 	private JTextArea reportsArea; // zona de informes
 	
-	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr) {
+	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr) {
 		
-	//public MainWindowSim(String inFileName){
+	public MainWindowSim(String inFileName){
 		super("Traffic Simulator");
-		this.contr = contr;
+		/*this.contr = contr;
 		map = tsim.getMap();
 		int cont = 0;
 		for (int i = 0; i < contr.getTime(); ++i) {
@@ -126,12 +126,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 					++cont;
 				}
 			}
-		}
+		}*/
 		currentFile = inFileName != null ? new File(inFileName) : null;
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
 		initGUI();
-		tsim.addSimulatorListener(this);
+		//tsim.addSimulatorListener(this);
 	}
 	
 	public void initGUI(){
@@ -143,17 +143,16 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addToolBar(); // barra de herramientas
 		addEventsEditor();
 		//addEventsView(); // cola de eventos
-		//addReportsArea(); // zona de informes
 		contentPanel2 = addPanel("Table");
-		contentPanel3 = addPanel("Reports");
+		addReportsArea(); // zona de informes
 		contentPanel4 = addPanel("Vehicles");
 		contentPanel5 = addPanel("Roads");
 		contentPanel6 = addPanel("Junctions");
 		contentPanel7 = addPanel("");
-		addVehiclesTable(); // tabla de vehiculos
-		addRoadsTable(); // tabla de carreteras
-		addJunctionsTable(); // tabla de cruces
-		addMap(); // mapa de carreteras
+		//addVehiclesTable(); // tabla de vehiculos
+		//addRoadsTable(); // tabla de carreteras
+		//addJunctionsTable(); // tabla de cruces
+		//addMap(); // mapa de carreteras
 		
 		JPanel panel1 = new JPanel();
 		panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
@@ -345,13 +344,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 	}
 	
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new MainWindowSim("test.txt");
 			}
 		});
-	}*/
+	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if (LOAD.equals(e.getActionCommand()))
@@ -556,6 +555,18 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addEditor(eventsEditor);
 	}
 	
+	private void addReportsArea(){
+		contentPanel3 = new JPanel(new BorderLayout());
+		contentPanel3.setBorder(BorderFactory.createTitledBorder("Reports"));
+		reportsArea = new JTextArea("");
+		reportsArea.setEditable(false);
+		reportsArea.setLineWrap(true);
+		reportsArea.setWrapStyleWord(true);
+		JScrollPane area = new JScrollPane(reportsArea);
+		area.setPreferredSize(new Dimension(500, 500));
+		contentPanel3.add(area);
+	}
+	
 	private void addEventsQueue() {
 		JPanel tablePanel = new JPanel(new BorderLayout());
 		List<Object> objectList = new ArrayList<Object>(events);
@@ -615,6 +626,24 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		// create the events pop-up menu
 		JPopupMenu _editorPopupMenu = new JPopupMenu();
 		
+		JMenuItem loadOption = new JMenuItem("Load");
+		loadOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadFile();
+			}
+		});
+		
+		JMenuItem saveOption = new JMenuItem("Save");
+		saveOption.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveFile();
+			}
+		});
+		
 		JMenuItem clearOption = new JMenuItem("Clear");
 		clearOption.addActionListener(new ActionListener() {
 
@@ -624,35 +653,176 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			}
 		});
 
-		JMenuItem exitOption = new JMenuItem("Exit");
-		exitOption.addActionListener(new ActionListener() {
-
+		JMenu subMenu = new JMenu("Add Template");
+		
+		JMenuItem templateRROption = new JMenuItem("New RR Junction");
+		templateRROption.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
+				String s = "[new_junction]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += "type = rr\n";
+				s += "max_time_slice = \n";
+				s += "min_time_slice = \n";
+				s += '\n';
+				textArea.append(s);
+			}
+		}); 
+		subMenu.add(templateRROption);
+		JMenuItem templateMCOption = new JMenuItem("New MC Junction");
+		templateMCOption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[new_junction]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += "type = mc\n";
+				s += '\n';
+				textArea.append(s);
 			}
 		});
-
-		JMenu subMenu = new JMenu("Insert");
-
-		String[] greetings = { "Hola!", "Hello!", "Ciao!" };
-		for (String s : greetings) {
-			JMenuItem menuItem = new JMenuItem(s);
-			menuItem.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					textArea.insert(s, textArea.getCaretPosition());
-				}
-			});
-			subMenu.add(menuItem);
-		}
-
+		subMenu.add(templateMCOption);
+		JMenuItem templateJOption = new JMenuItem("New Junction");
+		templateJOption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[new_junction]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += '\n';
+				textArea.append(s);
+			}
+		});
+		subMenu.add(templateJOption);
+		JMenuItem templateDirtOption = new JMenuItem("New Dirt Road");
+		templateDirtOption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[new_road]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += "src = \n";
+				s += "dest = \n";
+				s += "max_speed = \n";
+				s += "length = \n";
+				s += "type = dirt\n";
+				s += '\n';
+				textArea.append(s);
+			}
+		});
+		subMenu.add(templateDirtOption);
+		JMenuItem templateLanesOption = new JMenuItem("New Lanes Road");
+		templateLanesOption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[new_road]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += "src = \n";
+				s += "dest = \n";
+				s += "max_speed = \n";
+				s += "length = \n";
+				s += "type = lanes\n";
+				s += "lanes = \n";
+				s += '\n';
+				textArea.append(s);
+			}
+		});
+		subMenu.add(templateLanesOption);
+		JMenuItem templateROption = new JMenuItem("New Road");
+		templateROption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[new_road]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += "src = \n";
+				s += "dest = \n";
+				s += "max_speed = \n";
+				s += "length = \n";
+				s += '\n';
+				textArea.append(s);
+			}
+		});
+		subMenu.add(templateROption);
+		JMenuItem templateBikeOption = new JMenuItem("New Bike");
+		templateBikeOption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[new_vehicle]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += "itinerary = \n";
+				s += "max_speed = \n";
+				s += "type = bike\n";
+				s += '\n';
+				textArea.append(s);
+			}
+		});
+		subMenu.add(templateBikeOption);
+		JMenuItem templateCarOption = new JMenuItem("New Car");
+		templateCarOption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[new_vehicle]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += "itinerary = \n";
+				s += "max_speed = \n";
+				s += "type = car\n";
+				s += "resistance = \n";
+				s += "fault_probability = \n";
+				s += "max_fault_duration = \n";
+				s += "seed = \n";
+				s += '\n';
+				textArea.append(s);
+			}
+		});
+		subMenu.add(templateCarOption);
+		JMenuItem templateVOption = new JMenuItem("New Vehicle");
+		templateVOption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[new_vehicle]\n";
+				s += "time = \n";
+				s += "id = \n";
+				s += "max_speed = \n";
+				s += "itinerary = \n";
+				s += '\n';
+				textArea.append(s);
+			}
+		});
+		subMenu.add(templateVOption);
+		JMenuItem templateFaultyOption = new JMenuItem("Make Vehicle Faulty");
+		templateFaultyOption.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String s = "[make_vehicle_faulty]\n";
+				s += "time = \n";
+				s += "vehicles = \n";
+				s += "duration = \n";
+				s += '\n';
+				textArea.append(s);
+			}
+		});
+		subMenu.add(templateFaultyOption);
 		
 		_editorPopupMenu.add(subMenu);
 		_editorPopupMenu.addSeparator();
+		_editorPopupMenu.add(loadOption);
+		_editorPopupMenu.add(saveOption);
 		_editorPopupMenu.add(clearOption);
-		_editorPopupMenu.add(exitOption);
 
 		// connect the popup menu to the text area _editor
 		textArea.addMouseListener(new MouseListener() {
