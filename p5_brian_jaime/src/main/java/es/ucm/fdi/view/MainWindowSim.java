@@ -41,6 +41,8 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 
 import es.ucm.fdi.control.Controller;
@@ -140,10 +142,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 		addMenuBar(); // barra de menus
 		addToolBar(); // barra de herramientas
-		addEventsEditor();
+		//addEventsEditor();
 		//addEventsView(); // cola de eventos
 		//addReportsArea(); // zona de informes
-		addEventsEditor();
+		contentPanel1 = new TextComponentSim("Events", false);
+		contentPanel2 = new TextComponentSim("Table", false);
 		contentPanel3 = new TextComponentSim("Reports", false);
 		contentPanel4 = new TextComponentSim("Vehicles", false);
 		contentPanel5 = new TextComponentSim("Roads", false);
@@ -277,13 +280,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
 		toolBar.add(runButton);
 		
-		stopButton = new JButton();
-		stopButton.setActionCommand(STOP);
-		stopButton.setToolTipText("Stop simulation");
-		stopButton.addActionListener(this);
-		stopButton.setIcon(new ImageIcon("src/main/resources/icons/stop.png"));
-		toolBar.add(stopButton);
-		
 		resetButton = new JButton();
 		resetButton.setActionCommand(RESET);
 		resetButton.setToolTipText("Reset simulation");
@@ -292,13 +288,16 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		toolBar.add(resetButton);
 		
 		toolBar.add(new JLabel(" Steps: "));   
-		stepsSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 1000, 1)); 
-		// Configurar stepsSpinner  
+		stepsSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 1000, 1));
+		stepsSpinner.addChangeListener(new ChangeListener() {
+    		public void stateChanged(ChangeEvent e) {
+    	    	contr.setTime((int)stepsSpinner.getValue());
+			}
+		});
 		toolBar.add(stepsSpinner);
 		
 		toolBar.add(new JLabel(" Time: "));
 		timeViewer = new JTextField("0", 5);  
-		// Configurar timeViewer    
 		toolBar.add(timeViewer);
 		
 		toolBar.addSeparator(); 
@@ -353,6 +352,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		else if (CLEAR_REPORT.equals(e.getActionCommand()))
 			reportsArea.setText("");
 		else if (RUN.equals(e.getActionCommand())){
+			runButton.setActionCommand(STOP);
+			runButton.setToolTipText("Stop simulation");
+			runButton.addActionListener(this);
+			runButton.setIcon(new ImageIcon("src/main/resources/icons/stop.png"));
 			runSim();
 		}
 		else if (RESET.equals(e.getActionCommand())){
@@ -362,7 +365,15 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			genReport();
 		}
 		else if (STOP.equals(e.getActionCommand())) {
-			//stop();
+			runButton.setActionCommand(RUN);
+			runButton.setToolTipText("Run simulation");
+			runButton.addActionListener(this);
+			runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
+			try {
+				stop();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 		}
 		else if (CLEAR.equals(e.getActionCommand()))
 			eventsEditor.setText("");
@@ -443,6 +454,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private void checkInEvent() throws IOException {
 		contr.loadEvents(new ByteArrayInputStream(eventsEditor.getText().getBytes())); 
+	}
+	
+	private void stop() throws InterruptedException {
+		contr.wait(); 
 	}
 	
 	private void resetSim(){

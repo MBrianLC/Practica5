@@ -101,9 +101,10 @@ public class TrafficSimulator {
 	 * @param o : Flujo de salida
 	 * @throws IOException 
 	 * @throws SimulatorException 
+	 * @throws InterruptedException 
 	*/
 	
-	public void execute(int pasosSimulacion, OutputStream o) throws IOException, SimulatorException {
+	public void execute(int pasosSimulacion, OutputStream o) throws IOException, SimulatorException, InterruptedException {
 		int limiteTiempo = this.contadorTiempo + pasosSimulacion - 1;
 		while (this.contadorTiempo <= limiteTiempo) {
 			List<Event> eventActuales = eventos.get(contadorTiempo);
@@ -116,8 +117,9 @@ public class TrafficSimulator {
 			for (Junction j : SimObjects.getJunctions())
 				j.avanza();
 			this.contadorTiempo++;
-			fireUpdateEvent(EventType.ADVANCED, "");
 			report().store(o);
+			fireUpdateEvent(EventType.ADVANCED, "");
+			wait(500);
 		}
 	}
 	
