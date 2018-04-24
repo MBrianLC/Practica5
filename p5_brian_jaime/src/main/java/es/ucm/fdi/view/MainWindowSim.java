@@ -111,10 +111,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JTable roadsTable; // tabla de carreteras
 	private JTable junctionsTable; // tabla de cruces
 	private JTextArea reportsArea; // zona de informes
+	
+	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr)
 		
-	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr){
+	public MainWindowSim(String inFileName){
 		super("Traffic Simulator");
-		this.contr = contr;
+		/*this.contr = contr;
 		map = tsim.getMap();
 		int cont = 0;
 		for (int i = 0; i < contr.getTime(); ++i) {
@@ -125,7 +127,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 					++cont;
 				}
 			}
-		}
+		}*/
 		currentFile = inFileName != null ? new File(inFileName) : null;
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
@@ -140,10 +142,9 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 		addMenuBar(); // barra de menus
 		addToolBar(); // barra de herramientas
-		//addEventsEditor();
+		addEventsEditor();
 		//addEventsView(); // cola de eventos
 		//addReportsArea(); // zona de informes
-		contentPanel1 = new TextComponentSim("Events", false);
 		contentPanel2 = new TextComponentSim("Table", false);
 		contentPanel3 = new TextComponentSim("Reports", false);
 		contentPanel4 = new TextComponentSim("Vehicles", false);
@@ -332,13 +333,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 	}
 	
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new MainWindowSim();
+				new MainWindowSim("test.txt");
 			}
 		});
-	}*/
+	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if (LOAD.equals(e.getActionCommand()))
@@ -390,14 +391,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 
 	private void saveFile() {
-		stateBar.remove(statusBarText);
 		int returnVal = fc.showSaveDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			try {
 				writeFile(file, eventsEditor.getText());
 			} catch (IOException e) {
-				statusBarText.setText("ERROR: The file has not been saved");    
+				//statusBarText.setText("ERROR: The file has not been saved");    
 			}
 		}
 		statusBarText.setText("The file have been saved!");    
@@ -406,13 +406,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private void saveReport() {
 		int returnVal = fc.showSaveDialog(null);
-		stateBar.remove(statusBarText);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			try {
 				writeFile(file, reportsArea.getText());
 			} catch (IOException e) {
-				statusBarText.setText("ERROR: The reports have not been saved");    
+				//statusBarText.setText("ERROR: The reports have not been saved");    
 			}
 		}
 		statusBarText.setText("All reports have been saved!");    
@@ -421,16 +420,15 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 
 	private void loadFile() {
 		int returnVal = fc.showOpenDialog(null);
-		stateBar.remove(statusBarText);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			String s;
 			try {
 				s = readFile(file);
 				eventsEditor.setText(s);
-				statusBarText.setText("Events have been loaded to the simulator!"); 
+				//statusBarText.setText("Events have been loaded to the simulator!"); 
 				currentFile = file;
-				contentPanel2.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
+				contentPanel1.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -533,15 +531,15 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 	
 	private void addEventsEditor(){
-		contentPanel2 = new JPanel(new BorderLayout());
-		contentPanel2.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
+		contentPanel1 = new JPanel(new BorderLayout());
+		contentPanel1.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
 		eventsEditor = new JTextArea("");
 		eventsEditor.setEditable(true);
 		eventsEditor.setLineWrap(true);
 		eventsEditor.setWrapStyleWord(true);
 		JScrollPane area = new JScrollPane(eventsEditor);
 		area.setPreferredSize(new Dimension(500, 500));
-		this.add(area);
+		contentPanel1.add(area);
 		
 		addEditor(eventsEditor);
 	}
