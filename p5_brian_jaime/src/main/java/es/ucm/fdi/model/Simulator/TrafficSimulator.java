@@ -119,7 +119,6 @@ public class TrafficSimulator {
 			this.contadorTiempo++;
 			report().store(o);
 			fireUpdateEvent(EventType.ADVANCED, "");
-			wait(500);
 		}
 	}
 	

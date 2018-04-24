@@ -117,8 +117,8 @@ public class Main {
 	
 	private static void parseModeOption(CommandLine line) throws ParseException {
 		String s = line.getOptionValue("m");
-		if (s != null && (s == "batch" || s == "GUI")) {
-			if (s == "GUI") mode = false;
+		if (s != null && (s.equals("batch") || s.equals("GUI"))) {
+			if (s.equals("GUI")) mode = false;
 		}	
 		else {
 			throw new ParseException("An events file is missing");
@@ -176,7 +176,11 @@ public class Main {
 		if(_timeLimit == null) _timeLimit = _timeLimitDefaultValue;
 		InputStream in = new FileInputStream(_inFile);
 		Controller c = new Controller(new Ini(in), out, _timeLimit);
-		c.execute(new TrafficSimulator());
+		try {
+			c.execute(new TrafficSimulator());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

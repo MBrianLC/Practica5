@@ -98,9 +98,10 @@ public class Controller {
 	 * @param sim : La simulación de tráfico
 	 * @throws IOException 
 	 * @throws SimulatorException 
+	 * @throws InterruptedException 
 	*/
 	
-	public void execute(TrafficSimulator sim) throws IOException, SimulatorException {
+	public void execute(TrafficSimulator sim) throws IOException, SimulatorException, InterruptedException {
 		
 		for (Event e : eventos) {
 			sim.insertaEvento(e);

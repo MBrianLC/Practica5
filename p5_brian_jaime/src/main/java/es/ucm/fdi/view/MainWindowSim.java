@@ -97,7 +97,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JButton clearEventsButton;
 	private JButton checkInEventsButton;
 	private JButton runButton;
-	private JButton stopButton;
 	private JButton resetButton;
 	private JSpinner stepsSpinner;
 	private JTextField timeViewer;
@@ -112,11 +111,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JTable junctionsTable; // tabla de cruces
 	private JTextArea reportsArea; // zona de informes
 	
-	//public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr)
+	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr) {
 		
-	public MainWindowSim(String inFileName){
+	//public MainWindowSim(String inFileName){
 		super("Traffic Simulator");
-		/*this.contr = contr;
+		this.contr = contr;
 		map = tsim.getMap();
 		int cont = 0;
 		for (int i = 0; i < contr.getTime(); ++i) {
@@ -127,12 +126,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 					++cont;
 				}
 			}
-		}*/
+		}
 		currentFile = inFileName != null ? new File(inFileName) : null;
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
 		initGUI();
-		//tsim.addSimulatorListener(this);
+		tsim.addSimulatorListener(this);
 	}
 	
 	public void initGUI(){
@@ -145,16 +144,16 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addEventsEditor();
 		//addEventsView(); // cola de eventos
 		//addReportsArea(); // zona de informes
-		contentPanel2 = new TextComponentSim("Table", false);
-		contentPanel3 = new TextComponentSim("Reports", false);
-		contentPanel4 = new TextComponentSim("Vehicles", false);
-		contentPanel5 = new TextComponentSim("Roads", false);
-		contentPanel6 = new TextComponentSim("Junctions", false);
-		contentPanel7 = new TextComponentSim("Test", false);
-		//addVehiclesTable(); // tabla de vehiculos
-		//addRoadsTable(); // tabla de carreteras
-		//addJunctionsTable(); // tabla de cruces
-		//addMap(); // mapa de carreteras
+		contentPanel2 = addPanel("Table");
+		contentPanel3 = addPanel("Reports");
+		contentPanel4 = addPanel("Vehicles");
+		contentPanel5 = addPanel("Roads");
+		contentPanel6 = addPanel("Junctions");
+		contentPanel7 = addPanel("");
+		addVehiclesTable(); // tabla de vehiculos
+		addRoadsTable(); // tabla de carreteras
+		addJunctionsTable(); // tabla de cruces
+		addMap(); // mapa de carreteras
 		
 		JPanel panel1 = new JPanel();
 		panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
@@ -182,6 +181,19 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(1000, 1000);
 		this.setVisible(true);
+	}
+	
+	private JPanel addPanel(String text) {
+		JTextArea textArea = new JTextArea("");
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		JScrollPane area = new JScrollPane(textArea);
+		area.setPreferredSize(new Dimension(500, 500));
+		JPanel panel = new JPanel(new BorderLayout());
+		if (text != "") panel.setBorder(BorderFactory.createTitledBorder(text));
+		panel.add(area);
+		return panel;
 	}
 	
 	private void addMenuBar(){
@@ -333,13 +345,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				new MainWindowSim("test.txt");
 			}
 		});
-	}
+	}*/
 	
 	public void actionPerformed(ActionEvent e) {
 		if (LOAD.equals(e.getActionCommand()))
