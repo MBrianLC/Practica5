@@ -27,6 +27,7 @@ import es.ucm.fdi.util.MultiTreeMap;
 public class TrafficSimulator {
 	private int contadorTiempo;
 	private MultiTreeMap<Integer, Event> eventos;
+	private List<Event> eventsQueue;
 	private RoadMap SimObjects;
 	private List<Listener> listeners = new ArrayList<>();
 	
@@ -38,6 +39,7 @@ public class TrafficSimulator {
 		this.SimObjects = new RoadMap();
 		this.eventos = new MultiTreeMap<>();
 		this.contadorTiempo = 0;
+		this.eventsQueue = new ArrayList<>();
 	}
 	
 	/** 
@@ -51,6 +53,7 @@ public class TrafficSimulator {
 			throw new IllegalArgumentException("Invalid time");
 		}
 		eventos.putValue(e.getTime(), e);
+		eventsQueue.add(e);
 		fireUpdateEvent(EventType.NEWEVENT, "");
 	}
 	
@@ -132,12 +135,12 @@ public class TrafficSimulator {
 	}
 	
 	/** 
-	 * Devuelve los eventos de la simulación.
-	 * @return MultiTreMap que relaciona los eventos con su tiempo de ejecución
+	 * Devuelve la lista de eventos pendientes de la simulación.
+	 * @return Cola de eventos
 	*/
 	
-	public MultiTreeMap<Integer, Event> getEvents(){
-		return eventos;
+	public List<Event> getEventQueue(){
+		return eventsQueue;
 	}
 
 	/** 
@@ -167,8 +170,13 @@ public class TrafficSimulator {
 			return SimObjects;
 		}
 
-		public List<Event> getEvenQueue() {
-			return eventos.get(contadorTiempo);
+		public List<Event> getEventQueue() {
+			List<Event> aux = new ArrayList<>(eventsQueue);
+			for (Event e : aux) {
+				if (e.getTime() <= contadorTiempo)
+					eventsQueue.remove(e);
+			}
+			return eventsQueue;
 		}
 		
 		public int getCurrentTime() {

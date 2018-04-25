@@ -140,7 +140,8 @@ public class Vehicle extends SimObject implements Describable{
 		Map<String, String> out = new HashMap<>();
 		String s = "[";
 		out.put("ID", id);
-		out.put("Road", roadActual.getID());
+		if (haLlegado) out.put("Road", "Arrived");
+		else out.put("Road", roadActual.getID());
 		out.put("Location", String.valueOf(localizacion));
 		out.put("Speed", String.valueOf(velActual));
 		out.put("Km", String.valueOf(distTotal));

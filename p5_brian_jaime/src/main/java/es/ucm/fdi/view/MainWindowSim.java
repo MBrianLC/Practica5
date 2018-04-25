@@ -48,7 +48,6 @@ import javax.swing.table.AbstractTableModel;
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.extra.graphlayout.RoadMapGraph;
 import es.ucm.fdi.ini.Ini;
-import es.ucm.fdi.model.Events.Event;
 import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.model.SimulatedObjects.SimObject;
 import es.ucm.fdi.model.Simulator.Listener;
@@ -59,6 +58,7 @@ import es.ucm.fdi.model.Simulator.TrafficSimulator.UpdateEvent;
 @SuppressWarnings("serial")
 public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private Controller contr;
+	private TrafficSimulator tsim;
 	private RoadMap map;
 	private List<EventIndex> events;
 	private int time;
@@ -76,6 +76,8 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private final String CLEAR = "clear";
 	private final String QUIT = "quit";
 	
+	private TableSim tableSim;
+	private RoadMapGraph rmGraph;
 	private JPanel mainPanel;
 	private JPanel stateBar;
 	private JPanel editorPanel;
@@ -105,34 +107,24 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JButton saveReportsButton;
 	private JButton quitButton;
 	private JTextArea eventsEditor; // editor de eventos
-	private JTable eventsQueue; // tabla de eventos
-	private JTable vehiclesTable; // tabla de vehículos
-	private JTable roadsTable; // tabla de carreteras
-	private JTable junctionsTable; // tabla de cruces
 	private JTextArea reportsArea; // zona de informes
 	
 	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr) {
-		
-	//public MainWindowSim(String inFileName){
 		super("Traffic Simulator");
 		this.contr = contr;
+		this.tsim = tsim;
 		map = tsim.getMap();
 		events = new ArrayList<>();
-		int cont = 0;
-		for (int i = 0; i < contr.getTime(); ++i) {
-			List<Event> eventsMismoTiempo = tsim.getEvents().get(i);
-			if (eventsMismoTiempo != null) {
-				for (Event e : eventsMismoTiempo) {
-					events.add(new EventIndex(cont, e));
-					++cont;
-				}
-			}
+		for (int i = 0; i < tsim.getEventQueue().size(); ++i) {
+			events.add(new EventIndex(i, tsim.getEventQueue().get(i)));
 		}
 		currentFile = inFileName != null ? new File(inFileName) : null;
 		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
 		//contr.setOutputStream(reportsOutputStream); // ver sección 8
 		initGUI();
-		tsim.addSimulatorListener(this);
+		this.tsim.addSimulatorListener(this);
+		this.tsim.addSimulatorListener(tableSim);
+		this.tsim.addSimulatorListener(rmGraph);
 	}
 	
 	public void initGUI(){
@@ -143,12 +135,17 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addMenuBar(); // barra de menus
 		addToolBar(); // barra de herramientas
 		addEventsEditor();
-		addEventsQueue(); // cola de eventos
+		
+		tableSim = new TableSim(map, events);
+		eventsPanel = tableSim.getEventPanel();// cola de eventos
+		vehiclesPanel = tableSim.getVehiclesPanel();// tabla de vehiculos
+		roadsPanel = tableSim.getRoadsPanel();// tabla de carreteras
+		junctionsPanel = tableSim.getJunctionsPanel(); // tabla de cruces
+		
 		addReportsArea(); // zona de informes
-		addVehiclesTable(); // tabla de vehiculos
-		addRoadsTable(); // tabla de carreteras
-		addJunctionsTable(); // tabla de cruces
+		
 		addMap(); // mapa de carreteras
+		
 		addStatusBar(); // barra de estado
 		
 		JPanel panel1 = new JPanel();
@@ -438,9 +435,9 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private void runSim() throws InterruptedException{
 		try {
-			InputStream in = new FileInputStream(eventsEditor.getText());
+			InputStream in = new FileInputStream(currentFile);
 			contr.setIni(new Ini(in));
-			contr.execute(new TrafficSimulator());
+			contr.execute(this.tsim);
 		} 
 		catch (IOException ex) {
 			ex.printStackTrace();
@@ -499,34 +496,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			throw new IOException();
 		}
 	}
-
-	private class ListOfMapsTableModel extends AbstractTableModel {
-
-		private List<Object> elements;
-		private String[] fieldNames;
-		
-		public ListOfMapsTableModel(List<Object> objectList, String[] names) {
-			elements = objectList;
-			fieldNames = names;
-		}
-		
-		@Override // fieldNames es un String[] con nombrs de col.
-		public String getColumnName(int columnIndex) {
-			return fieldNames[columnIndex];
-		}
-		@Override // elements contiene la lista de elementos
-		public int getRowCount() {
-			return elements.size();
-		}
-		@Override
-		public int getColumnCount() {
-			return fieldNames.length;
-		}
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			return ((Describable) elements.get(rowIndex)).describe().get(fieldNames[columnIndex]);
-		}
-	}
 	
 	private void addEventsEditor(){
 		editorPanel = new JPanel(new BorderLayout());
@@ -542,18 +511,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addEditor(eventsEditor);
 	}
 	
-	private void addEventsQueue() {
-		eventsPanel = new JPanel(new BorderLayout());
-		List<Object> objectList = new ArrayList<Object>(events);
-		String[] fieldNames = {"#", "Time", "Type"};
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		eventsQueue = new JTable(tableMaps); 
-		JScrollPane sp = new JScrollPane(eventsQueue);
-		sp.setPreferredSize(new Dimension(500, 500));
-		eventsPanel.setBorder(BorderFactory.createTitledBorder("Events Queue"));
-		eventsPanel.add(sp);
-	}
-	
 	private void addReportsArea(){
 		reportsPanel = new JPanel(new BorderLayout());
 		reportsPanel.setBorder(BorderFactory.createTitledBorder("Reports"));
@@ -566,42 +523,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		reportsPanel.add(area);
 	}
 	
-	private void addVehiclesTable() {
-		vehiclesPanel = new JPanel(new BorderLayout());
-		List<Object> objectList = new ArrayList<Object>(map.getVehicles());
-		String[] fieldNames = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		vehiclesTable = new JTable(tableMaps); 
-		JScrollPane sp = new JScrollPane(vehiclesTable);
-		sp.setPreferredSize(new Dimension(500, 500));
-		vehiclesPanel.setBorder(BorderFactory.createTitledBorder("Vehicles"));
-		vehiclesPanel.add(sp);	
-	}
-	
-	private void addRoadsTable() {
-		roadsPanel = new JPanel(new BorderLayout());
-		List<Object> objectList = new ArrayList<Object>(map.getRoads());
-		String[] fieldNames = {"ID", "Source", "Target", "Length", "Max Speed", "Vehicles"};
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames);
-		roadsTable = new JTable(tableMaps);
-		JScrollPane sp = new JScrollPane(roadsTable);
-		sp.setPreferredSize(new Dimension(500, 500));
-		roadsPanel.setBorder(BorderFactory.createTitledBorder("Roads"));
-		roadsPanel.add(sp);
-	}
-	
-	private void addJunctionsTable() {
-		junctionsPanel = new JPanel(new BorderLayout());
-		List<Object> objectList = new ArrayList<Object>(map.getJunctions());
-		String[] fieldNames = {"ID", "Green", "Red"};
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		junctionsTable = new JTable(tableMaps); 
-		JScrollPane sp = new JScrollPane(junctionsTable);
-		sp.setPreferredSize(new Dimension(500, 500));
-		junctionsPanel.setBorder(BorderFactory.createTitledBorder("Junctions"));
-		junctionsPanel.add(sp);
-	}
-	
 	private void addStatusBar() {  
 		stateBar = new JPanel(new BorderLayout());
 		statusBarText = new JLabel("Welcome to the simulator!");    
@@ -611,8 +532,8 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private void addMap() {  
 		mapPanel = new JPanel(new BorderLayout());
-		RoadMapGraph roadMap = new RoadMapGraph(new RoadMap());
-		JScrollPane sp = new JScrollPane(roadMap._graphComp);
+		rmGraph = new RoadMapGraph(new RoadMap());
+		JScrollPane sp = new JScrollPane(rmGraph._graphComp);
 		sp.setPreferredSize(new Dimension(500, 500));
 		mapPanel.add(sp);
 	}
@@ -857,6 +778,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		switch (ue.getEvent()) {
 			case ADVANCED:{
 				timeViewer.setText(String.valueOf(ue.getCurrentTime()));
+				map = ue.getRoadMap();
+				eventsPanel = tableSim.getEventPanel();
+				vehiclesPanel = tableSim.getVehiclesPanel();
+				roadsPanel = tableSim.getRoadsPanel();
+				junctionsPanel = tableSim.getJunctionsPanel();
 				break;
 			}
 			case RESET:{
