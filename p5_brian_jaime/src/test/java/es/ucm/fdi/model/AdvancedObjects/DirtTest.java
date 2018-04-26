@@ -28,7 +28,7 @@ public class DirtTest {
 		l1.avanza();
 		v1.setTiempoAveria(1);
 		l1.avanza();
-		assertTrue("Los vehículos van a velocidades incorrectas", v1.getPos() == 6 && v2.getPos() == 9 && v3.getPos() == 9);
+		assertTrue("Los vehículos van a velocidades incorrectas", v1.getPos() == 10 && v2.getPos() == 19 && v3.getPos() == 22);
 
 	}
 }
