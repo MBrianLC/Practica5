@@ -35,8 +35,9 @@ public class Junction extends SimObject implements Describable{
 	 * @param v : Vehículo
 	*/
 	public void entraVehiculo(Vehicle v){
-		for (Road r : entrantes)
+		for (Road r : entrantes){
 			if (r == v.getCarretera()) r.getQueue().add(v);
+		}
 	}
 	
 	/** 
@@ -54,7 +55,9 @@ public class Junction extends SimObject implements Describable{
 	*/
 	public void addEntra(Road r) {
 		entrantes.add(r);
-		if (entrantes.size() == 1) r.setSemaforo(true);
+		if (entrantes.size() == 1){
+			r.setSemaforo(true);
+		}
 	}
 	
 	/** 
@@ -83,11 +86,15 @@ public class Junction extends SimObject implements Describable{
 		if (!entrantes.isEmpty()) {
 			for (int i = 0; i < entrantes.size(); ++i){
 				s += "(" + entrantes.get(i).getID() + ",";
-				if (entrantes.get(i).getSemaforo()) s += "green,[";
-				else s += "red,[";
+				if (entrantes.get(i).getSemaforo()){
+					s += "green,[";
+				} else {
+					s += "red,[";
+				}
 				if (!entrantes.get(i).getQueue().isEmpty()) {
-					for (Vehicle v : entrantes.get(i).getQueue())
+					for (Vehicle v : entrantes.get(i).getQueue()){
 						s += v.getID() + ",";
+					}
 					s = s.substring(0, s.length() - 1);
 				}
 				s += "]),";
@@ -113,19 +120,28 @@ public class Junction extends SimObject implements Describable{
 				if (entrantes.get(i).getSemaforo()) {
 					b = true;
 					g += "green,[";
+				} else {
+					aux += "red,[";
 				}
-				else aux += "red,[";
 				if (!entrantes.get(i).getQueue().isEmpty()) {
-					for (Vehicle v : entrantes.get(i).getQueue())
+					for (Vehicle v : entrantes.get(i).getQueue()){
 						aux += v.getID() + ",";
+					}
 					aux = aux.substring(0, aux.length() - 1);
 				}
 				aux += "]),";
-				if (b) g += aux;
-				else r += aux;
+				if (b){
+					g += aux;
+				} else {
+					r += aux;
+				}
 			}
-			if (g.endsWith(",")) g = g.substring(0, g.length() - 1);
-			if (r.endsWith(",")) r = r.substring(0, r.length() - 1);
+			if (g.endsWith(",")){
+				g = g.substring(0, g.length() - 1);
+			}
+			if (r.endsWith(",")){
+				r = r.substring(0, r.length() - 1);
+			}
 		}
 		g += "]";
 		r += "]";
@@ -140,20 +156,22 @@ public class Junction extends SimObject implements Describable{
 	public void avanza(){
 		if (k == -1) {
 			k = 0;
-		}
-		else if (!entrantes.isEmpty()) {
+		} else if (!entrantes.isEmpty()) {
 			if (!entrantes.get(k).getQueue().isEmpty()) {
 				Vehicle v = entrantes.get(k).getQueue().getFirst();
 				if (!v.fin()) {
 					Road r = mapSaliente.get(v.sigCruce());
 					v.moverASiguienteCarretera(r);
+				} else {
+					v.moverASiguienteCarretera(null);
 				}
-				else v.moverASiguienteCarretera(null);
 				entrantes.get(k).getQueue().pop();
 			}
 			entrantes.get(k).setSemaforo(false);
 			k++;
-			if (k == entrantes.size()) k = 0;
+			if (k == entrantes.size()){
+				k = 0;
+			}
 			entrantes.get(k).setSemaforo(true);
 		}
 	}

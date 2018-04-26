@@ -19,11 +19,11 @@ public class Dirt extends Road{
 	 * @param ident : Identificador
 	 * @param l : Longitud del camino
 	 * @param maxV : Velocidad máxima
-	 * @param junction_i : Cruce inicial
-	 * @param junction_f : Cruce final
+	 * @param junctioni : Cruce inicial
+	 * @param junctionf : Cruce final
 	*/
-	public Dirt(String ident, int l, int maxV, Junction junction_i, Junction junction_f) {
-		super(ident, l, maxV, junction_i, junction_f);
+	public Dirt(String ident, int l, int maxV, Junction junctioni, Junction junctionf) {
+		super(ident, l, maxV, junctioni, junctionf);
 	}
 	
 	/**
@@ -49,15 +49,20 @@ public class Dirt extends Road{
 		for (int i = longitud - 1; i >= 0; --i){
 			if (vehiculos.containsKey(i)){
 				for(Vehicle v: vehiculos.get(i)){
-					if (v.getAveria()) factorRed++;
+					if (v.getAveria()) {
+						factorRed++;
+					}
 				}
 			}
 		}
 		for (int i = longitud - 1; i >= 0; --i){
 			if (vehiculos.containsKey(i)){
 				for(Vehicle v: vehiculos.get(i)){
-					if (v.getAveria()) v.setVelocidadActual(0);
-					else v.setVelocidadActual(maxVel / factorRed);
+					if (v.getAveria()) {
+						v.setVelocidadActual(0);
+					} else {
+						v.setVelocidadActual(maxVel / factorRed);
+					}
 					v.avanza();
 					if (v.getPos() == longitud) {
 						v.setVelocidadActual(0);

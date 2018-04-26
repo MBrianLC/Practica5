@@ -57,11 +57,15 @@ public class RoundRobin extends Junction{
 		if (!entrantes.isEmpty()) {
 			for (int i = 0; i < entrantes.size(); ++i){
 				s += "(" + entrantes.get(i).getID() + ",";
-				if (entrantes.get(i).getSemaforo()) s += "green:" + (intervaloDeTiempo.get(i) - unidadesDeTiempoUsadas) + ",[";
-				else s += "red,[";
+				if (entrantes.get(i).getSemaforo()) {
+					s += "green:" + (intervaloDeTiempo.get(i) - unidadesDeTiempoUsadas) + ",[";
+				} else {
+					s += "red,[";
+				}
 				if (!entrantes.get(i).getQueue().isEmpty()) {
-					for (Vehicle v : entrantes.get(i).getQueue())
+					for (Vehicle v : entrantes.get(i).getQueue()){
 						s += v.getID() + ",";
+					}
 					s = s.substring(0, s.length() - 1);
 				}
 				s += "]),";
@@ -78,29 +82,32 @@ public class RoundRobin extends Junction{
 	public void avanza(){
 		if (k == -1) {
 			k = 0;
-		}
-		else if (!entrantes.isEmpty()) {
+		} else if (!entrantes.isEmpty()) {
 			if (!entrantes.get(k).getQueue().isEmpty()) {
 				++usos;
 				Vehicle v = entrantes.get(k).getQueue().getFirst();
 				if (!v.fin()) {
 					Road r = road(v);
 					v.moverASiguienteCarretera(r);
+				} else {
+					v.moverASiguienteCarretera(null);
 				}
-				else v.moverASiguienteCarretera(null);
 				entrantes.get(k).getQueue().pop();
 			}
 			++unidadesDeTiempoUsadas;
 			if (unidadesDeTiempoUsadas == intervaloDeTiempo.get(k)) {
 				entrantes.get(k).setSemaforo(false);
-				if (usos == unidadesDeTiempoUsadas) 
+				if (usos == unidadesDeTiempoUsadas){ 
 					intervaloDeTiempo.set(k, Math.min((int) intervaloDeTiempo.get(k) + 1, maxValorIntervalo));
-				else if (usos == 0) 
+				} else if (usos == 0) { 
 					intervaloDeTiempo.set(k, Math.max((int) intervaloDeTiempo.get(k) - 1, minValorIntervalo));
+				}
 				unidadesDeTiempoUsadas = 0;
 				usos = 0;
 				k++;
-				if (k == entrantes.size()) k = 0;
+				if (k == entrantes.size()) {
+					k = 0;
+				}
 				entrantes.get(k).setSemaforo(true);
 			}
 		}

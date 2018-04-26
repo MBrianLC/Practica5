@@ -16,8 +16,8 @@ import es.ucm.fdi.model.simulator.RoadMap;
 
 public class NewCarEvent extends NewVehicleEvent{
 	
-	private int resistance, max_fault_duration;
-	private double fault_probability;
+	private int resistance, maxFaultDuration;
+	private double faultProbability;
 	private long seed;
 	private String type;
 	
@@ -28,16 +28,16 @@ public class NewCarEvent extends NewVehicleEvent{
 	 * @param max Velocidad maxima del coche
 	 * @param cruces Array de strings con el itinerario de cruces
 	 * @param resistance Entero con la resistencia del coche
-	 * @param fault_probability Entero con la probabilidad de avería del coche
-	 * @param max_fault_duration Entero con la duración máxima de la avería
+	 * @param faultProbability Entero con la probabilidad de avería del coche
+	 * @param maxFaultDuration Entero con la duración máxima de la avería
 	 * @param seed Semilla
 	*/
 
-	public NewCarEvent(int time, String id, int max, String[] cruces, int resistance, double fault_probability, int max_fault_duration, long seed) {
+	public NewCarEvent(int time, String id, int max, String[] cruces, int resistance, double faultProbability, int maxFaultDuration, long seed) {
 		super(time, id, max, cruces);
 		this.resistance = resistance;
-		this.fault_probability = fault_probability;
-		this.max_fault_duration = max_fault_duration;
+		this.faultProbability = faultProbability;
+		this.maxFaultDuration = maxFaultDuration;
 		this.seed = seed;
 		type = "New Car " + id;
 	}
@@ -61,16 +61,15 @@ public class NewCarEvent extends NewVehicleEvent{
 		
 		List<Junction> itinerario = new ArrayList<>();
 		try {
-			for (String n : cruces)
+			for (String n : cruces) {
 				itinerario.add(map.getJunction(n));
-			Vehicle v = new Car(id, max, itinerario, resistance, fault_probability, max_fault_duration, seed);
+			}
+			Vehicle v = new Car(id, max, itinerario, resistance, faultProbability, maxFaultDuration, seed);
 			v.moverASiguienteCarretera(itinerario.get(0).road(v));
 			map.addVehicle(v);
-		}
-		catch(NullPointerException e) {
+		} catch(NullPointerException e) {
 			throw new SimulatorException("Car " + id + ": invalid itinerary");
-		}
-		catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			throw new SimulatorException("Car " + id + ": id already exists");
 		}
 	}

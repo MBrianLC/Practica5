@@ -25,8 +25,9 @@ public class VehicleFaultyEvent extends Event{
 		this.duration = duration;
 		this.vehicles = vehicles;
 		type = "Break Vehicles [";
-		for (int i = 0; i < vehicles.length; ++i)
+		for (int i = 0; i < vehicles.length; ++i) {
 			type += vehicles[i] + ",";
+		}
 		type = type.substring(0, type.length() - 1);
 		type += "]";
 	}
@@ -48,10 +49,10 @@ public class VehicleFaultyEvent extends Event{
 
 	public void execute(RoadMap map) throws SimulatorException {
 		try {
-		for (String v : vehicles)
-			map.getVehicle(v).setTiempoAveria(duration);
-		}
-		catch(NullPointerException e) {
+			for (String v : vehicles) {
+				map.getVehicle(v).setTiempoAveria(duration);
+			}
+		} catch(NullPointerException e) {
 			throw new SimulatorException("VehicleFaulty " + ": invalid vehicles");
 		}
 	}

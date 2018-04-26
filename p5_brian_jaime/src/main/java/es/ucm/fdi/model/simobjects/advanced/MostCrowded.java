@@ -43,11 +43,15 @@ public class MostCrowded extends Junction {
 		if (!entrantes.isEmpty()) {
 			for (int i = 0; i < entrantes.size(); ++i){
 				s += "(" + entrantes.get(i).getID() + ",";
-				if (entrantes.get(i).getSemaforo()) s += "green:" + (intervaloDeTiempo - unidadesDeTiempoUsadas) + ",[";
-				else s += "red,[";
+				if (entrantes.get(i).getSemaforo()) {
+					s += "green:" + (intervaloDeTiempo - unidadesDeTiempoUsadas) + ",[";
+				} else {
+					s += "red,[";
+				}
 				if (!entrantes.get(i).getQueue().isEmpty()) {
-					for (Vehicle v : entrantes.get(i).getQueue())
+					for (Vehicle v : entrantes.get(i).getQueue()){
 						s += v.getID() + ",";
+					}
 					s = s.substring(0, s.length() - 1);
 				}
 				s += "]),";
@@ -67,15 +71,15 @@ public class MostCrowded extends Junction {
 			entrantes.get(k).setSemaforo(true);
 			intervaloDeTiempo = Math.max((int) entrantes.get(k).getQueue().size() / 2, 1);
 			unidadesDeTiempoUsadas = 0;
-		}
-		else if (!entrantes.isEmpty()) {
+		} else if (!entrantes.isEmpty()) {
 			if (!entrantes.get(k).getQueue().isEmpty()) {
 				Vehicle v = entrantes.get(k).getQueue().getFirst();
 				if (!v.fin()) {
 					Road r = mapSaliente.get(v.sigCruce());
 					v.moverASiguienteCarretera(r);
+				} else {
+					v.moverASiguienteCarretera(null);
 				}
-				else v.moverASiguienteCarretera(null);
 				entrantes.get(k).getQueue().pop();
 			}
 			++unidadesDeTiempoUsadas;
@@ -83,12 +87,18 @@ public class MostCrowded extends Junction {
 				entrantes.get(k).setSemaforo(false);
 				int l = k;
 				k++;
-				if (k == entrantes.size()) k = 0;
+				if (k == entrantes.size()) {
+					k = 0;
+				}
 				for(int i = l + 1; i < entrantes.size(); i++){
-					if (entrantes.get(i).getQueue().size() > entrantes.get(k).getQueue().size()) k = i;
+					if (entrantes.get(i).getQueue().size() > entrantes.get(k).getQueue().size()) {
+						k = i;
+					}
 				}
 				for(int i = 0; i < l; i++){
-					if (entrantes.get(i).getQueue().size() > entrantes.get(k).getQueue().size()) k = i;
+					if (entrantes.get(i).getQueue().size() > entrantes.get(k).getQueue().size()) {
+						k = i;
+					}
 				}
 				entrantes.get(k).setSemaforo(true);
 				intervaloDeTiempo = Math.max((int) entrantes.get(k).getQueue().size() / 2, 1);

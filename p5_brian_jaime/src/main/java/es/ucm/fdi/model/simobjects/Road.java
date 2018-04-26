@@ -24,15 +24,15 @@ public class Road extends SimObject implements Describable{
 	 * @param ident : Identificador
 	 * @param l : Longitud de la carretera
 	 * @param maxV : Velocidad máxima permitida en la carretera
-	 * @param junction_i: Cruce inicial
-	 * @param junction_f: Cruce final
+	 * @param junctioni: Cruce inicial
+	 * @param junctionf: Cruce final
 	*/
-	public Road(String ident, int l, int maxV, Junction junction_i, Junction junction_f){
+	public Road(String ident, int l, int maxV, Junction junctioni, Junction junctionf){
 		super(ident);
 		longitud = l;
 		maxVel = maxV;
-		ini = junction_i;
-		fin = junction_f;
+		ini = junctioni;
+		fin = junctionf;
 		cola = new ArrayDeque<>();
 		vehiculos = new MultiTreeMap<>((a, b) -> a - b);
 	}
@@ -126,8 +126,9 @@ public class Road extends SimObject implements Describable{
 		if (!vehiculos.isEmpty()) {
 			for (int i = longitud; i >= 0; --i){
 				if (vehiculos.containsKey(i)){
-					for(Vehicle v: vehiculos.get(i))
+					for(Vehicle v: vehiculos.get(i)){
 						s += "(" + v.getID() + "," + v.getPos() + "),";
+					}
 				}
 			}
 			s = s.substring(0, s.length() - 1);
@@ -149,8 +150,9 @@ public class Road extends SimObject implements Describable{
 		out.put("Max Speed", String.valueOf(maxVel));
 		for (int i = longitud; i >= 0; --i){
 			if (vehiculos.containsKey(i)){
-				for(Vehicle v: vehiculos.get(i))
+				for(Vehicle v: vehiculos.get(i)){
 					s += v.getID() + ",";
+				}
 			}
 		}
 		s = s.substring(0, s.length() - 1);
@@ -177,8 +179,9 @@ public class Road extends SimObject implements Describable{
 					if (v.getAveria()) {
 						factorRed = 2;
 						v.setVelocidadActual(0);
+					} else {
+						v.setVelocidadActual(velBase / factorRed);
 					}
-					else v.setVelocidadActual(velBase / factorRed);
 					v.avanza();
 					if (v.getPos() == longitud) {
 						v.setVelocidadActual(0);

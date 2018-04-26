@@ -40,10 +40,9 @@ public class NewMostCrowdedEvent extends NewJunctionEvent{
 	*/
 
 	public void execute(RoadMap map) throws SimulatorException {
-		try{
+		try {
 			map.addJunction(new MostCrowded(id));
-		}
-		catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			throw new SimulatorException("MostCrowded " + id + ": id already exists");
 		}
 	}

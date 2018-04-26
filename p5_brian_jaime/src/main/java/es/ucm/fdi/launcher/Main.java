@@ -168,9 +168,14 @@ public class Main {
 	 */
 	private static void startBatchMode() throws IOException, SimulatorException {
 		OutputStream out;
-		if(_outFile != null) out = new FileOutputStream(_outFile);
-		else out = System.out;
-		if(_timeLimit == null) _timeLimit = _timeLimitDefaultValue;
+		if(_outFile != null) {
+			out = new FileOutputStream(_outFile);
+		} else {
+			out = System.out;
+		}
+		if(_timeLimit == null) {
+			_timeLimit = _timeLimitDefaultValue;
+		}
 		InputStream in = new FileInputStream(_inFile);
 		Controller c = new Controller(new Ini(in), out, _timeLimit);
 		try {
@@ -198,11 +203,9 @@ public class Main {
 		try {
 			if (mode) startBatchMode();
 			else startGUIMode();
-		}
-		catch(SimulatorException e) {
+		} catch(SimulatorException e) {
 			System.err.println(e.getMessage());
-		}
-		catch(IOException e) {
+		} catch(IOException e) {
 			System.err.println("OuputStream error");
 		}
 	}

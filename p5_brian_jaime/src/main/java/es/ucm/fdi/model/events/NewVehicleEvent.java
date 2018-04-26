@@ -53,16 +53,15 @@ public class NewVehicleEvent extends Event{
 		
 		List<Junction> itinerario = new ArrayList<>();
 		try {
-			for (String n : cruces)
+			for (String n : cruces) {
 				itinerario.add(map.getJunction(n));
+			}
 			Vehicle v = new Vehicle(id, max, itinerario);
 			v.moverASiguienteCarretera(itinerario.get(0).road(v));
 			map.addVehicle(v);
-		}
-		catch(NullPointerException e) {
+		} catch(NullPointerException e) {
 			throw new SimulatorException("Vehicle " + id + ": invalid itinerary");
-		}
-		catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			throw new SimulatorException("Vehicle " + id + ": id already exists");
 		}
 	}

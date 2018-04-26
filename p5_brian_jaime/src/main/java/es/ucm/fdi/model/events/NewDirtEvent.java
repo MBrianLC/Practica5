@@ -53,11 +53,9 @@ public class NewDirtEvent extends NewRoadEvent{
 			ini.addSale(r);
 			fin.addEntra(r);
 			map.addRoad(r);
-		}
-		catch(NullPointerException e) {
+		} catch(NullPointerException e) {
 			throw new SimulatorException("Dirt " + id + ": invalid source/destiny junctions");
-		}
-		catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			throw new SimulatorException("Dirt " + id + ": id already exists");
 		}
 	}

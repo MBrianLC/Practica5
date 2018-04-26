@@ -55,11 +55,9 @@ public class NewLaneEvent extends NewRoadEvent {
 			ini.addSale(r);
 			fin.addEntra(r);
 			map.addRoad(r);
-		}
-		catch(NullPointerException e) {
+		} catch(NullPointerException e) {
 			throw new SimulatorException("Lane " + id + ": invalid source/destiny junctions");
-		}
-		catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			throw new SimulatorException("Lane " + id + ": id already exists");
 		}
 	}

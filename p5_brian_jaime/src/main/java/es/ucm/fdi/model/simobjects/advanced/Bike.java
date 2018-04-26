@@ -37,8 +37,9 @@ public class Bike extends Vehicle{
 	 * @param n : Tiempo de avería
 	*/
 	public void setTiempoAveria(int n) {
-		if (2 * velActual > velMaxima)
+		if (2 * velActual > velMaxima) {
 			super.setTiempoAveria(n);
+		}
 	}
 
 }

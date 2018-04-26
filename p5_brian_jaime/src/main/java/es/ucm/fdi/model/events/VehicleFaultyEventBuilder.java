@@ -17,10 +17,13 @@ public class VehicleFaultyEventBuilder implements EventBuilder {
 	 * @return El evento creado
 	*/
 	public Event parse(IniSection sec) {
-		if ( ! sec.getTag().equals("make_vehicle_faulty")) return null;
+		if ( ! sec.getTag().equals("make_vehicle_faulty")) {
+			return null;
+		}
 		String[] parF = {"time", "vehicles", "duration"};
-		if (!sec.getKeys().containsAll(Arrays.asList(parF))) 
+		if (!sec.getKeys().containsAll(Arrays.asList(parF))) {
 			throw new IllegalArgumentException();
+		}
 		return new VehicleFaultyEvent(parseInt(sec, "time"), parseIdList(sec, "vehicles"),
 									  parseInt(sec, "duration"));
 	}

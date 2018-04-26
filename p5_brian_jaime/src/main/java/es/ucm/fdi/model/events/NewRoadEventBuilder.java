@@ -17,20 +17,26 @@ public class NewRoadEventBuilder implements EventBuilder {
 	 * @return El evento creado.
 	*/
 	public Event parse(IniSection sec) {
-		if (!sec.getTag().equals("new_road")) return null;
+		if (!sec.getTag().equals("new_road")) {
+			return null;
+		}
 		String[] parR = {"time", "id", "src", "dest", "max_speed", "length"};
-		if (!sec.getKeys().containsAll(Arrays.asList(parR))) 
+		if (!sec.getKeys().containsAll(Arrays.asList(parR))) {
 			throw new IllegalArgumentException();
-		if (!sec.getKeys().contains("type")) 
+		}
+		if (!sec.getKeys().contains("type")) {
 			return new NewRoadEvent(parseInt(sec, "time"), sec.getValue("id"),
 									sec.getValue("src"), sec.getValue("dest"),
 									parseInt(sec, "max_speed"), parseInt(sec, "length"));
-		if (sec.getValue("type").equals("dirt")) 
+		}
+		if (sec.getValue("type").equals("dirt")) {
 			return new NewDirtEvent(parseInt(sec, "time"), sec.getValue("id"),
 									sec.getValue("src"), sec.getValue("dest"),
 									parseInt(sec, "max_speed"), parseInt(sec, "length"));
-		if (!sec.getKeys().contains("lanes")) 
+		}
+		if (!sec.getKeys().contains("lanes")) {
 			throw new IllegalArgumentException();
+		}
 		return new NewLaneEvent(parseInt(sec, "time"), sec.getValue("id"), 
 								sec.getValue("src"), sec.getValue("dest"),
 								parseInt(sec, "max_speed"),parseInt(sec, "length"),

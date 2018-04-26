@@ -41,10 +41,9 @@ public class NewJunctionEvent extends Event{
 	*/
 	
 	public void execute(RoadMap map) throws SimulatorException {
-		try{
+		try {
 			map.addJunction(new Junction(id));
-		}
-		catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException e) {
 			throw new SimulatorException("Junction " + id + ": id already exists");
 		}
 	}

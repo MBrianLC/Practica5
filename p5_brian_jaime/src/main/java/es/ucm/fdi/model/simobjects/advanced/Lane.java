@@ -21,12 +21,12 @@ public class Lane extends Road{
 	 * @param ident : Identificador
 	 * @param l : Longitud de la autopista
 	 * @param maxV : Velocidad máxima
-	 * @param junction_i : Cruce inicial
-	 * @param junction_f : Cruce final
+	 * @param junctioni : Cruce inicial
+	 * @param junctionf : Cruce final
 	 * @param lanes : Carriles de la autopista
 	*/
-	public Lane(String ident, int l, int maxV, Junction junction_i, Junction junction_f, int lanes) {
-		super(ident, l, maxV, junction_i, junction_f);
+	public Lane(String ident, int l, int maxV, Junction junctioni, Junction junctionf, int lanes) {
+		super(ident, l, maxV, junctioni, junctionf);
 		numCarriles = lanes;
 	}
 	
@@ -62,14 +62,19 @@ public class Lane extends Road{
 						}
 					}
 				}
-				if (numObstaculos >= numCarriles) break;
+				if (numObstaculos >= numCarriles){
+					break;
+				}
 			}
 		}
 		for (int i = longitud - 1; i >= 0; --i){
 			if (vehiculos.containsKey(i)){
 				for(Vehicle v: vehiculos.get(i)){
-					if (v.getAveria()) v.setVelocidadActual(0);
-					else v.setVelocidadActual(velBase / factorRed);
+					if (v.getAveria()) {
+						v.setVelocidadActual(0);
+					} else {
+						v.setVelocidadActual(velBase / factorRed);
+					}
 					v.avanza();
 					if (v.getPos() == longitud) {
 						v.setVelocidadActual(0);

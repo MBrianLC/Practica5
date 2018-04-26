@@ -17,22 +17,32 @@ public class NewVehicleEventBuilder implements EventBuilder{
 	 * @return El evento creado.
 	*/
 	public Event parse(IniSection sec) {
-		if (!sec.getTag().equals("new_vehicle")) return null;
+		if (!sec.getTag().equals("new_vehicle")) {
+			return null;
+		}
 		String[] parV = {"time", "id", "max_speed", "itinerary"};
-		if (!sec.getKeys().containsAll(Arrays.asList(parV))) 
+		if (!sec.getKeys().containsAll(Arrays.asList(parV))) {
 			throw new IllegalArgumentException();
-		if (!sec.getKeys().contains("type")) 
+		}
+		if (!sec.getKeys().contains("type")) {
 			return new NewVehicleEvent(parseInt(sec, "time"), sec.getValue("id"),
 									   parseInt(sec, "max_speed"), parseIdList(sec, "itinerary"));
-		if (sec.getValue("type").equals("bike")) 
+		}
+		if (sec.getValue("type").equals("bike")) {
 			return new NewBikeEvent(parseInt(sec, "time"), sec.getValue("id"),
 									parseInt(sec, "max_speed"), parseIdList(sec, "itinerary"));
+		}
 		String[] parC = {"resistance", "fault_probability", "max_fault_duration", "seed"};
-		if (!sec.getKeys().containsAll(Arrays.asList(parC))) 
+		if (!sec.getKeys().containsAll(Arrays.asList(parC))) {
 			throw new IllegalArgumentException();
+		}
 		long seed;
-		if (sec.getValue("seed").isEmpty()) seed = System.currentTimeMillis();
-		else seed = parseLong(sec,"seed");
+		if (sec.getValue("seed").isEmpty()) {
+			seed = System.currentTimeMillis();
+		}
+		else {
+			seed = parseLong(sec,"seed");
+		}
 		return new NewCarEvent(parseInt(sec, "time"), sec.getValue("id"), 
 							   parseInt(sec, "max_speed"), parseIdList(sec, "itinerary"),
 							   parseInt(sec, "resistance"), parseDouble(sec, "fault_probability"),

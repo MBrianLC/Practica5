@@ -17,17 +17,22 @@ public class NewJunctionEventBuilder implements EventBuilder {
 	 * @return El evento creado.
 	*/
 	public Event parse(IniSection sec) {
-		if (!sec.getTag().equals("new_junction")) return null;
+		if (!sec.getTag().equals("new_junction")) {
+			return null;
+		}
 		String[] parJ = {"time", "id"};
-		if (!sec.getKeys().containsAll(Arrays.asList(parJ))) 
+		if (!sec.getKeys().containsAll(Arrays.asList(parJ))) {
 			throw new IllegalArgumentException();
-		if (!sec.getKeys().contains("type")) 
+		}
+		if (!sec.getKeys().contains("type")) {
 			return new NewJunctionEvent(parseInt(sec, "time"), sec.getValue("id"));
-		else if (sec.getValue("type").equals("mc")) 
+		} else if (sec.getValue("type").equals("mc")) {
 			return new NewMostCrowdedEvent(parseInt(sec, "time"), sec.getValue("id"));
+		}
 		String[] parRR = {"max_time_slice", "min_time_slice"};
-		if (!sec.getKeys().containsAll(Arrays.asList(parRR))) 
+		if (!sec.getKeys().containsAll(Arrays.asList(parRR))) {
 			throw new IllegalArgumentException();
+		}
 		return new NewRoundRobinEvent(parseInt(sec, "time"), sec.getValue("id"), 
 									  parseInt(sec, "max_time_slice"), 
 									  parseInt(sec, "min_time_slice"));

@@ -10,7 +10,7 @@ import es.ucm.fdi.model.simulator.RoadMap;
 */
 
 public class NewRoundRobinEvent extends NewJunctionEvent{
-	private int max_time_slice, min_time_slice;
+	private int maxTimeSlice, minTimeSlice;
 	private String type;
 	
 	
@@ -22,10 +22,10 @@ public class NewRoundRobinEvent extends NewJunctionEvent{
 	 * @param min Mínimo valor del intervalo de tiempo
 	*/
 
-	public NewRoundRobinEvent(int time, String id, int max_time_slice, int min_time_slice) {
+	public NewRoundRobinEvent(int time, String id, int maxTimeSlice, int minTimeSlice) {
 		super(time, id);
-		this.max_time_slice = max_time_slice;
-		this.min_time_slice = min_time_slice;
+		this.maxTimeSlice = maxTimeSlice;
+		this.minTimeSlice = minTimeSlice;
 		type = "New RoundRobin " + id;
 	}
 	
@@ -46,9 +46,8 @@ public class NewRoundRobinEvent extends NewJunctionEvent{
 
 	public void execute(RoadMap map) throws SimulatorException {
 		try{
-			map.addJunction(new RoundRobin(id, max_time_slice, min_time_slice));
-		}
-		catch(IllegalArgumentException e) {
+			map.addJunction(new RoundRobin(id, maxTimeSlice, minTimeSlice));
+		} catch(IllegalArgumentException e) {
 			throw new SimulatorException("RoundRobin " + id + ": id already exists");
 		}
 	}
