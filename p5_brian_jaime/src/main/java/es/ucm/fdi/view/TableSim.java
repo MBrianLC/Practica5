@@ -22,6 +22,11 @@ public class TableSim implements Listener{
 	private String[] fieldNamesV = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
 	private String[] fieldNamesR = {"ID", "Source", "Target", "Length", "Max Speed", "Vehicles"};
 	private String[] fieldNamesJ = {"ID", "Green", "Red"};
+
+	private ListOfMapsTableModel eTableMaps;
+	private ListOfMapsTableModel vTableMaps;
+	private ListOfMapsTableModel rTableMaps;
+	private ListOfMapsTableModel jTableMaps;
 	
 	private JTable eventsQueue; // tabla de eventos
 	private JTable vehiclesTable; // tabla de vehículos
@@ -88,14 +93,17 @@ public class TableSim implements Listener{
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			return elements.get(rowIndex).describe().get(fieldNames[columnIndex]);
 		}
+		
+		public void update(List<Describable> objectList) {
+			elements = objectList;
+		}
 	}
 	
 	private void addEventsQueue() {
 		eventsPanel = new JPanel(new BorderLayout());
 		List<Describable> objectList = new ArrayList<Describable>(events);
-		String[] fieldNames = {"#", "Time", "Type"};
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		eventsQueue = new JTable(tableMaps); 
+		eTableMaps = new ListOfMapsTableModel(objectList, fieldNamesQ); 
+		eventsQueue = new JTable(eTableMaps); 
 		JScrollPane sp = new JScrollPane(eventsQueue);
 		sp.setPreferredSize(new Dimension(500, 500));
 		eventsPanel.setBorder(BorderFactory.createTitledBorder("Events Queue"));
@@ -105,9 +113,8 @@ public class TableSim implements Listener{
 	private void addVehiclesTable() {
 		vehiclesPanel = new JPanel(new BorderLayout());
 		List<Describable> objectList = new ArrayList<Describable>(map.getVehicles());
-		String[] fieldNames = {"ID", "Road", "Location", "Speed", "Km", "Faulty Units", "Itinerary"};
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNames); 
-		vehiclesTable = new JTable(tableMaps); 
+		vTableMaps = new ListOfMapsTableModel(objectList, fieldNamesV); 
+		vehiclesTable = new JTable(vTableMaps); 
 		JScrollPane sp = new JScrollPane(vehiclesTable);
 		sp.setPreferredSize(new Dimension(500, 500));
 		vehiclesPanel.setBorder(BorderFactory.createTitledBorder("Vehicles"));
@@ -117,8 +124,8 @@ public class TableSim implements Listener{
 	private void addRoadsTable() {
 		roadsPanel = new JPanel(new BorderLayout());
 		List<Describable> objectList = new ArrayList<Describable>(map.getRoads());
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNamesR);
-		roadsTable = new JTable(tableMaps);
+		rTableMaps = new ListOfMapsTableModel(objectList, fieldNamesR);
+		roadsTable = new JTable(rTableMaps);
 		JScrollPane sp = new JScrollPane(roadsTable);
 		sp.setPreferredSize(new Dimension(500, 500));
 		roadsPanel.setBorder(BorderFactory.createTitledBorder("Roads"));
@@ -128,8 +135,8 @@ public class TableSim implements Listener{
 	private void addJunctionsTable() {
 		junctionsPanel = new JPanel(new BorderLayout());
 		List<Describable> objectList = new ArrayList<Describable>(map.getJunctions());
-		ListOfMapsTableModel tableMaps = new ListOfMapsTableModel(objectList, fieldNamesJ); 
-		junctionsTable = new JTable(tableMaps); 
+		jTableMaps = new ListOfMapsTableModel(objectList, fieldNamesJ); 
+		junctionsTable = new JTable(jTableMaps); 
 		JScrollPane sp = new JScrollPane(junctionsTable);
 		sp.setPreferredSize(new Dimension(500, 500));
 		junctionsPanel.setBorder(BorderFactory.createTitledBorder("Junctions"));
@@ -144,44 +151,29 @@ public class TableSim implements Listener{
 		return events;
 	}
 	
-	private JScrollPane updateTable(List<Describable> elements, String[] fieldNames, JTable table) {
-		table = new JTable(new ListOfMapsTableModel(elements, fieldNames));
-		JScrollPane sp = new JScrollPane(table);
-		sp.setPreferredSize(new Dimension(500, 500));
-		return sp;
+	private void updateTable(ListOfMapsTableModel tableMaps, List<Describable> elements) {
+		tableMaps.update(new ArrayList<Describable>(elements));
+		tableMaps.fireTableDataChanged();
 	}
 	
 	public void update(UpdateEvent ue, String error) {
 		switch (ue.getEvent()) {
 			case ADVANCED:{
-				List<Describable> objectList;
-				objectList = new ArrayList<Describable>(getEvents(ue.getEventQueue()));
-				eventsPanel.removeAll();
-				eventsPanel.add(updateTable(objectList, fieldNamesQ, eventsQueue));
-				objectList = new ArrayList<Describable>(ue.getRoadMap().getVehicles());
-				vehiclesPanel.removeAll();
-				vehiclesPanel.add(updateTable(objectList, fieldNamesV, vehiclesTable));
-				objectList = new ArrayList<Describable>(ue.getRoadMap().getRoads());
-				roadsPanel.removeAll();
-				roadsPanel.add(updateTable(objectList, fieldNamesR, roadsTable));
-				objectList = new ArrayList<Describable>(ue.getRoadMap().getJunctions());
-				junctionsPanel.removeAll();
-				junctionsPanel.add(updateTable(objectList, fieldNamesJ, junctionsTable));
+				updateTable(eTableMaps, new ArrayList<Describable>(getEvents(ue.getEventQueue())));
+				updateTable(vTableMaps, new ArrayList<Describable>(ue.getRoadMap().getVehicles()));
+				updateTable(rTableMaps, new ArrayList<Describable>(ue.getRoadMap().getRoads()));
+				updateTable(jTableMaps, new ArrayList<Describable>(ue.getRoadMap().getJunctions()));
 				break;
 			}	
 			case NEWEVENT:{
-				List<Describable> objectList;
-				objectList = new ArrayList<Describable>(getEvents(ue.getEventQueue()));
-				eventsPanel.removeAll();
-				eventsPanel.add(updateTable(objectList, fieldNamesQ, eventsQueue));
+				updateTable(eTableMaps, new ArrayList<Describable>(getEvents(ue.getEventQueue())));
 				break;
 			}
 			case RESET:{
-				eventsPanel.removeAll();
-				vehiclesPanel.removeAll();
-				roadsPanel.removeAll();
-				roadsPanel.removeAll();
-				junctionsPanel.removeAll();
+				updateTable(eTableMaps, new ArrayList<Describable>());
+				updateTable(vTableMaps, new ArrayList<Describable>());
+				updateTable(rTableMaps, new ArrayList<Describable>());
+				updateTable(jTableMaps, new ArrayList<Describable>());
 				break;
 			}
 		default:

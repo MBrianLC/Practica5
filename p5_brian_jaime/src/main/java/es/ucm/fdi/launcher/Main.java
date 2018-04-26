@@ -178,11 +178,7 @@ public class Main {
 		}
 		InputStream in = new FileInputStream(_inFile);
 		Controller c = new Controller(new Ini(in), out, _timeLimit);
-		try {
-			c.execute(new TrafficSimulator());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		c.execute(new TrafficSimulator());
 	}
 	
 	/**

@@ -35,7 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -43,7 +42,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.AbstractTableModel;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.extra.graphlayout.RoadMapGraph;
@@ -81,11 +79,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JPanel mainPanel;
 	private JPanel stateBar;
 	private JPanel editorPanel;
-	private JPanel eventsPanel;
 	private JPanel reportsPanel;
-	private JPanel vehiclesPanel;
-	private JPanel roadsPanel;
-	private JPanel junctionsPanel;
 	private JPanel mapPanel;
 	private JMenu fileMenu;
 	private JMenu simulatorMenu;
@@ -137,10 +131,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addEventsEditor();
 		
 		tableSim = new TableSim(map, events);
-		eventsPanel = tableSim.getEventPanel();// cola de eventos
-		vehiclesPanel = tableSim.getVehiclesPanel();// tabla de vehiculos
-		roadsPanel = tableSim.getRoadsPanel();// tabla de carreteras
-		junctionsPanel = tableSim.getJunctionsPanel(); // tabla de cruces
 		
 		addReportsArea(); // zona de informes
 		
@@ -345,14 +335,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		else if (CLEAR_REPORT.equals(e.getActionCommand()))
 			reportsArea.setText("");
 		else if (RUN.equals(e.getActionCommand())){
-			runButton.setActionCommand(STOP);
-			runButton.setToolTipText("Stop simulation");
-			runButton.setIcon(new ImageIcon("src/main/resources/icons/stop.png"));
-			try {
-				runSim();
-			} catch (InterruptedException e1) {
-				contr.notify();
-			}
+			runSim();
 			runButton.setActionCommand(RUN);
 			runButton.setToolTipText("Run simulation");
 			runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
@@ -362,17 +345,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		}
 		else if (GEN_REPORT.equals(e.getActionCommand())) {
 			genReport();
-		}
-		else if (STOP.equals(e.getActionCommand())) {
-			runButton.setActionCommand(RUN);
-			runButton.setToolTipText("Run simulation");
-			runButton.addActionListener(this);
-			runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
-			try {
-				stop();
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
 		}
 		else if (CLEAR.equals(e.getActionCommand()))
 			eventsEditor.setText("");
@@ -434,7 +406,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		stateBar.add(statusBarText);
 	}
 	
-	private void runSim() throws InterruptedException{
+	private void runSim() {
 		try {
 			tsim.resetEvents();
 			contr.setIni(new Ini(new ByteArrayInputStream(eventsEditor.getText().getBytes())));
@@ -450,10 +422,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private void checkInEvent() throws IOException {
 		//contr.loadEvents(new ByteArrayInputStream(eventsEditor.getText().getBytes())); 
-	}
-	
-	private void stop() throws InterruptedException {
-		contr.wait(); 
 	}
 	
 	private void resetSim(){

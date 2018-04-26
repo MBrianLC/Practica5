@@ -1,12 +1,8 @@
 package es.ucm.fdi.control;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
-import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.EventBuilder;
 import es.ucm.fdi.model.events.NewJunctionEventBuilder;
 import es.ucm.fdi.model.events.NewRoadEventBuilder;
@@ -28,7 +24,6 @@ public class Controller {
 			new NewJunctionEventBuilder(), new VehicleFaultyEventBuilder() };
 	private Ini ini;
 	private OutputStream out;
-	private List<Event> eventos;
 	private int timeLimit;
 	
 	/** 
@@ -41,7 +36,6 @@ public class Controller {
 		this.ini = ini;
 		this.out = out;
 		this.timeLimit = timeLimit;
-		eventos = new ArrayList<>();
 	}
 	
 	/** 
@@ -71,41 +65,15 @@ public class Controller {
 		return timeLimit;
 	}
 	
-	public void loadEvents(InputStream in) throws IOException {
-		for (IniSection n : ini.getSections()) {
-			boolean b = false;
-			try {
-				if (!n.getTag().isEmpty()) {
-					for (EventBuilder eBuilder : events) {
-						if (n.getTag().equals(eBuilder.type())) {
-							eventos.add(eBuilder.parse(n));
-							b = true;
-						}
-					}
-				}
-				if (!b) throw new IllegalArgumentException("Incorrect tag: " + n.getTag());
-			}
-			catch(IllegalArgumentException e) {
-				System.err.println(e.getMessage());
-				System.exit(1);
-			}
-		}
-		ini = new Ini(in);
-	}
-	
 	/** 
 	 * Método que lee las secciones de eventos, les asigna el builder correspondiente a cada una, y ejecuta la simulación.
 	 * @param sim : La simulación de tráfico
 	 * @throws IOException 
 	 * @throws SimulatorException 
-	 * @throws InterruptedException 
 	*/
 	
-	public void execute(TrafficSimulator sim) throws IOException, SimulatorException, InterruptedException {
-		
-		for (Event e : eventos) {
-			sim.insertaEvento(e);
-		}
+	public void execute(TrafficSimulator sim) throws IOException, SimulatorException {
+
 		for (IniSection n : ini.getSections()) {
 			boolean b = false;
 			try {

@@ -71,6 +71,7 @@ public class TrafficSimulator {
 	
 	public void resetEvents() {
 		eventos = new MultiTreeMap<>();
+		eventsQueue = new ArrayList<>();
 	}
 	
 	public void resetSim() {
@@ -89,7 +90,7 @@ public class TrafficSimulator {
 	
 	private void fireUpdateEvent(EventType type, String error) {
 		UpdateEvent ue = new UpdateEvent(type);
-		for (Listener l : listeners) l.update(ue, "ERROR");
+		for (Listener l : listeners) l.update(ue, "ERROR: " + error);
 	}
 	
 	/** 
