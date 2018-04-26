@@ -6,14 +6,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.ucm.fdi.model.Exceptions.SimulatorException;
-import es.ucm.fdi.model.Events.Event;
-import es.ucm.fdi.model.Events.EventBuilder;
-import es.ucm.fdi.model.Events.NewJunctionEventBuilder;
-import es.ucm.fdi.model.Events.NewRoadEventBuilder;
-import es.ucm.fdi.model.Events.NewVehicleEventBuilder;
-import es.ucm.fdi.model.Events.VehicleFaultyEventBuilder;
-import es.ucm.fdi.model.Simulator.TrafficSimulator;
+import es.ucm.fdi.model.events.Event;
+import es.ucm.fdi.model.events.EventBuilder;
+import es.ucm.fdi.model.events.NewJunctionEventBuilder;
+import es.ucm.fdi.model.events.NewRoadEventBuilder;
+import es.ucm.fdi.model.events.NewVehicleEventBuilder;
+import es.ucm.fdi.model.events.VehicleFaultyEventBuilder;
+import es.ucm.fdi.model.exceptions.SimulatorException;
+import es.ucm.fdi.model.simulator.TrafficSimulator;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.ini.IniSection;
 

@@ -27,9 +27,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 
-import es.ucm.fdi.model.Simulator.Listener;
-import es.ucm.fdi.model.Simulator.TrafficSimulator.EventType;
-import es.ucm.fdi.model.Simulator.TrafficSimulator.UpdateEvent;
+import es.ucm.fdi.model.simulator.Listener;
+import es.ucm.fdi.model.simulator.TrafficSimulator.EventType;
+import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;
 
 @SuppressWarnings("serial")
 public class TextComponentSim extends JPanel implements ActionListener,Listener {

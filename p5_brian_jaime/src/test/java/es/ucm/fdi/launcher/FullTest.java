@@ -3,8 +3,8 @@ package es.ucm.fdi.launcher;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.launcher.Main;
+import es.ucm.fdi.model.exceptions.SimulatorException;
 
 /** 
  * La clase FullTest se encarga de probar los casos de prueba.

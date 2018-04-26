@@ -48,12 +48,12 @@ import javax.swing.table.AbstractTableModel;
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.extra.graphlayout.RoadMapGraph;
 import es.ucm.fdi.ini.Ini;
-import es.ucm.fdi.model.Exceptions.SimulatorException;
-import es.ucm.fdi.model.SimulatedObjects.SimObject;
-import es.ucm.fdi.model.Simulator.Listener;
-import es.ucm.fdi.model.Simulator.RoadMap;
-import es.ucm.fdi.model.Simulator.TrafficSimulator;
-import es.ucm.fdi.model.Simulator.TrafficSimulator.UpdateEvent;
+import es.ucm.fdi.model.exceptions.SimulatorException;
+import es.ucm.fdi.model.simobjects.SimObject;
+import es.ucm.fdi.model.simulator.Listener;
+import es.ucm.fdi.model.simulator.RoadMap;
+import es.ucm.fdi.model.simulator.TrafficSimulator;
+import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;
 
 @SuppressWarnings("serial")
 public class MainWindowSim extends JFrame implements ActionListener, Listener {

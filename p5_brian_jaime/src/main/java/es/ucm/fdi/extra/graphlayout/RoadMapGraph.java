@@ -2,12 +2,12 @@ package es.ucm.fdi.extra.graphlayout;
 
 import javax.swing.*;
 
-import es.ucm.fdi.model.SimulatedObjects.Junction;
-import es.ucm.fdi.model.SimulatedObjects.Road;
-import es.ucm.fdi.model.SimulatedObjects.Vehicle;
-import es.ucm.fdi.model.Simulator.Listener;
-import es.ucm.fdi.model.Simulator.RoadMap;
-import es.ucm.fdi.model.Simulator.TrafficSimulator.UpdateEvent;
+import es.ucm.fdi.model.simobjects.Junction;
+import es.ucm.fdi.model.simobjects.Road;
+import es.ucm.fdi.model.simobjects.Vehicle;
+import es.ucm.fdi.model.simulator.Listener;
+import es.ucm.fdi.model.simulator.RoadMap;
+import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;
 
 import java.awt.BorderLayout;
 import java.util.HashMap;

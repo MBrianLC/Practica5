@@ -3,7 +3,7 @@ package es.ucm.fdi.view;
 import java.util.HashMap;
 import java.util.Map;
 
-import es.ucm.fdi.model.Events.Event;
+import es.ucm.fdi.model.events.Event;
 
 public class EventIndex implements Describable{
 	

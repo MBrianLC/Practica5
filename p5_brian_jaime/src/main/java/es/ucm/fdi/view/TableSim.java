@@ -11,10 +11,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import es.ucm.fdi.model.Events.Event;
-import es.ucm.fdi.model.Simulator.Listener;
-import es.ucm.fdi.model.Simulator.RoadMap;
-import es.ucm.fdi.model.Simulator.TrafficSimulator.UpdateEvent;
+import es.ucm.fdi.model.events.Event;
+import es.ucm.fdi.model.simulator.Listener;
+import es.ucm.fdi.model.simulator.RoadMap;
+import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;
 
 public class TableSim implements Listener{
 	
