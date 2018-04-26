@@ -18,10 +18,6 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class VehicleFaultyEventTest {
 	
-	/**
-	 * Método que prueba el método execute de VehicleFaultyEvent.
-	 */
-	
 	@Test
 	public void testExecute(){
 		RoadMap m = new RoadMap();

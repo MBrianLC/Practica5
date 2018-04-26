@@ -28,9 +28,6 @@ public class VehicleTest {
 		itinerario.get(1).addEntra(r1);
 	}
 	
-	/**
-	 * Método que prueba el método moverASiguienteCarretera de Vehicle.
-	*/
 	@Test
 	public void moverASiguienteCarreteraTest() {
 		inicio();
@@ -39,10 +36,7 @@ public class VehicleTest {
 		v1.moverASiguienteCarretera(r1);
 		assertTrue("El vehículo no entra en la carretera", v1.getCarretera() == r1);
 	}	
-	
-	/**
-	 * Método que prueba el método setVelocidadActual de Vehicle.
-	*/
+
 	@Test
 	public void vehicleTest() {
 		inicio();
@@ -69,9 +63,6 @@ public class VehicleTest {
 		assertFalse("El vehículo no está averiado", v1.getPos() > 10);
 	}	
 	
-	/**
-	 * Método que prueba el método avanza de Vehicle.
-	*/
 	@Test
 	public void avanzaTest() {
 		inicio();

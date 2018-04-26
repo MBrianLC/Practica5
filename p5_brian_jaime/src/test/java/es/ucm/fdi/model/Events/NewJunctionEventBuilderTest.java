@@ -11,10 +11,6 @@ import es.ucm.fdi.ini.IniSection;
 */
 
 public class NewJunctionEventBuilderTest {
-
-	/**
-	 * Método que prueba el método parse de NewJunctionEventBuilder.
-	 */
 	
 	@Test
 	public void parseTest(){
@@ -49,10 +45,6 @@ public class NewJunctionEventBuilderTest {
 		Assert.assertEquals("Comprueba si ha construido el tipo de evento correcto", f.getClass(), e.getClass());
 	}
 	
-	/**
-	 * Método que prueba el método isValidId de NewJunctionEventBuilder.
-	 */
-	
 	@Test
 	public void isValidIdTest(){
 		NewJunctionEventBuilder b = new NewJunctionEventBuilder();
@@ -63,20 +55,12 @@ public class NewJunctionEventBuilderTest {
 		Assert.assertTrue("La ID no es válida, luego isValidId da false", !b.isValidId(s));
 	}
 	
-	/**
-	 * Método que prueba el método type de NewJunctionEventBuilder.
-	 */
-	
 	@Test
 	public void typeTest(){
 		NewJunctionEventBuilder b = new NewJunctionEventBuilder();
 		String s = "new_junction";
 		Assert.assertEquals("Devuelve el tipo adecuado", b.type(), s);
 	}
-	
-	/**
-	 * Método que prueba el método parseInt de NewJunctionEventBuilder.
-	 */
 	
 	@Test
 	public void parseIntTest(){
@@ -85,10 +69,6 @@ public class NewJunctionEventBuilderTest {
 		sj.setValue("time", "2");
 		Assert.assertEquals("Comprueba que parsea bien el entero", b.parseInt(sj, "time"), 2);
 	}
-	
-	/**
-	 * Método que prueba el método parseIdList de NewJunctionEventBuilder.
-	 */
 	
 	@Test
 	public void parseIdListTest(){

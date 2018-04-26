@@ -14,10 +14,6 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class NewRoundRobinEventTest {
 	
-	/**
-	 * Método que prueba el método execute de NewRoundRobinEvent.
-	 */
-	
 	@Test
 	public void testExecute(){
 		RoadMap m = new RoadMap();

@@ -11,10 +11,6 @@ import es.ucm.fdi.ini.IniSection;
 */
 
 public class NewVehicleEventBuilderTest {
-
-	/**
-	 * Método que prueba el método parse de NewVehicleEventBuilder.
-	 */
 	
 	@Test
 	public void parseTest(){
@@ -54,10 +50,6 @@ public class NewVehicleEventBuilderTest {
 		Assert.assertEquals("Comprueba si ha construido el tipo de evento correcto", f.getClass(), e.getClass());
 	}
 	
-	/**
-	 * Método que prueba el método isValidId de NewVehicleEvent.
-	 */
-	
 	@Test
 	public void isValidIdTest(){
 		NewVehicleEventBuilder b = new NewVehicleEventBuilder();
@@ -68,20 +60,12 @@ public class NewVehicleEventBuilderTest {
 		Assert.assertTrue("La ID no es válida, luego isValidId da false", !b.isValidId(s));
 	}
 	
-	/**
-	 * Método que prueba el método type de NewVehicleEvent.
-	 */
-	
 	@Test
 	public void typeTest(){
 		NewVehicleEventBuilder b = new NewVehicleEventBuilder();
 		String s = "new_vehicle";
 		Assert.assertEquals("Devuelve el tipo adecuado", b.type(), s);
 	}
-	
-	/**
-	 * Método que prueba el método parseInt de NewVehicleEvent.
-	 */
 	
 	@Test
 	public void parseIntTest(){
@@ -91,10 +75,6 @@ public class NewVehicleEventBuilderTest {
 		Assert.assertEquals("Comprueba que parsea bien el entero", b.parseInt(sj, "time"), 2);
 	}
 	
-	/**
-	 * Método que prueba el método parseLong de NewVehicleEvent.
-	 */
-	
 	@Test
 	public void parseLongTest(){
 		NewVehicleEventBuilder b = new NewVehicleEventBuilder();
@@ -103,10 +83,6 @@ public class NewVehicleEventBuilderTest {
 		Assert.assertEquals("Comprueba que parsea bien el entero", b.parseLong(sj, "time"), 2);
 	}
 	
-	/**
-	 * Método que prueba el método parseDouble de NewVehicleEvent.
-	 */
-	
 	@Test
 	public void parseDoubleTest(){
 		NewVehicleEventBuilder b = new NewVehicleEventBuilder();
@@ -114,10 +90,6 @@ public class NewVehicleEventBuilderTest {
 		sj.setValue("time", "2");
 		Assert.assertTrue(b.parseDouble(sj, "time") == 2);
 	}
-	
-	/**
-	 * Método que prueba el método parseIdList de NewVehicleEvent.
-	 */
 	
 	@Test
 	public void parseIdListTest(){

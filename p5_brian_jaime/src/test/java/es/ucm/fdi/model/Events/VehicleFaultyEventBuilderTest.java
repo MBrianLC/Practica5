@@ -11,10 +11,6 @@ import es.ucm.fdi.ini.IniSection;
 */
 
 public class VehicleFaultyEventBuilderTest {
-
-	/**
-	 * Método que prueba el método parse de VehicleFaultyEventBuilder.
-	 */
 	
 	@Test
 	public void parseTest(){
@@ -35,10 +31,6 @@ public class VehicleFaultyEventBuilderTest {
 		Assert.assertEquals("Comprueba si ha construido el tipo de evento correcto", f.getClass(), e.getClass());
 	}
 	
-	/**
-	 * Método que prueba el método isValidId de VehicleFaultyEventBuilder.
-	 */
-	
 	@Test
 	public void isValidIdTest(){
 		VehicleFaultyEventBuilder b = new VehicleFaultyEventBuilder();
@@ -49,20 +41,12 @@ public class VehicleFaultyEventBuilderTest {
 		Assert.assertTrue("La ID no es válida, luego isValidId da false", !b.isValidId(s));
 	}
 	
-	/**
-	 * Método que prueba el método type de VehicleFaultyEventBuilder.
-	 */
-	
 	@Test
 	public void typeTest(){
 		VehicleFaultyEventBuilder b = new VehicleFaultyEventBuilder();
 		String s = "make_vehicle_faulty";
 		Assert.assertEquals("Devuelve el tipo adecuado", b.type(), s);
 	}
-	
-	/**
-	 * Método que prueba el método parseInt de VehicleFaultyEventBuilder.
-	 */
 	
 	@Test
 	public void parseIntTest(){
@@ -71,10 +55,6 @@ public class VehicleFaultyEventBuilderTest {
 		sj.setValue("time", "2");
 		Assert.assertEquals("Comprueba que parsea bien el entero", b.parseInt(sj, "time"), 2);
 	}
-	
-	/**
-	 * Método que prueba el método parseIdList de VehicleFaultyEventBuilder.
-	 */
 	
 	@Test
 	public void parseIdListTest(){

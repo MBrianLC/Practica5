@@ -45,9 +45,6 @@ public class RoadTest {
 		assertTrue("v1 debe haber salido de r1", r1.vehiculos.sizeOfValues() == 1);
 	}
 	
-	/**
-	 * Método que prueba el método avanza de Road.
-	*/
 	@Test
 	public void avanzaTest() {
 		

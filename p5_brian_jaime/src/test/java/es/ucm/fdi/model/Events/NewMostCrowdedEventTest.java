@@ -14,10 +14,6 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class NewMostCrowdedEventTest {
 	
-	/**
-	 * Método que prueba el método execute de NewMostCrowdedEvent.
-	 */
-	
 	@Test
 	public void testExecute(){
 		RoadMap m = new RoadMap();

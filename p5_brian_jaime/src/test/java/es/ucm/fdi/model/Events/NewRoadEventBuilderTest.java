@@ -11,10 +11,6 @@ import es.ucm.fdi.ini.IniSection;
 */
 
 public class NewRoadEventBuilderTest {
-
-	/**
-	 * Método que prueba el método parse de NewRoadEventBuilder.
-	 */
 	
 	@Test
 	public void parseTest(){
@@ -51,11 +47,7 @@ public class NewRoadEventBuilderTest {
 		Assert.assertEquals("Comprueba si ha parseado bien el tiempo", f.getTime(), e.getTime());
 		Assert.assertEquals("Comprueba si ha construido el tipo de evento correcto", f.getClass(), e.getClass());
 	}
-	
-	/**
-	 * Método que prueba el método isValidId de NewRoadEventBuilder.
-	 */
-	
+
 	@Test
 	public void isValidIdTest(){
 		NewRoadEventBuilder b = new NewRoadEventBuilder();
@@ -66,20 +58,12 @@ public class NewRoadEventBuilderTest {
 		Assert.assertTrue("La ID no es válida, luego isValidId da false", !b.isValidId(s));
 	}
 	
-	/**
-	 * Método que prueba el método type de NewRoadEventBuilder.
-	 */
-	
 	@Test
 	public void typeTest(){
 		NewRoadEventBuilder b = new NewRoadEventBuilder();
 		String s = "new_road";
 		Assert.assertEquals("Devuelve el tipo adecuado", b.type(), s);
 	}
-	
-	/**
-	 * Método que prueba el método parseInt de NewRoadEventBuilder.
-	 */
 	
 	@Test
 	public void parseIntTest(){
@@ -88,10 +72,6 @@ public class NewRoadEventBuilderTest {
 		sj.setValue("time", "2");
 		Assert.assertEquals("Comprueba que parsea bien el entero", b.parseInt(sj, "time"), 2);
 	}
-	
-	/**
-	 * Método que prueba el método parseIdList de NewRoadEventBuilder.
-	 */
 	
 	@Test
 	public void parseIdListTest(){

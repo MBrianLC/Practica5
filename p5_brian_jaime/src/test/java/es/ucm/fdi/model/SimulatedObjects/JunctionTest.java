@@ -73,9 +73,6 @@ public class JunctionTest {
 		assertTrue("El vehículo v1 debe estar en la cola de r1", r1.getQueue().contains(v1));
 	}
 	
-	/**
-	 * Método que prueba el método avanza de Junction.
-	*/
 	@Test
 	public void avanzaTest() {
 		List<Junction> itinerario = new ArrayList<>();

@@ -14,10 +14,6 @@ import es.ucm.fdi.model.Simulator.RoadMap;
 
 public class NewJunctionEventTest {
 	
-	/**
-	 * Método que prueba el método execute de NewJunctionEvent.
-	 */
-	
 	@Test
 	public void testExecute(){
 		RoadMap m = new RoadMap();
