@@ -3,7 +3,7 @@ package es.ucm.fdi.model.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.ucm.fdi.model.advanced.Car;
+import es.ucm.fdi.model.simobjects.advanced.Car;
 import es.ucm.fdi.model.exceptions.SimulatorException;
 import es.ucm.fdi.model.simobjects.Junction;
 import es.ucm.fdi.model.simobjects.Vehicle;

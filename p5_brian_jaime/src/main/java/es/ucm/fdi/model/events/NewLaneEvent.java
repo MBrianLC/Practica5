@@ -1,6 +1,6 @@
 package es.ucm.fdi.model.events;
 
-import es.ucm.fdi.model.advanced.Lane;
+import es.ucm.fdi.model.simobjects.advanced.Lane;
 import es.ucm.fdi.model.exceptions.SimulatorException;
 import es.ucm.fdi.model.simobjects.Junction;
 import es.ucm.fdi.model.simobjects.Road;

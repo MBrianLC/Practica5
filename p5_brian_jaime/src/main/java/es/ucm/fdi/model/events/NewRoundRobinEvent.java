@@ -1,6 +1,6 @@
 package es.ucm.fdi.model.events;
 
-import es.ucm.fdi.model.advanced.RoundRobin;
+import es.ucm.fdi.model.simobjects.advanced.RoundRobin;
 import es.ucm.fdi.model.exceptions.SimulatorException;
 import es.ucm.fdi.model.simulator.RoadMap;
 
