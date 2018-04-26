@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import es.ucm.fdi.model.advanced.RoundRobin;
+import es.ucm.fdi.model.simobjects.advanced.RoundRobin;
 import es.ucm.fdi.model.simobjects.Junction;
 import es.ucm.fdi.model.simobjects.Road;
 import es.ucm.fdi.model.simobjects.Vehicle;

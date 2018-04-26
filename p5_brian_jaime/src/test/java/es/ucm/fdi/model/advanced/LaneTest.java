@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import es.ucm.fdi.model.advanced.Lane;
+import es.ucm.fdi.model.simobjects.advanced.Lane;
 import es.ucm.fdi.model.simobjects.Junction;
 import es.ucm.fdi.model.simobjects.Vehicle;
 
