@@ -176,6 +176,14 @@ public class TableSim implements Listener{
 				eventsPanel.add(updateTable(objectList, fieldNamesQ, eventsQueue));
 				break;
 			}
+			case RESET:{
+				eventsPanel.removeAll();
+				vehiclesPanel.removeAll();
+				roadsPanel.removeAll();
+				roadsPanel.removeAll();
+				junctionsPanel.removeAll();
+				break;
+			}
 		default:
 			break;
 		}

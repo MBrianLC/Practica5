@@ -9,8 +9,8 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
-import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.model.Events.Event;
+import es.ucm.fdi.model.Exceptions.SimulatorException;
 import es.ucm.fdi.model.SimulatedObjects.Junction;
 import es.ucm.fdi.model.SimulatedObjects.Road;
 import es.ucm.fdi.model.SimulatedObjects.SimObject;
@@ -36,10 +36,10 @@ public class TrafficSimulator {
 	*/
 	
 	public TrafficSimulator() {
-		this.SimObjects = new RoadMap();
-		this.eventos = new MultiTreeMap<>();
-		this.contadorTiempo = 0;
-		this.eventsQueue = new ArrayList<>();
+		SimObjects = new RoadMap();
+		eventos = new MultiTreeMap<>();
+		contadorTiempo = 0;
+		eventsQueue = new ArrayList<>();
 	}
 	
 	/** 
@@ -48,13 +48,15 @@ public class TrafficSimulator {
 	*/
 	
 	public void insertaEvento(Event e) {
-		if (e.getTime() < contadorTiempo) {
+		if (e.getTime() < 0) {
 			fireUpdateEvent(EventType.ERROR, "ERROR: Invalid time");
 			throw new IllegalArgumentException("Invalid time");
 		}
-		eventos.putValue(e.getTime(), e);
-		eventsQueue.add(e);
-		fireUpdateEvent(EventType.NEWEVENT, "");
+		if (e.getTime() >= contadorTiempo) {
+			eventos.putValue(e.getTime(), e);
+			eventsQueue.add(e);
+			fireUpdateEvent(EventType.NEWEVENT, "");
+		}
 	}
 	
 	public void addSimulatorListener(Listener l) {
@@ -65,6 +67,18 @@ public class TrafficSimulator {
 	
 	public void removeListener(Listener l) {
 		listeners.remove(l);
+	}
+	
+	public void resetEvents() {
+		eventos = new MultiTreeMap<>();
+	}
+	
+	public void resetSim() {
+		SimObjects = new RoadMap();
+		eventos = new MultiTreeMap<>();
+		contadorTiempo = 0;
+		eventsQueue = new ArrayList<>();
+		fireUpdateEvent(EventType.RESET, "");
 	}
 	
 	/** 
@@ -104,12 +118,11 @@ public class TrafficSimulator {
 	 * @param o : Flujo de salida
 	 * @throws IOException 
 	 * @throws SimulatorException 
-	 * @throws InterruptedException 
 	*/
 	
-	public void execute(int pasosSimulacion, OutputStream o) throws IOException, SimulatorException, InterruptedException {
-		int limiteTiempo = this.contadorTiempo + pasosSimulacion - 1;
-		while (this.contadorTiempo <= limiteTiempo) {
+	public void execute(int pasosSimulacion, OutputStream o) throws IOException, SimulatorException {
+		int limiteTiempo = contadorTiempo + pasosSimulacion - 1;
+		while (contadorTiempo <= limiteTiempo) {
 			List<Event> eventActuales = eventos.get(contadorTiempo);
 			if (eventActuales != null) {
 				for (Event e : eventActuales)
@@ -119,8 +132,8 @@ public class TrafficSimulator {
 				r.avanza();
 			for (Junction j : SimObjects.getJunctions())
 				j.avanza();
-			this.contadorTiempo++;
-			report().store(o);
+			contadorTiempo++;
+			if (o != null) report().store(o);
 			fireUpdateEvent(EventType.ADVANCED, "");
 		}
 	}

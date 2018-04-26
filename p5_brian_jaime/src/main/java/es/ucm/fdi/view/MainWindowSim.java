@@ -161,13 +161,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		panel1.add(panel3);
 		panel1.add(stateBar);
 		panel2.add(editorPanel);
-		panel2.add(eventsPanel);
+		panel2.add(tableSim.getEventPanel());
 		panel2.add(reportsPanel);
 		panel3.add(panel4);
 		panel3.add(mapPanel);
-		panel4.add(vehiclesPanel);
-		panel4.add(roadsPanel);
-		panel4.add(junctionsPanel);
+		panel4.add(tableSim.getVehiclesPanel());
+		panel4.add(tableSim.getRoadsPanel());
+		panel4.add(tableSim.getJunctionsPanel());
 		
 		mainPanel.add(panel1);
 		if (currentFile != null) {
@@ -175,8 +175,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 				String s = readFile(currentFile);
 				eventsEditor.setText(s);
 				editorPanel.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
-			} 
-			catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -348,13 +347,15 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		else if (RUN.equals(e.getActionCommand())){
 			runButton.setActionCommand(STOP);
 			runButton.setToolTipText("Stop simulation");
-			runButton.addActionListener(this);
 			runButton.setIcon(new ImageIcon("src/main/resources/icons/stop.png"));
 			try {
 				runSim();
 			} catch (InterruptedException e1) {
 				contr.notify();
 			}
+			runButton.setActionCommand(RUN);
+			runButton.setToolTipText("Run simulation");
+			runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
 		}
 		else if (RESET.equals(e.getActionCommand())){
 			resetSim();
@@ -392,7 +393,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			try {
 				writeFile(file, eventsEditor.getText());
 			} catch (IOException e) {
-				//statusBarText.setText("ERROR: The file has not been saved");    
+				statusBarText.setText("ERROR: The file has not been saved");    
 			}
 		}
 		statusBarText.setText("The file have been saved!");    
@@ -406,7 +407,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			try {
 				writeFile(file, reportsArea.getText());
 			} catch (IOException e) {
-				//statusBarText.setText("ERROR: The reports have not been saved");    
+				statusBarText.setText("ERROR: The reports have not been saved");    
 			}
 		}
 		statusBarText.setText("All reports have been saved!");    
@@ -435,20 +436,20 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	
 	private void runSim() throws InterruptedException{
 		try {
-			InputStream in = new FileInputStream(currentFile);
-			contr.setIni(new Ini(in));
-			contr.execute(this.tsim);
-		} 
-		catch (IOException ex) {
+			tsim.resetEvents();
+			contr.setIni(new Ini(new ByteArrayInputStream(eventsEditor.getText().getBytes())));
+			contr.setTime((int)stepsSpinner.getValue());
+			contr.execute(tsim);
+			tableSim = new TableSim(map, events);
+		} catch (IOException ex) {
 			ex.printStackTrace();
-		} 
-		catch (SimulatorException ex) {
+		} catch (SimulatorException ex) {
 			ex.printStackTrace();
 		}
 	}
 	
 	private void checkInEvent() throws IOException {
-		contr.loadEvents(new ByteArrayInputStream(eventsEditor.getText().getBytes())); 
+		//contr.loadEvents(new ByteArrayInputStream(eventsEditor.getText().getBytes())); 
 	}
 	
 	private void stop() throws InterruptedException {
@@ -458,7 +459,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private void resetSim(){
 		time = 0;
 		reportsArea.setText("");
-		// resetear el resto de componentes también (excepto eventsEditor)
+		tsim.resetSim();
 	}
 	
 	private void genReport(){
@@ -468,9 +469,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			sim.report(time, m);
 			reporte += "[" + m.get("") + "]\n";
 			for (String key : m.keySet()){
-				reporte += key + " = " + m.get(key) + '\n';
+				if (key != "") reporte += key + " = " + m.get(key) + '\n';
 			}
 			reporte += '\n';
+			m.clear();
 		}
 		reportsArea.setText(reporte);
 	}
@@ -576,13 +578,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_junction]\n";
+				String s = "\n[new_junction]\n";
 				s += "time = \n";
 				s += "id = \n";
 				s += "type = rr\n";
 				s += "max_time_slice = \n";
 				s += "min_time_slice = \n";
-				s += '\n';
 				textArea.append(s);
 			}
 		}); 
@@ -592,11 +593,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_junction]\n";
+				String s = "\n[new_junction]\n";
 				s += "time = \n";
 				s += "id = \n";
 				s += "type = mc\n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -606,10 +606,9 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_junction]\n";
+				String s = "\n[new_junction]\n";
 				s += "time = \n";
 				s += "id = \n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -619,7 +618,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_road]\n";
+				String s = "\n[new_road]\n";
 				s += "time = \n";
 				s += "id = \n";
 				s += "src = \n";
@@ -627,7 +626,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 				s += "max_speed = \n";
 				s += "length = \n";
 				s += "type = dirt\n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -637,7 +635,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_road]\n";
+				String s = "\n[new_road]\n";
 				s += "time = \n";
 				s += "id = \n";
 				s += "src = \n";
@@ -646,7 +644,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 				s += "length = \n";
 				s += "type = lanes\n";
 				s += "lanes = \n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -656,14 +653,13 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_road]\n";
+				String s = "\n[new_road]\n";
 				s += "time = \n";
 				s += "id = \n";
 				s += "src = \n";
 				s += "dest = \n";
 				s += "max_speed = \n";
 				s += "length = \n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -673,13 +669,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_vehicle]\n";
+				String s = "\n[new_vehicle]\n";
 				s += "time = \n";
 				s += "id = \n";
 				s += "itinerary = \n";
 				s += "max_speed = \n";
 				s += "type = bike\n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -689,7 +684,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_vehicle]\n";
+				String s = "\n[new_vehicle]\n";
 				s += "time = \n";
 				s += "id = \n";
 				s += "itinerary = \n";
@@ -699,7 +694,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 				s += "fault_probability = \n";
 				s += "max_fault_duration = \n";
 				s += "seed = \n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -709,12 +703,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[new_vehicle]\n";
+				String s = "\n[new_vehicle]\n";
 				s += "time = \n";
 				s += "id = \n";
 				s += "max_speed = \n";
 				s += "itinerary = \n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -724,11 +717,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "[make_vehicle_faulty]\n";
+				String s = "\n[make_vehicle_faulty]\n";
 				s += "time = \n";
 				s += "vehicles = \n";
 				s += "duration = \n";
-				s += '\n';
 				textArea.append(s);
 			}
 		});
@@ -777,16 +769,15 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	public void update(UpdateEvent ue, String error) {
 		switch (ue.getEvent()) {
 			case ADVANCED:{
-				timeViewer.setText(String.valueOf(ue.getCurrentTime()));
+				time = ue.getCurrentTime();
+				timeViewer.setText(String.valueOf(time));
 				map = ue.getRoadMap();
-				eventsPanel = tableSim.getEventPanel();
-				vehiclesPanel = tableSim.getVehiclesPanel();
-				roadsPanel = tableSim.getRoadsPanel();
-				junctionsPanel = tableSim.getJunctionsPanel();
 				break;
 			}
 			case RESET:{
 				timeViewer.setText("0");
+				map = ue.getRoadMap();
+				events = new ArrayList<EventIndex>();
 				break;
 			}
 			case NEWEVENT:{
@@ -801,4 +792,5 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			break;
 		}
 	}
+	
 }

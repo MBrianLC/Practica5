@@ -21,7 +21,9 @@ public class RoadMapGraph extends JFrame implements Listener {
 	public RoadMapGraph(RoadMap roadMap) {
 		super("Dialog Example");
 		_graphComp = new GraphComponent();
-		if (roadMap != null) generateGraph(roadMap);
+		if (roadMap != null) {
+			generateGraph(roadMap);
+		}
 	}
 
 	protected void generateGraph(RoadMap roadMap) {
