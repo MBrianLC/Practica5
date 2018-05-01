@@ -28,7 +28,7 @@ public class TrafficSimulator {
 	private int contadorTiempo;
 	private MultiTreeMap<Integer, Event> eventos;
 	private List<Event> eventsQueue;
-	private RoadMap SimObjects;
+	private RoadMap roadMap;
 	private List<Listener> listeners = new ArrayList<>();
 	
 	/** 
@@ -36,7 +36,7 @@ public class TrafficSimulator {
 	*/
 	
 	public TrafficSimulator() {
-		SimObjects = new RoadMap();
+		roadMap = new RoadMap();
 		eventos = new MultiTreeMap<>();
 		contadorTiempo = 0;
 		eventsQueue = new ArrayList<>();
@@ -75,7 +75,7 @@ public class TrafficSimulator {
 	}
 	
 	public void resetSim() {
-		SimObjects = new RoadMap();
+		roadMap = new RoadMap();
 		eventos = new MultiTreeMap<>();
 		contadorTiempo = 0;
 		eventsQueue = new ArrayList<>();
@@ -103,7 +103,7 @@ public class TrafficSimulator {
 	public Ini report() {
 		Map<String, String> m = new LinkedHashMap<>();
 		Ini salida = new Ini();
-		for (SimObject sim : SimObjects.getSimObjects()) {
+		for (SimObject sim : roadMap.getSimObjects()) {
 			sim.report(contadorTiempo, m);
 			IniSection s = new IniSection(m.get(""));
 			for (String key: m.keySet()) {
@@ -131,13 +131,13 @@ public class TrafficSimulator {
 			List<Event> eventActuales = eventos.get(contadorTiempo);
 			if (eventActuales != null) {
 				for (Event e : eventActuales) {
-					e.execute(SimObjects);
+					e.execute(roadMap);
 				}
 			}
-			for (Road r : SimObjects.getRoads()) {
+			for (Road r : roadMap.getRoads()) {
 				r.avanza();
 			}
-			for (Junction j : SimObjects.getJunctions()) {
+			for (Junction j : roadMap.getJunctions()) {
 				j.avanza();
 			}
 			contadorTiempo++;
@@ -154,7 +154,7 @@ public class TrafficSimulator {
 	*/
 	
 	public RoadMap getMap() {
-		return SimObjects;
+		return roadMap;
 	}
 	
 	/** 
@@ -190,7 +190,7 @@ public class TrafficSimulator {
 		}
 		
 		public RoadMap getRoadMap() {
-			return SimObjects;
+			return roadMap;
 		}
 
 		public List<Event> getEventQueue() {
