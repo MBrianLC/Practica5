@@ -85,9 +85,10 @@ public class Controller {
 						}
 					}
 				}
-				if (!b) throw new IllegalArgumentException("Incorrect tag: " + n.getTag());
-			}
-			catch(IllegalArgumentException e) {
+				if (!b){
+					throw new IllegalArgumentException("Incorrect tag: " + n.getTag());
+				}
+			} catch(IllegalArgumentException e) {
 				System.err.println(e.getMessage());
 				System.exit(1);
 			}
