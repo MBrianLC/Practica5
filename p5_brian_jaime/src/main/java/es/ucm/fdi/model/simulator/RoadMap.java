@@ -39,7 +39,9 @@ public class RoadMap {
 	 * @return SimObject asociado al identificador
 	*/
 	public SimObject getSimObject(String id) {
-		if (!simObjects.containsKey(id)) throw new NullPointerException();
+		if (!simObjects.containsKey(id)){
+			throw new NullPointerException();
+		}
 		return simObjects.get(id);
 	}
 	
@@ -49,7 +51,9 @@ public class RoadMap {
 	 * @return Vehicle asociado al identificador
 	*/
 	public Vehicle getVehicle(String id) {
-		if (!simObjects.containsKey(id)) throw new NullPointerException();
+		if (!simObjects.containsKey(id)) {
+			throw new NullPointerException();
+		}
 		return (Vehicle) getSimObject(id);
 	}
 	
@@ -59,7 +63,9 @@ public class RoadMap {
 	 * @return Road asociado al identificador
 	*/
 	public Road getRoad(String id) {
-		if (!simObjects.containsKey(id)) throw new NullPointerException();
+		if (!simObjects.containsKey(id)) {
+			throw new NullPointerException();
+		}
 		return (Road) getSimObject(id);
 	}
 	
@@ -69,7 +75,9 @@ public class RoadMap {
 	 * @return Junction asociado al identificador
 	*/
 	public Junction getJunction(String id) {
-		if (!simObjects.containsKey(id)) throw new NullPointerException();
+		if (!simObjects.containsKey(id)) {
+			throw new NullPointerException();
+		}
 		return (Junction) getSimObject(id);
 	}
 	
@@ -114,7 +122,9 @@ public class RoadMap {
 	 * @param v: Vehículo
 	*/	
 	public void addVehicle(Vehicle v) {
-		if (simObjects.containsKey(v.getID())) throw new IllegalArgumentException();
+		if (simObjects.containsKey(v.getID())) {
+			throw new IllegalArgumentException();
+		}
 		simObjects.put(v.getID(), v);
 		vehicles.add(v);
 	}
@@ -124,7 +134,9 @@ public class RoadMap {
 	 * @param r: Carretera
 	*/
 	public void addRoad(Road r) {
-		if (simObjects.containsKey(r.getID())) throw new IllegalArgumentException();
+		if (simObjects.containsKey(r.getID())) {
+			throw new IllegalArgumentException();
+		}
 		simObjects.put(r.getID(), r);
 		roads.add(r);
 	}
@@ -134,7 +146,9 @@ public class RoadMap {
 	 * @param c: Cruce
 	*/
 	public void addJunction(Junction j) {
-		if (simObjects.containsKey(j.getID())) throw new IllegalArgumentException();
+		if (simObjects.containsKey(j.getID())) {
+			throw new IllegalArgumentException();
+		}
 		simObjects.put(j.getID(), j);
 		junctions.add(j);
 	}

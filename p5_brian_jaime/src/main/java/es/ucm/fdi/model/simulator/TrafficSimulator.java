@@ -90,7 +90,9 @@ public class TrafficSimulator {
 	
 	private void fireUpdateEvent(EventType type, String error) {
 		UpdateEvent ue = new UpdateEvent(type);
-		for (Listener l : listeners) l.update(ue, "ERROR: " + error);
+		for (Listener l : listeners){
+			l.update(ue, "ERROR: " + error);
+		}
 	}
 	
 	/** 
@@ -105,7 +107,9 @@ public class TrafficSimulator {
 			sim.report(contadorTiempo, m);
 			IniSection s = new IniSection(m.get(""));
 			for (String key: m.keySet()) {
-				if (key != "") s.setValue(key, m.get(key));
+				if (key != ""){
+					s.setValue(key, m.get(key));
+				}
 			}
 			salida.addsection(s);
 			m.clear();
@@ -126,15 +130,20 @@ public class TrafficSimulator {
 		while (contadorTiempo <= limiteTiempo) {
 			List<Event> eventActuales = eventos.get(contadorTiempo);
 			if (eventActuales != null) {
-				for (Event e : eventActuales)
+				for (Event e : eventActuales) {
 					e.execute(SimObjects);
+				}
 			}
-			for (Road r : SimObjects.getRoads())
+			for (Road r : SimObjects.getRoads()) {
 				r.avanza();
-			for (Junction j : SimObjects.getJunctions())
+			}
+			for (Junction j : SimObjects.getJunctions()) {
 				j.avanza();
+			}
 			contadorTiempo++;
-			if (o != null) report().store(o);
+			if (o != null){
+				report().store(o);
+			}
 			fireUpdateEvent(EventType.ADVANCED, "");
 		}
 	}
@@ -187,8 +196,9 @@ public class TrafficSimulator {
 		public List<Event> getEventQueue() {
 			List<Event> aux = new ArrayList<>(eventsQueue);
 			for (Event e : aux) {
-				if (e.getTime() <= contadorTiempo)
+				if (e.getTime() <= contadorTiempo) {
 					eventsQueue.remove(e);
+				}
 			}
 			return eventsQueue;
 		}
