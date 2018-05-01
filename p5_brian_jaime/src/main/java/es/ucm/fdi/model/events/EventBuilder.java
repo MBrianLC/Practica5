@@ -35,7 +35,20 @@ public interface EventBuilder {
 	 * @return El entero obtenido a partir de la key.
 	*/
 	
-	public int parseInt(IniSection sec, String key);
+	public default int parseInt(IniSection sec, String key){
+		return Integer.parseInt(sec.getValue(key));
+	}
+	
+	/** 
+	 * Método que convierte una key de una sección en un array de strings.
+	 * @param sec : La sección.
+	 * @param key : La clave que va a ser convertida en entero.
+	 * @return El array de strings.
+	*/
+	public default String[] parseIdList(IniSection sec, String key){
+		String[] s = sec.getValue(key).split(",");
+		return s;
+	}
 	
 	/** 
 	 * Método que convierte una key de una sección en un array de strings.

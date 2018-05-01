@@ -67,16 +67,6 @@ public class NewVehicleEventBuilder implements EventBuilder{
 	}
 	
 	/** 
-	 * Método que convierte una key de una sección en un entero
-	 * @param sec : La sección.
-	 * @param key : La clave que va a ser convertida en entero.
-	 * @return El entero obtenido a partir de la key.
-	*/
-	public int parseInt(IniSection sec, String key){
-		return Integer.parseInt(sec.getValue(key));
-	}
-	
-	/** 
 	 * Método que convierte una key de una sección en un double
 	 * @param sec : La sección.
 	 * @param key : La clave que va a ser convertida en double.
@@ -94,16 +84,5 @@ public class NewVehicleEventBuilder implements EventBuilder{
 	*/
 	public long parseLong(IniSection sec, String key){
 		return Long.parseLong(sec.getValue(key));
-	}
-	
-	/** 
-	 * Método que convierte una key de una sección en un array de strings.
-	 * @param sec :La sección.
-	 * @param key : La clave que va a ser convertida en entero.
-	 * @return El array de strings.
-	*/
-	public String[] parseIdList(IniSection sec, String key){
-		String[] s = sec.getValue(key).split(",");
-		return s;
 	}
 }
