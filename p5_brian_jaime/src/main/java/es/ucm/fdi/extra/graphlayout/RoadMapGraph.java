@@ -9,7 +9,6 @@ import es.ucm.fdi.model.simulator.Listener;
 import es.ucm.fdi.model.simulator.RoadMap;
 import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;
 
-import java.awt.BorderLayout;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +18,6 @@ public class RoadMapGraph extends JFrame implements Listener {
 	public GraphComponent _graphComp;
     
 	public RoadMapGraph(RoadMap roadMap) {
-		super("Dialog Example");
 		_graphComp = new GraphComponent();
 		if (roadMap != null) {
 			generateGraph(roadMap);

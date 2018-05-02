@@ -44,7 +44,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import es.ucm.fdi.control.Controller;
+import es.ucm.fdi.extra.dialog.ReportWindow;
 import es.ucm.fdi.extra.graphlayout.RoadMapGraph;
+import es.ucm.fdi.extra.texteditor.TextEditor;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.exceptions.SimulatorException;
 import es.ucm.fdi.model.simobjects.SimObject;
@@ -69,13 +71,15 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private final String CLEAR_REPORT = "clearReport";
 	private final String CHECK_IN = "checkIn";
 	private final String RUN = "run";
-	private final String STOP = "stop";
 	private final String RESET = "reset";
+	private final String OUTPUT = "output";
 	private final String CLEAR = "clear";
 	private final String QUIT = "quit";
 	
 	private TableSim tableSim;
 	private RoadMapGraph rmGraph;
+	private TextEditor textEditor;
+	private ReportWindow dialog;
 	private JPanel mainPanel;
 	private JPanel stateBar;
 	private JPanel editorPanel;
@@ -113,9 +117,9 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			events.add(new EventIndex(i, tsim.getEventQueue().get(i)));
 		}
 		currentFile = inFileName != null ? new File(inFileName) : null;
-		//reportsOutputStream = new JTextAreaOutputStream(reportsArea,null);
-		//contr.setOutputStream(reportsOutputStream); // ver sección 8
 		initGUI();
+		reportsOutputStream = new JTextAreaOutputStream(reportsArea);
+		contr.setOutputStream(reportsOutputStream);
 		this.tsim.addSimulatorListener(this);
 		this.tsim.addSimulatorListener(tableSim);
 		this.tsim.addSimulatorListener(rmGraph);
@@ -129,6 +133,8 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		addMenuBar(); // barra de menus
 		addToolBar(); // barra de herramientas
 		addEventsEditor();
+		
+		//textEditor = new TextEditor();
 		
 		tableSim = new TableSim(map, events);
 		
@@ -176,6 +182,21 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		this.setVisible(true);
 	}
 	
+	private class JTextAreaOutputStream extends OutputStream{
+		
+		private JTextArea textArea;
+
+		public JTextAreaOutputStream(JTextArea textArea) {
+			this.textArea = textArea;
+		}
+
+		public void write(int b) throws IOException {
+			textArea.append(String.valueOf((char)b));
+	        textArea.setCaretPosition(textArea.getDocument().getLength());
+		}
+		
+	}
+	
 	private void addMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
 		fileMenu = new JMenu("File");
@@ -215,6 +236,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		reset.setToolTipText("Reset simulation");
 		reset.addActionListener(this);
 		simulatorMenu.add(reset);
+		JMenuItem output = new JMenuItem("Redirect Output");
+		output.setActionCommand(OUTPUT);
+		output.setToolTipText("Redirect simulation's output to text area");
+		output.addActionListener(this);
+		simulatorMenu.add(output);
 		
 		reportsMenu = new JMenu("Reports");
 		menuBar.add(reportsMenu);
@@ -336,12 +362,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			reportsArea.setText("");
 		else if (RUN.equals(e.getActionCommand())){
 			runSim();
-			runButton.setActionCommand(RUN);
-			runButton.setToolTipText("Run simulation");
-			runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
 		}
 		else if (RESET.equals(e.getActionCommand())){
 			resetSim();
+		}
+		else if (OUTPUT.equals(e.getActionCommand())){
+			redirectOutput();	
 		}
 		else if (GEN_REPORT.equals(e.getActionCommand())) {
 			genReport();
@@ -409,7 +435,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private void runSim() {
 		try {
 			tsim.resetEvents();
-			contr.setIni(new Ini(new ByteArrayInputStream(eventsEditor.getText().getBytes())));
 			contr.setTime((int)stepsSpinner.getValue());
 			contr.execute(tsim);
 			tableSim = new TableSim(map, events);
@@ -421,7 +446,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 	
 	private void checkInEvent() throws IOException {
-		//contr.loadEvents(new ByteArrayInputStream(eventsEditor.getText().getBytes())); 
+		contr.setIni(new Ini(new ByteArrayInputStream(eventsEditor.getText().getBytes())));
 	}
 	
 	private void resetSim(){
@@ -430,19 +455,19 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		tsim.resetSim();
 	}
 	
-	private void genReport(){
-		Map<String, String> m = new LinkedHashMap<>();
-		String reporte = "";
-		for (SimObject sim : map.getSimObjects()) {
-			sim.report(time, m);
-			reporte += "[" + m.get("") + "]\n";
-			for (String key : m.keySet()){
-				if (key != "") reporte += key + " = " + m.get(key) + '\n';
-			}
-			reporte += '\n';
-			m.clear();
+	private void redirectOutput() {
+		if (reportsOutputStream != null) {
+			reportsOutputStream = null;
 		}
-		reportsArea.setText(reporte);
+		else {
+			reportsOutputStream = new JTextAreaOutputStream(reportsArea);
+		}
+		contr.setOutputStream(reportsOutputStream);
+	}
+	
+	private void genReport(){
+		dialog = new ReportWindow(map, time);
+		reportsArea.setText(dialog.getReport());
 	}
 	
 	public static String readFile(File file) throws IOException {
@@ -621,14 +646,15 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_road]\n";
-				s += "time = \n";
-				s += "id = \n";
-				s += "src = \n";
-				s += "dest = \n";
-				s += "max_speed = \n";
-				s += "length = \n";
-				textArea.append(s);
+				StringBuilder sb = new StringBuilder();
+				sb.append("\n[new_road]\n");
+				sb.append("time = \n");
+				sb.append("id = \n");
+				sb.append("src = \n");
+				sb.append("dest = \n");
+				sb.append("max_speed = \n");
+				sb.append("length = \n");
+				textArea.append(sb.toString());
 			}
 		});
 		subMenu.add(templateROption);
