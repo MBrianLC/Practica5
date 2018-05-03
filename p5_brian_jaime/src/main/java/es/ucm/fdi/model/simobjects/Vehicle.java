@@ -142,7 +142,7 @@ public class Vehicle extends SimObject implements Describable{
 	*/
 	public Map<String, String> describe(){
 		Map<String, String> out = new HashMap<>();
-		String s = "[";
+		StringBuilder sb = new StringBuilder("[");
 		out.put("ID", id);
 		if (haLlegado){
 			out.put("Road", "Arrived");
@@ -154,11 +154,11 @@ public class Vehicle extends SimObject implements Describable{
 		out.put("Km", String.valueOf(distTotal));
 		out.put("Faulty Units", String.valueOf(tiempoAveria));
 		for (int i = 0; i < itinerario.size(); ++i) {
-			s += itinerario.get(i).getID() + ",";
+			sb.append(itinerario.get(i).getID() + ",");
 		}
-		s = s.substring(0, s.length() - 1);
-		s += "]";
-		out.put("Itinerary", s);
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append("]");
+		out.put("Itinerary", sb.toString());
 		return out;
 	}
 	

@@ -39,26 +39,26 @@ public class MostCrowded extends Junction {
 	 * @param out : Mapa para salida de datos
 	*/
 	protected void fillReportDetails(Map<String, String> out){
-		String s = "";
+		StringBuilder s = new StringBuilder();
 		if (!entrantes.isEmpty()) {
 			for (int i = 0; i < entrantes.size(); ++i){
-				s += "(" + entrantes.get(i).getID() + ",";
+				s.append("(" + entrantes.get(i).getID() + ",");
 				if (entrantes.get(i).getSemaforo()) {
-					s += "green:" + (intervaloDeTiempo - unidadesDeTiempoUsadas) + ",[";
+					s.append("green:" + (intervaloDeTiempo - unidadesDeTiempoUsadas) + ",[");
 				} else {
-					s += "red,[";
+					s.append("red,[");
 				}
 				if (!entrantes.get(i).getQueue().isEmpty()) {
 					for (Vehicle v : entrantes.get(i).getQueue()){
-						s += v.getID() + ",";
+						s.append(v.getID() + ",");
 					}
-					s = s.substring(0, s.length() - 1);
+					s.deleteCharAt(s.length() - 1);
 				}
-				s += "]),";
+				s.append("]),");
 			}
-			s = s.substring(0, s.length() - 1);
+			s.deleteCharAt(s.length() - 1);
 		}
-		out.put("queues", s);
+		out.put("queues", s.toString());
 		out.put("type", "mc");
 	}
 	

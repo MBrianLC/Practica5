@@ -122,18 +122,18 @@ public class Road extends SimObject implements Describable{
 	 * @param out : Mapa para salida de datos
 	*/
 	protected void fillReportDetails(Map<String, String> out){
-		String s = "";
+		StringBuilder sb = new StringBuilder();
 		if (!vehiculos.isEmpty()) {
 			for (int i = longitud; i >= 0; --i){
 				if (vehiculos.containsKey(i)){
 					for(Vehicle v: vehiculos.get(i)){
-						s += "(" + v.getID() + "," + v.getPos() + "),";
+						sb.append("(" + v.getID() + "," + v.getPos() + "),");
 					}
 				}
 			}
-			s = s.substring(0, s.length() - 1);
+			sb.deleteCharAt(sb.length() - 1);
 		}
-		out.put("state", s);
+		out.put("state", sb.toString());
 	}
 	
 	/** 
@@ -142,7 +142,7 @@ public class Road extends SimObject implements Describable{
 	*/
 	public Map<String, String> describe(){
 		Map<String, String> out = new HashMap<>();
-		String s = "[";
+		StringBuilder sb = new StringBuilder("[");
 		out.put("ID", id);
 		out.put("Source", ini.getID());
 		out.put("Target", fin.getID());
@@ -151,13 +151,13 @@ public class Road extends SimObject implements Describable{
 		for (int i = longitud; i >= 0; --i){
 			if (vehiculos.containsKey(i)){
 				for(Vehicle v: vehiculos.get(i)){
-					s += v.getID() + ",";
+					sb.append(v.getID() + ",");
 				}
 			}
 		}
-		s = s.substring(0, s.length() - 1);
-		s += "]";
-		out.put("Vehicles", s);
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append("]");
+		out.put("Vehicles", sb.toString());
 		return out;
 	}
 	

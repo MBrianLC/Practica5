@@ -82,26 +82,26 @@ public class Junction extends SimObject implements Describable{
 	 * @param out : Mapa para salida de datos
 	*/
 	protected void fillReportDetails(Map<String, String> out){
-		String s = "";
+		StringBuilder sb = new StringBuilder();
 		if (!entrantes.isEmpty()) {
 			for (int i = 0; i < entrantes.size(); ++i){
-				s += "(" + entrantes.get(i).getID() + ",";
+				sb.append("(" + entrantes.get(i).getID() + ",");
 				if (entrantes.get(i).getSemaforo()){
-					s += "green,[";
+					sb.append("green,[");
 				} else {
-					s += "red,[";
+					sb.append("red,[");
 				}
 				if (!entrantes.get(i).getQueue().isEmpty()) {
 					for (Vehicle v : entrantes.get(i).getQueue()){
-						s += v.getID() + ",";
+						sb.append(v.getID() + ",");
 					}
-					s = s.substring(0, s.length() - 1);
+					sb.deleteCharAt(sb.length() - 1);
 				}
-				s += "]),";
+				sb.append("]),");
 			}
-			s = s.substring(0, s.length() - 1);
+			sb.deleteCharAt(sb.length() - 1);
 		}
-		out.put("queues", s);
+		out.put("queues", sb.toString());
 	}
 	
 	/** 
@@ -110,43 +110,44 @@ public class Junction extends SimObject implements Describable{
 	*/
 	public Map<String, String> describe(){
 		Map<String, String> out = new HashMap<>();
-		String g = "[", r = g;
+		StringBuilder g = new StringBuilder("[");
+		StringBuilder r = new StringBuilder("[");
 		out.put("ID", id);
 		if (!entrantes.isEmpty()) {
 			for (int i = 0; i < entrantes.size(); ++i){
-				String aux = "";
+				StringBuilder aux = new StringBuilder();
 				Boolean b = false;
-				aux += "(" + entrantes.get(i).getID() + ",";
+				aux.append("(" + entrantes.get(i).getID() + ",");
 				if (entrantes.get(i).getSemaforo()) {
 					b = true;
-					g += "green,[";
+					g.append("green,[");
 				} else {
-					aux += "red,[";
+					aux.append("red,[");
 				}
 				if (!entrantes.get(i).getQueue().isEmpty()) {
 					for (Vehicle v : entrantes.get(i).getQueue()){
-						aux += v.getID() + ",";
+						aux.append(v.getID() + ",");
 					}
-					aux = aux.substring(0, aux.length() - 1);
+					aux.deleteCharAt(aux.length() - 1);
 				}
-				aux += "]),";
+				aux.append("]),");
 				if (b){
-					g += aux;
+					g.append(aux.toString());
 				} else {
-					r += aux;
+					r.append(aux.toString());
 				}
 			}
-			if (g.endsWith(",")){
-				g = g.substring(0, g.length() - 1);
+			if (g.toString().endsWith(",")){
+				g.deleteCharAt(g.length() - 1);
 			}
-			if (r.endsWith(",")){
-				r = r.substring(0, r.length() - 1);
+			if (r.toString().endsWith(",")){
+				r.deleteCharAt(r.length() - 1);
 			}
 		}
-		g += "]";
-		r += "]";
-		out.put("Green", g);
-		out.put("Red", r);
+		g.append("]");
+		r.append("]");
+		out.put("Green", g.toString());
+		out.put("Red", r.toString());
 		return out;
 	}
 	
