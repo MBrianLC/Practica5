@@ -46,10 +46,8 @@ public class ReportWindow extends JFrame  {
 		_dialog.setData(_vehicles, _roads, _junctions);
 		
 		int status = _dialog.open();
-		String reporte = "";
-		if ( status == 0) {
-			System.out.println("Canceled");
-		} else {
+		if ( status != 0) {
+			String reporte = "";
 			Map<String, String> m = new LinkedHashMap<>();
 			for(String s : _dialog.getSelectedSimObjects()) {
 				roadMap.getSimObject(s).report(time, m);
@@ -60,8 +58,8 @@ public class ReportWindow extends JFrame  {
 				reporte += '\n';
 				m.clear();
 			}
+			report = reporte;
 		}
-		report = reporte;
 
 	}
 }

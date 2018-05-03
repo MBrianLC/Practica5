@@ -38,10 +38,12 @@ public class SimulatorAction extends AbstractAction {
         putValue(Action.SHORT_DESCRIPTION, tooltip);
         putValue(Action.MNEMONIC_KEY, mnemonic);
         putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(accelerator));
-        BufferedImage icon = loadImage(iconName);
-        BufferedImage small = scaleImage(icon, 16, 16);
-        putValue(Action.LARGE_ICON_KEY, new ImageIcon(icon));
-        putValue(Action.SMALL_ICON, new ImageIcon(small));
+        if (iconName != null) {
+        	BufferedImage icon = loadImage(iconName);
+        	 BufferedImage small = scaleImage(icon, 16, 16);
+             putValue(Action.LARGE_ICON_KEY, new ImageIcon(icon));
+             putValue(Action.SMALL_ICON, new ImageIcon(small));
+        }
         this.callback = callback;
     }
 

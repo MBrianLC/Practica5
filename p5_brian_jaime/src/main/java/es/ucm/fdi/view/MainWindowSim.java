@@ -16,11 +16,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -44,19 +44,19 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import es.ucm.fdi.control.Controller;
+import es.ucm.fdi.control.SimulatorAction;
 import es.ucm.fdi.extra.dialog.ReportWindow;
 import es.ucm.fdi.extra.graphlayout.RoadMapGraph;
 import es.ucm.fdi.extra.texteditor.TextEditor;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.exceptions.SimulatorException;
-import es.ucm.fdi.model.simobjects.SimObject;
 import es.ucm.fdi.model.simulator.Listener;
 import es.ucm.fdi.model.simulator.RoadMap;
 import es.ucm.fdi.model.simulator.TrafficSimulator;
 import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;
 
 @SuppressWarnings("serial")
-public class MainWindowSim extends JFrame implements ActionListener, Listener {
+public class MainWindowSim extends JFrame implements Listener {
 	private Controller contr;
 	private TrafficSimulator tsim;
 	private RoadMap map;
@@ -64,22 +64,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private int time;
 	private OutputStream reportsOutputStream;
 	
-	private final String LOAD = "load";
-	private final String SAVE = "save";
-	private final String SAVE_REPORT = "saveReport";
-	private final String GEN_REPORT = "genReport";
-	private final String CLEAR_REPORT = "clearReport";
-	private final String CHECK_IN = "checkIn";
-	private final String RUN = "run";
-	private final String RESET = "reset";
-	private final String OUTPUT = "output";
-	private final String CLEAR = "clear";
-	private final String QUIT = "quit";
-	
 	private TableSim tableSim;
 	private RoadMapGraph rmGraph;
 	private TextEditor textEditor;
-	private ReportWindow dialog;
+	private ReportWindow reports;
 	private JPanel mainPanel;
 	private JPanel stateBar;
 	private JPanel editorPanel;
@@ -92,20 +80,54 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	private JToolBar toolBar;
 	private JFileChooser fc;
 	private File currentFile;
-	private JButton loadButton;
-	private JButton saveButton;
-	private JButton clearEventsButton;
-	private JButton checkInEventsButton;
-	private JButton runButton;
-	private JButton resetButton;
 	private JSpinner stepsSpinner;
 	private JTextField timeViewer;
-	private JButton genReportsButton;
-	private JButton clearReportsButton;
-	private JButton saveReportsButton;
-	private JButton quitButton;
 	private JTextArea eventsEditor; // editor de eventos
 	private JTextArea reportsArea; // zona de informes
+	
+	Action exit = new SimulatorAction(Command.Quit, "exit.png",
+			"Exit",
+			KeyEvent.VK_E, "control shift E", () -> System.exit(0));
+	
+	Action load = new SimulatorAction(Command.Load, "open.png",
+			"Load a file",
+			KeyEvent.VK_L, "control shift L", () -> loadFile());
+	
+	Action save = new SimulatorAction(Command.Save, "save.png",
+			"Save a file",
+			KeyEvent.VK_S, "control shift S", () -> saveFile());
+	
+	Action clear = new SimulatorAction(Command.Clear, "clear.png",
+			"Clear events",
+			KeyEvent.VK_C, "control shift C", () -> eventsEditor.setText(""));
+	
+	Action checkIn = new SimulatorAction(Command.CheckIn, "events.png",
+			"Insert an event",
+			KeyEvent.VK_C, "control shift I", () -> checkInEvent());
+	
+	Action run = new SimulatorAction(Command.Run, "play.png",
+			"Run simulation",
+			KeyEvent.VK_R, "control shift P", () -> runSim());	
+	
+	Action saveReport = new SimulatorAction(Command.SaveReport, "save_report.png",
+			"Save reports",
+			KeyEvent.VK_S, "control shift R", () -> saveReport());	
+	
+	Action genReport = new SimulatorAction(Command.GenReport, "report.png",
+			"Generate reports",
+			KeyEvent.VK_R, "control shift F", () -> genReport());
+	
+	Action clearReport = new SimulatorAction(Command.ClearReport, "delete_report.png",
+			"Clear reports",
+			KeyEvent.VK_C, "control shift M", () -> reportsArea.setText(""));
+	
+	Action reset = new SimulatorAction(Command.Reset, "reset.png",
+			"Reset simulation",
+			KeyEvent.VK_R, "control shift N", () -> resetSim());
+	
+	Action output = new SimulatorAction(Command.Output, null,
+			"Redirect simulation's output to text area",
+			KeyEvent.VK_R, "control shift O", () -> redirectOutput());
 	
 	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr) {
 		super("Traffic Simulator");
@@ -201,59 +223,25 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		JMenuBar menuBar = new JMenuBar();
 		fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
-		JMenuItem loadEvents = new JMenuItem("Load Events", KeyEvent.VK_L);
-		loadEvents.setActionCommand(LOAD);
-		loadEvents.setToolTipText("Load a file");
-		loadEvents.addActionListener(this);
-		fileMenu.add(loadEvents);
-		JMenuItem saveEvents = new JMenuItem("Save Events", KeyEvent.VK_S);
-		saveEvents.setActionCommand(SAVE);
-		saveEvents.setToolTipText("Save a file");
-		saveEvents.addActionListener(this);
-		fileMenu.add(saveEvents);
+		fileMenu.add(load);
+		fileMenu.add(save);
 		fileMenu.addSeparator();
-		JMenuItem saveReport = new JMenuItem("Save Report", KeyEvent.VK_R);
-		saveReport.setActionCommand(SAVE_REPORT);
-		saveReport.setToolTipText("Save the reports");
-		saveReport.addActionListener(this);
 		fileMenu.add(saveReport);
+		
 		fileMenu.addSeparator();
-		JMenuItem exit = new JMenuItem("Exit", KeyEvent.VK_E);
-		exit.setActionCommand(QUIT);
-		exit.setToolTipText("Exit");
-		exit.addActionListener(this);
+		
 		fileMenu.add(exit);
 		
 		simulatorMenu = new JMenu("Simulator");
 		menuBar.add(simulatorMenu);
-		JMenuItem run = new JMenuItem("Run");
-		run.setActionCommand(RUN);
-		run.setToolTipText("Run simulation");
-		run.addActionListener(this);
 		simulatorMenu.add(run);
-		JMenuItem reset = new JMenuItem("Reset");
-		reset.setActionCommand(RESET);
-		reset.setToolTipText("Reset simulation");
-		reset.addActionListener(this);
 		simulatorMenu.add(reset);
-		JMenuItem output = new JMenuItem("Redirect Output");
-		output.setActionCommand(OUTPUT);
-		output.setToolTipText("Redirect simulation's output to text area");
-		output.addActionListener(this);
 		simulatorMenu.add(output);
 		
 		reportsMenu = new JMenu("Reports");
 		menuBar.add(reportsMenu);
-		JMenuItem genRep = new JMenuItem("Generate");
-		genRep.setActionCommand(GEN_REPORT);
-		genRep.setToolTipText("Generate reports");
-		genRep.addActionListener(this);
-		reportsMenu.add(genRep);
-		JMenuItem clearRep = new JMenuItem("Clear");
-		clearRep.setActionCommand(CLEAR_REPORT);
-		clearRep.setToolTipText("Clear reports");
-		clearRep.addActionListener(this);
-		reportsMenu.add(clearRep);
+		reportsMenu.add(genReport);
+		reportsMenu.add(clearReport);
 		
 		this.setJMenuBar(menuBar);
 	}
@@ -262,47 +250,11 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		toolBar = new JToolBar();    
 		mainPanel.add(toolBar, BorderLayout.PAGE_START);  
 		
-		loadButton = new JButton();
-		loadButton.setActionCommand(LOAD);
-		loadButton.setToolTipText("Load a file");
-		loadButton.addActionListener(this);	
-	    loadButton.setIcon(new ImageIcon("src/main/resources/icons/open.png"));
-		toolBar.add(loadButton);
-		
-		saveButton = new JButton();
-		saveButton.setActionCommand(SAVE);
-		saveButton.setToolTipText("Save a file");
-		saveButton.addActionListener(this);
-		saveButton.setIcon(new ImageIcon("src/main/resources/icons/save.png"));
-		toolBar.add(saveButton);
-		
-		clearEventsButton = new JButton(); 
-		clearEventsButton.setActionCommand(CLEAR);
-		clearEventsButton.setToolTipText("Clear events");
-		clearEventsButton.addActionListener(this);
-		clearEventsButton.setIcon(new ImageIcon("src/main/resources/icons/clear.png"));
-		toolBar.add(clearEventsButton);
-		
-		checkInEventsButton = new JButton();
-		checkInEventsButton.setActionCommand(CHECK_IN);
-		checkInEventsButton.setToolTipText("Insert an event");
-		checkInEventsButton.addActionListener(this);
-		checkInEventsButton.setIcon(new ImageIcon("src/main/resources/icons/events.png"));
-		toolBar.add(checkInEventsButton);
-		
-		runButton = new JButton(); 
-		runButton.setActionCommand(RUN);
-		runButton.setToolTipText("Run simulation");
-		runButton.addActionListener(this);
-		runButton.setIcon(new ImageIcon("src/main/resources/icons/play.png"));
-		toolBar.add(runButton);
-		
-		resetButton = new JButton();
-		resetButton.setActionCommand(RESET);
-		resetButton.setToolTipText("Reset simulation");
-		resetButton.addActionListener(this);
-		resetButton.setIcon(new ImageIcon("src/main/resources/icons/reset.png"));
-		toolBar.add(resetButton);
+		toolBar.add(load);
+		toolBar.add(save);
+		toolBar.add(checkIn);
+		toolBar.add(run);
+		toolBar.add(reset);
 		
 		toolBar.add(new JLabel(" Steps: "));   
 		stepsSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 1000, 1));
@@ -319,69 +271,14 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		
 		toolBar.addSeparator(); 
 		
-		genReportsButton = new JButton();
-		genReportsButton.setActionCommand(GEN_REPORT);
-		genReportsButton.setToolTipText("Generate reports");
-		genReportsButton.addActionListener(this);
-		genReportsButton.setIcon(new ImageIcon("src/main/resources/icons/report.png"));
-		toolBar.add(genReportsButton);
-		
-		clearReportsButton = new JButton();
-		clearReportsButton.setActionCommand(CLEAR_REPORT);
-		clearReportsButton.setToolTipText("Clear reports");
-		clearReportsButton.addActionListener(this);
-		clearReportsButton.setIcon(new ImageIcon("src/main/resources/icons/delete_report.png"));
-		toolBar.add(clearReportsButton);
-		
-		saveReportsButton = new JButton();
-		saveReportsButton.setActionCommand(SAVE_REPORT);
-		saveReportsButton.setToolTipText("Save reports");
-		saveReportsButton.addActionListener(this);
-		saveReportsButton.setIcon(new ImageIcon("src/main/resources/icons/save_report.png"));
-		toolBar.add(saveReportsButton);
+		toolBar.add(genReport);
+		toolBar.add(clearReport);
+		toolBar.add(saveReport);
 		
 		toolBar.addSeparator(); 
 		
-		quitButton = new JButton();
-		quitButton.setActionCommand(QUIT);
-		quitButton.setToolTipText("Exit");
-		quitButton.addActionListener(this);
-		quitButton.setIcon(new ImageIcon("src/main/resources/icons/exit.png"));
-		toolBar.add(quitButton);
+		toolBar.add(exit);
 		
-	}
-	
-	public void actionPerformed(ActionEvent e) {
-		if (LOAD.equals(e.getActionCommand()))
-			loadFile();
-		else if (SAVE.equals(e.getActionCommand()))
-			saveFile();
-		else if (SAVE_REPORT.equals(e.getActionCommand()))
-			saveReport();
-		else if (CLEAR_REPORT.equals(e.getActionCommand()))
-			reportsArea.setText("");
-		else if (RUN.equals(e.getActionCommand())){
-			runSim();
-		}
-		else if (RESET.equals(e.getActionCommand())){
-			resetSim();
-		}
-		else if (OUTPUT.equals(e.getActionCommand())){
-			redirectOutput();	
-		}
-		else if (GEN_REPORT.equals(e.getActionCommand())) {
-			genReport();
-		}
-		else if (CLEAR.equals(e.getActionCommand()))
-			eventsEditor.setText("");
-		else if (CHECK_IN.equals(e.getActionCommand()))
-			try {
-				checkInEvent();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		else if (QUIT.equals(e.getActionCommand()))
-			System.exit(0);
 	}
 
 	private void saveFile() {
@@ -398,20 +295,6 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		stateBar.add(statusBarText);
 	}
 	
-	private void saveReport() {
-		int returnVal = fc.showSaveDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
-			try {
-				writeFile(file, reportsArea.getText());
-			} catch (IOException e) {
-				statusBarText.setText("ERROR: The reports have not been saved");    
-			}
-		}
-		statusBarText.setText("All reports have been saved!");    
-		stateBar.add(statusBarText);
-	}
-
 	private void loadFile() {
 		int returnVal = fc.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -432,6 +315,20 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		stateBar.add(statusBarText);
 	}
 	
+	private void saveReport() {
+		int returnVal = fc.showSaveDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			try {
+				writeFile(file, reportsArea.getText());
+			} catch (IOException e) {
+				statusBarText.setText("ERROR: The reports have not been saved");    
+			}
+		}
+		statusBarText.setText("All reports have been saved!");    
+		stateBar.add(statusBarText);
+	}
+	
 	private void runSim() {
 		try {
 			tsim.resetEvents();
@@ -445,8 +342,12 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		}
 	}
 	
-	private void checkInEvent() throws IOException {
-		contr.setIni(new Ini(new ByteArrayInputStream(eventsEditor.getText().getBytes())));
+	private void checkInEvent() {
+		try {
+			contr.setIni(new Ini(new ByteArrayInputStream(eventsEditor.getText().getBytes())));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void resetSim(){
@@ -466,8 +367,10 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 	}
 	
 	private void genReport(){
-		dialog = new ReportWindow(map, time);
-		reportsArea.setText(dialog.getReport());
+		reports = new ReportWindow(map, time);
+		if (reports.getReport() != null) {
+			reportsArea.setText(reports.getReport());
+		}
 	}
 	
 	public static String readFile(File file) throws IOException {
@@ -533,162 +436,113 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 		mapPanel.add(sp);
 	}
 	
+	private String newVehicle() {
+		StringBuilder sb = new StringBuilder("\n[new_vehicle]\n");
+		sb.append("time = \n");
+		sb.append("id = \n");
+		sb.append("max_speed = \n");
+		sb.append("itinerary = \n");
+		return sb.toString();
+	}
+	
+	private String newRoad() {
+		StringBuilder sb = new StringBuilder("\n[new_road]\n");
+		sb.append("time = \n");
+		sb.append("id = \n");
+		sb.append("src = \n");
+		sb.append("dest = \n");
+		sb.append("max_speed = \n");
+		sb.append("length = \n");
+		return sb.toString();
+	}
+	
+	private String newJunction() {
+		StringBuilder sb = new StringBuilder("\n[new_junction]\n");
+		sb.append("time = \n");
+		sb.append("id = \n");
+		return sb.toString();
+	}
+	
 	private void addEditor(JTextArea textArea) {
 		// create the events pop-up menu
 		JPopupMenu _editorPopupMenu = new JPopupMenu();
 		
-		JMenuItem loadOption = new JMenuItem("Load");
-		loadOption.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				loadFile();
-			}
-		});
-		
-		JMenuItem saveOption = new JMenuItem("Save");
-		saveOption.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveFile();
-			}
-		});
-		
-		JMenuItem clearOption = new JMenuItem("Clear");
-		clearOption.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				textArea.setText("");
-			}
-		});
-
 		JMenu subMenu = new JMenu("Add Template");
 		
 		JMenuItem templateRROption = new JMenuItem("New RR Junction");
 		templateRROption.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_junction]\n";
-				s += "time = \n";
-				s += "id = \n";
-				s += "type = rr\n";
-				s += "max_time_slice = \n";
-				s += "min_time_slice = \n";
-				textArea.append(s);
+				StringBuilder sb = new StringBuilder(newJunction());
+				sb.append("type = rr\n");
+				sb.append("max_time_slice = \n");
+				sb.append("min_time_slice = \n");
+				textArea.append(sb.toString());
 			}
 		}); 
 		subMenu.add(templateRROption);
 		JMenuItem templateMCOption = new JMenuItem("New MC Junction");
 		templateMCOption.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_junction]\n";
-				s += "time = \n";
-				s += "id = \n";
-				s += "type = mc\n";
-				textArea.append(s);
+				textArea.append(newJunction() + "type = mc\n");
 			}
 		});
 		subMenu.add(templateMCOption);
 		JMenuItem templateJOption = new JMenuItem("New Junction");
 		templateJOption.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_junction]\n";
-				s += "time = \n";
-				s += "id = \n";
-				textArea.append(s);
+				textArea.append(newJunction());
 			}
 		});
 		subMenu.add(templateJOption);
 		JMenuItem templateDirtOption = new JMenuItem("New Dirt Road");
 		templateDirtOption.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_road]\n";
-				s += "time = \n";
-				s += "id = \n";
-				s += "src = \n";
-				s += "dest = \n";
-				s += "max_speed = \n";
-				s += "length = \n";
-				s += "type = dirt\n";
-				textArea.append(s);
+				textArea.append(newRoad() + "type = dirt\n");
 			}
 		});
 		subMenu.add(templateDirtOption);
 		JMenuItem templateLanesOption = new JMenuItem("New Lanes Road");
 		templateLanesOption.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_road]\n";
-				s += "time = \n";
-				s += "id = \n";
-				s += "src = \n";
-				s += "dest = \n";
-				s += "max_speed = \n";
-				s += "length = \n";
-				s += "type = lanes\n";
-				s += "lanes = \n";
-				textArea.append(s);
+				StringBuilder sb = new StringBuilder(newRoad());
+				sb.append("type = lanes\n");
+				sb.append("lanes = \n");
+				textArea.append(sb.toString());
 			}
 		});
 		subMenu.add(templateLanesOption);
 		JMenuItem templateROption = new JMenuItem("New Road");
 		templateROption.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("\n[new_road]\n");
-				sb.append("time = \n");
-				sb.append("id = \n");
-				sb.append("src = \n");
-				sb.append("dest = \n");
-				sb.append("max_speed = \n");
-				sb.append("length = \n");
-				textArea.append(sb.toString());
+				textArea.append(newRoad());
 			}
 		});
 		subMenu.add(templateROption);
 		JMenuItem templateBikeOption = new JMenuItem("New Bike");
 		templateBikeOption.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_vehicle]\n";
-				s += "time = \n";
-				s += "id = \n";
-				s += "itinerary = \n";
-				s += "max_speed = \n";
-				s += "type = bike\n";
-				textArea.append(s);
+				textArea.append(newVehicle() + "type = bike\n");
 			}
 		});
 		subMenu.add(templateBikeOption);
 		JMenuItem templateCarOption = new JMenuItem("New Car");
 		templateCarOption.addActionListener(new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_vehicle]\n";
-				s += "time = \n";
-				s += "id = \n";
-				s += "itinerary = \n";
-				s += "max_speed = \n";
-				s += "type = car\n";
-				s += "resistance = \n";
-				s += "fault_probability = \n";
-				s += "max_fault_duration = \n";
-				s += "seed = \n";
-				textArea.append(s);
+				StringBuilder sb = new StringBuilder(newVehicle());
+				sb.append("type = car\n");
+				sb.append("resistance = \n");
+				sb.append("fault_probability = \n");
+				sb.append("max_fault_duration = \n");
+				sb.append("seed = \n");
+				textArea.append(sb.toString());
 			}
 		});
 		subMenu.add(templateCarOption);
@@ -697,12 +551,7 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[new_vehicle]\n";
-				s += "time = \n";
-				s += "id = \n";
-				s += "max_speed = \n";
-				s += "itinerary = \n";
-				textArea.append(s);
+				textArea.append(newVehicle());
 			}
 		});
 		subMenu.add(templateVOption);
@@ -711,20 +560,20 @@ public class MainWindowSim extends JFrame implements ActionListener, Listener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String s = "\n[make_vehicle_faulty]\n";
-				s += "time = \n";
-				s += "vehicles = \n";
-				s += "duration = \n";
-				textArea.append(s);
+				StringBuilder sb = new StringBuilder("\n[make_vehicle_faulty]\n");
+				sb.append("time = \n");
+				sb.append("vehicles = \n");
+				sb.append("duration = \n");
+				textArea.append(sb.toString());
 			}
 		});
 		subMenu.add(templateFaultyOption);
 		
 		_editorPopupMenu.add(subMenu);
 		_editorPopupMenu.addSeparator();
-		_editorPopupMenu.add(loadOption);
-		_editorPopupMenu.add(saveOption);
-		_editorPopupMenu.add(clearOption);
+		_editorPopupMenu.add(load);
+		_editorPopupMenu.add(save);
+		_editorPopupMenu.add(clear);
 
 		// connect the popup menu to the text area _editor
 		textArea.addMouseListener(new MouseListener() {
