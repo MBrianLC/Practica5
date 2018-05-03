@@ -123,7 +123,7 @@ public class RoadMap {
 	*/	
 	public void addVehicle(Vehicle v) {
 		if (simObjects.containsKey(v.getID())) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Vehicle already exists");
 		}
 		simObjects.put(v.getID(), v);
 		vehicles.add(v);
@@ -135,7 +135,7 @@ public class RoadMap {
 	*/
 	public void addRoad(Road r) {
 		if (simObjects.containsKey(r.getID())) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Road already exists");
 		}
 		simObjects.put(r.getID(), r);
 		roads.add(r);
@@ -147,7 +147,7 @@ public class RoadMap {
 	*/
 	public void addJunction(Junction j) {
 		if (simObjects.containsKey(j.getID())) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Junction already exists");
 		}
 		simObjects.put(j.getID(), j);
 		junctions.add(j);
