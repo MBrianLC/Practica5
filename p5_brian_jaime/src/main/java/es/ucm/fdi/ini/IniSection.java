@@ -126,6 +126,7 @@ public class IniSection {
 	 */
 	public void store(OutputStream out) throws IOException {
 		out.write(toString().getBytes());
+		out.flush();
 	}
 
 	/**

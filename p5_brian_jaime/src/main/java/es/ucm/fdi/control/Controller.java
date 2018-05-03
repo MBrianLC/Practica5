@@ -57,6 +57,15 @@ public class Controller {
 	}
 	
 	/** 
+	 * Método set para out.
+	 * @param out : Nuevo formato de salida
+	*/
+	
+	public void setOutputStream (OutputStream out){
+		this.out = out;
+	}
+	
+	/** 
 	 * Método get para timeLimit.
 	 * @return Límite de tiempo (pasos de simulación)
 	*/
