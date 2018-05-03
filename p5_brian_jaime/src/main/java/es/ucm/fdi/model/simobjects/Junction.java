@@ -120,7 +120,7 @@ public class Junction extends SimObject implements Describable{
 				aux.append("(" + entrantes.get(i).getID() + ",");
 				if (entrantes.get(i).getSemaforo()) {
 					b = true;
-					g.append("green,[");
+					aux.append("green,[");
 				} else {
 					aux.append("red,[");
 				}

@@ -155,7 +155,9 @@ public class Road extends SimObject implements Describable{
 				}
 			}
 		}
-		sb.deleteCharAt(sb.length() - 1);
+		if (sb.toString().endsWith(",")){
+			sb.deleteCharAt(sb.length() - 1);
+		}
 		sb.append("]");
 		out.put("Vehicles", sb.toString());
 		return out;
