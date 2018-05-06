@@ -2,44 +2,32 @@ package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -47,6 +35,7 @@ import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.control.SimulatorAction;
 import es.ucm.fdi.extra.dialog.ReportWindow;
 import es.ucm.fdi.extra.graphlayout.RoadMapGraph;
+import es.ucm.fdi.extra.popupmenu.PopUpMenu;
 import es.ucm.fdi.extra.texteditor.TextEditor;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.exceptions.SimulatorException;
@@ -54,6 +43,11 @@ import es.ucm.fdi.model.simulator.Listener;
 import es.ucm.fdi.model.simulator.RoadMap;
 import es.ucm.fdi.model.simulator.TrafficSimulator;
 import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;
+
+/** 
+ * La clase MainWindowSim representa la interfaz del simulador.
+ * @author Jaime Fernández y Brian Leiva
+*/
 
 @SuppressWarnings("serial")
 public class MainWindowSim extends JFrame implements Listener {
@@ -66,8 +60,8 @@ public class MainWindowSim extends JFrame implements Listener {
 	
 	private TableSim tableSim;
 	private RoadMapGraph rmGraph;
-	private TextEditor textEditor;
 	private ReportWindow reports;
+	private PopUpMenu popUpMenu;
 	private JPanel mainPanel;
 	private JPanel stateBar;
 	private JPanel editorPanel;
@@ -85,49 +79,35 @@ public class MainWindowSim extends JFrame implements Listener {
 	private JTextArea eventsEditor; // editor de eventos
 	private JTextArea reportsArea; // zona de informes
 	
-	Action exit = new SimulatorAction(Command.Quit, "exit.png",
-			"Exit",
+	Action exit = new SimulatorAction(Command.Quit, "exit.png", "Exit",
 			KeyEvent.VK_E, "control shift E", () -> System.exit(0));
-	
-	Action load = new SimulatorAction(Command.Load, "open.png",
-			"Load a file",
+	Action load = new SimulatorAction(Command.Load, "open.png", "Load a file",
 			KeyEvent.VK_L, "control shift L", () -> loadFile());
-	
-	Action save = new SimulatorAction(Command.Save, "save.png",
-			"Save a file",
+	Action save = new SimulatorAction(Command.Save, "save.png", "Save a file",
 			KeyEvent.VK_S, "control shift S", () -> saveFile());
-	
-	Action clear = new SimulatorAction(Command.Clear, "clear.png",
-			"Clear events",
+	Action clear = new SimulatorAction(Command.Clear, "clear.png", "Clear events",
 			KeyEvent.VK_C, "control shift C", () -> eventsEditor.setText(""));
-	
-	Action checkIn = new SimulatorAction(Command.CheckIn, "events.png",
-			"Insert an event",
+	Action checkIn = new SimulatorAction(Command.CheckIn, "events.png", "Insert an event",
 			KeyEvent.VK_C, "control shift I", () -> checkInEvent());
-	
-	Action run = new SimulatorAction(Command.Run, "play.png",
-			"Run simulation",
+	Action run = new SimulatorAction(Command.Run, "play.png", "Run simulation",
 			KeyEvent.VK_R, "control shift P", () -> runSim());	
-	
-	Action saveReport = new SimulatorAction(Command.SaveReport, "save_report.png",
-			"Save reports",
-			KeyEvent.VK_S, "control shift R", () -> saveReport());	
-	
-	Action genReport = new SimulatorAction(Command.GenReport, "report.png",
-			"Generate reports",
+	Action saveReport = new SimulatorAction(Command.SaveReport, "save_report.png", "Save reports",
+			KeyEvent.VK_S, "control shift R", () -> saveReport());
+	Action genReport = new SimulatorAction(Command.GenReport, "report.png", "Generate reports",
 			KeyEvent.VK_R, "control shift F", () -> genReport());
-	
-	Action clearReport = new SimulatorAction(Command.ClearReport, "delete_report.png",
-			"Clear reports",
+	Action clearReport = new SimulatorAction(Command.ClearReport, "delete_report.png", "Clear reports",
 			KeyEvent.VK_C, "control shift M", () -> reportsArea.setText(""));
-	
-	Action reset = new SimulatorAction(Command.Reset, "reset.png",
-			"Reset simulation",
+	Action reset = new SimulatorAction(Command.Reset, "reset.png", "Reset simulation",
 			KeyEvent.VK_R, "control shift N", () -> resetSim());
-	
-	Action output = new SimulatorAction(Command.Output, null,
-			"Redirect simulation's output to text area",
+	Action output = new SimulatorAction(Command.Output, null, "Redirect simulation's output to text area",
 			KeyEvent.VK_R, "control shift O", () -> redirectOutput());
+	
+	/** 
+	 * Constructor de la clase MainWindowSim.
+	 * @param tsim: Simulador
+	 * @param inFileName: Nombre del archivo de entrada inicial
+	 * @param contr: Controlador
+	*/
 	
 	public MainWindowSim(TrafficSimulator tsim, String inFileName, Controller contr) {
 		super("Traffic Simulator");
@@ -155,8 +135,6 @@ public class MainWindowSim extends JFrame implements Listener {
 		addMenuBar(); // barra de menus
 		addToolBar(); // barra de herramientas
 		addEventsEditor();
-		
-		//textEditor = new TextEditor();
 		
 		tableSim = new TableSim(map, events);
 		
@@ -219,17 +197,20 @@ public class MainWindowSim extends JFrame implements Listener {
 		
 	}
 	
+	/** 
+	 * Añade la barra de menú a la ventana principal.
+	*/
+	
 	private void addMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
+		
 		fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
 		fileMenu.add(load);
 		fileMenu.add(save);
 		fileMenu.addSeparator();
 		fileMenu.add(saveReport);
-		
 		fileMenu.addSeparator();
-		
 		fileMenu.add(exit);
 		
 		simulatorMenu = new JMenu("Simulator");
@@ -268,15 +249,11 @@ public class MainWindowSim extends JFrame implements Listener {
 		toolBar.add(new JLabel(" Time: "));
 		timeViewer = new JTextField("0", 5);  
 		toolBar.add(timeViewer);
-		
 		toolBar.addSeparator(); 
-		
 		toolBar.add(genReport);
 		toolBar.add(clearReport);
 		toolBar.add(saveReport);
-		
 		toolBar.addSeparator(); 
-		
 		toolBar.add(exit);
 		
 	}
@@ -406,7 +383,11 @@ public class MainWindowSim extends JFrame implements Listener {
 		area.setPreferredSize(new Dimension(500, 500));
 		editorPanel.add(area);
 		
-		addEditor(eventsEditor);
+		eventsEditor.getActionMap().put(Command.Load, load);
+		eventsEditor.getActionMap().put(Command.Save, save);
+		eventsEditor.getActionMap().put(Command.Clear, clear);		
+		popUpMenu = new PopUpMenu();
+		popUpMenu.addEditor(eventsEditor);
 	}
 	
 	private void addReportsArea(){
@@ -436,179 +417,6 @@ public class MainWindowSim extends JFrame implements Listener {
 		mapPanel.add(sp);
 	}
 	
-	private String newVehicle() {
-		StringBuilder sb = new StringBuilder("\n[new_vehicle]\n");
-		sb.append("time = \n");
-		sb.append("id = \n");
-		sb.append("max_speed = \n");
-		sb.append("itinerary = \n");
-		return sb.toString();
-	}
-	
-	private String newRoad() {
-		StringBuilder sb = new StringBuilder("\n[new_road]\n");
-		sb.append("time = \n");
-		sb.append("id = \n");
-		sb.append("src = \n");
-		sb.append("dest = \n");
-		sb.append("max_speed = \n");
-		sb.append("length = \n");
-		return sb.toString();
-	}
-	
-	private String newJunction() {
-		StringBuilder sb = new StringBuilder("\n[new_junction]\n");
-		sb.append("time = \n");
-		sb.append("id = \n");
-		return sb.toString();
-	}
-	
-	private void addEditor(JTextArea textArea) {
-		// create the events pop-up menu
-		JPopupMenu _editorPopupMenu = new JPopupMenu();
-		
-		JMenu subMenu = new JMenu("Add Template");
-		
-		JMenuItem templateRROption = new JMenuItem("New RR Junction");
-		templateRROption.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				StringBuilder sb = new StringBuilder(newJunction());
-				sb.append("type = rr\n");
-				sb.append("max_time_slice = \n");
-				sb.append("min_time_slice = \n");
-				textArea.append(sb.toString());
-			}
-		}); 
-		subMenu.add(templateRROption);
-		JMenuItem templateMCOption = new JMenuItem("New MC Junction");
-		templateMCOption.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				textArea.append(newJunction() + "type = mc\n");
-			}
-		});
-		subMenu.add(templateMCOption);
-		JMenuItem templateJOption = new JMenuItem("New Junction");
-		templateJOption.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				textArea.append(newJunction());
-			}
-		});
-		subMenu.add(templateJOption);
-		JMenuItem templateDirtOption = new JMenuItem("New Dirt Road");
-		templateDirtOption.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				textArea.append(newRoad() + "type = dirt\n");
-			}
-		});
-		subMenu.add(templateDirtOption);
-		JMenuItem templateLanesOption = new JMenuItem("New Lanes Road");
-		templateLanesOption.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				StringBuilder sb = new StringBuilder(newRoad());
-				sb.append("type = lanes\n");
-				sb.append("lanes = \n");
-				textArea.append(sb.toString());
-			}
-		});
-		subMenu.add(templateLanesOption);
-		JMenuItem templateROption = new JMenuItem("New Road");
-		templateROption.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				textArea.append(newRoad());
-			}
-		});
-		subMenu.add(templateROption);
-		JMenuItem templateBikeOption = new JMenuItem("New Bike");
-		templateBikeOption.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				textArea.append(newVehicle() + "type = bike\n");
-			}
-		});
-		subMenu.add(templateBikeOption);
-		JMenuItem templateCarOption = new JMenuItem("New Car");
-		templateCarOption.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				StringBuilder sb = new StringBuilder(newVehicle());
-				sb.append("type = car\n");
-				sb.append("resistance = \n");
-				sb.append("fault_probability = \n");
-				sb.append("max_fault_duration = \n");
-				sb.append("seed = \n");
-				textArea.append(sb.toString());
-			}
-		});
-		subMenu.add(templateCarOption);
-		JMenuItem templateVOption = new JMenuItem("New Vehicle");
-		templateVOption.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				textArea.append(newVehicle());
-			}
-		});
-		subMenu.add(templateVOption);
-		JMenuItem templateFaultyOption = new JMenuItem("Make Vehicle Faulty");
-		templateFaultyOption.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				StringBuilder sb = new StringBuilder("\n[make_vehicle_faulty]\n");
-				sb.append("time = \n");
-				sb.append("vehicles = \n");
-				sb.append("duration = \n");
-				textArea.append(sb.toString());
-			}
-		});
-		subMenu.add(templateFaultyOption);
-		
-		_editorPopupMenu.add(subMenu);
-		_editorPopupMenu.addSeparator();
-		_editorPopupMenu.add(load);
-		_editorPopupMenu.add(save);
-		_editorPopupMenu.add(clear);
-
-		// connect the popup menu to the text area _editor
-		textArea.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				showPopup(e);
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				showPopup(e);
-			}
-
-			private void showPopup(MouseEvent e) {
-				if (e.isPopupTrigger() && _editorPopupMenu.isEnabled()) {
-					_editorPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-				}
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-		});
-
-	}
-
 	public void update(UpdateEvent ue, String error) {
 		switch (ue.getEvent()) {
 			case ADVANCED:{
