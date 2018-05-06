@@ -17,7 +17,7 @@ import es.ucm.fdi.model.simulator.RoadMap;
 public class NewDirtEventTest {
 	
 	@Test
-	public void testExecute(){
+	public void testExecute() throws SimulatorException{
 		RoadMap m = new RoadMap();
 		Junction a = new Junction("j8");
 		Junction b = new Junction("j1");
@@ -25,12 +25,7 @@ public class NewDirtEventTest {
 		m.addJunction(b);
 		NewDirtEvent r = new NewDirtEvent(3, "r9", "j8", "j1", 20, 60);
 		
-		try {
-			r.execute(m);
-		} catch (SimulatorException e) {
-			Assert.fail();
-			System.out.println("Fallo en la ejecución");
-		}
+		r.execute(m);
 		
 		Road x = m.getRoads().get(m.getRoads().size() - 1);
 		Assert.assertEquals("El ID del camino creado es correcto", "r9", x.getID());

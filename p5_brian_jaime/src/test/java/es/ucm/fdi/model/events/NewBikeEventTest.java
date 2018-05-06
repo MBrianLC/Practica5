@@ -18,7 +18,7 @@ import es.ucm.fdi.model.simulator.RoadMap;
 public class NewBikeEventTest {
 	
 	@Test
-	public void testExecute(){
+	public void testExecute() throws SimulatorException{
 		RoadMap m = new RoadMap();
 		Junction a = new Junction("j3");
 		Junction b = new Junction("j5");
@@ -31,12 +31,7 @@ public class NewBikeEventTest {
 		String[] s = {"j3", "j5", "j6"};
 		NewBikeEvent v = new NewBikeEvent(3, "v6", 20, s);
 		
-		try {
-			v.execute(m);
-		} catch (SimulatorException e) {
-			Assert.fail();
-			System.out.println("Fallo en la ejecución");
-		}
+		v.execute(m);
 		
 		Vehicle x = m.getVehicles().get(m.getVehicles().size() - 1);
 		Assert.assertEquals("El ID de la bici creada es correcto", "v6", x.getID());

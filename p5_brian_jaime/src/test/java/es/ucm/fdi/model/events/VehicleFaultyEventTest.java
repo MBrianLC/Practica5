@@ -20,7 +20,7 @@ import es.ucm.fdi.model.simulator.RoadMap;
 public class VehicleFaultyEventTest {
 	
 	@Test
-	public void testExecute(){
+	public void testExecute() throws SimulatorException{
 		RoadMap m = new RoadMap();
 		String[] s = {"v3", "v5", "v7"};
 		List<Junction> l = new ArrayList<>();
@@ -34,12 +34,7 @@ public class VehicleFaultyEventTest {
 		m.addVehicle(c);
 		VehicleFaultyEvent e = new VehicleFaultyEvent(3, s, 4);
 		
-		try {
-			e.execute(m);
-		} catch (SimulatorException ex) {
-			Assert.fail();
-			System.out.println("Fallo en la ejecución");
-		}
+		e.execute(m);
 		
 		for (String v : s){
 			Assert.assertTrue("Los vehiculos han sido averiados", m.getVehicle(v).getAveria());

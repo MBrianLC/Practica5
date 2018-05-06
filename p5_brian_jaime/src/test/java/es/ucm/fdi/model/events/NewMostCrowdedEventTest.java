@@ -16,16 +16,11 @@ import es.ucm.fdi.model.simulator.RoadMap;
 public class NewMostCrowdedEventTest {
 	
 	@Test
-	public void testExecute(){
+	public void testExecute() throws SimulatorException{
 		RoadMap m = new RoadMap();
 		NewMostCrowdedEvent j = new NewMostCrowdedEvent(3, "j9");
 		
-		try {
-			j.execute(m);
-		} catch (SimulatorException e) {
-			Assert.fail();
-			System.out.println("Fallo en la ejecución");
-		}
+		j.execute(m);
 		
 		Junction x = m.getJunctions().get(m.getJunctions().size() - 1);
 		Assert.assertEquals("El ID del cruce creado es correcto", "j9", x.getID());
