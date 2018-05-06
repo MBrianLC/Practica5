@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.ucm.fdi.view.Describable;
-
 /** 
  * La clase Junction representa un cruce del simulador.
  * @author Jaime Fernández y Brian Leiva

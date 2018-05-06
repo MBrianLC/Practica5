@@ -139,9 +139,7 @@ public class MainWindowSim extends JFrame implements Listener {
 		tableSim = new TableSim(map, events);
 		
 		addReportsArea(); // zona de informes
-		
 		addMap(); // mapa de carreteras
-		
 		addStatusBar(); // barra de estado
 		
 		JPanel panel1 = new JPanel();
@@ -312,10 +310,13 @@ public class MainWindowSim extends JFrame implements Listener {
 			contr.setTime((int)stepsSpinner.getValue());
 			contr.execute(tsim);
 			tableSim = new TableSim(map, events);
+			statusBarText.setText("Simulator has run succesfully!");
 		} catch (IOException ex) {
 			ex.printStackTrace();
+			statusBarText.setText("ERROR");
 		} catch (SimulatorException ex) {
 			ex.printStackTrace();
+			statusBarText.setText("ERROR");
 		}
 	}
 	
@@ -325,20 +326,24 @@ public class MainWindowSim extends JFrame implements Listener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		statusBarText.setText("Events have been inserted into the simulator!");
 	}
 	
 	private void resetSim(){
 		time = 0;
 		reportsArea.setText("");
 		tsim.resetSim();
+		statusBarText.setText("Simulation reseted!");
 	}
 	
 	private void redirectOutput() {
 		if (reportsOutputStream != null) {
 			reportsOutputStream = null;
+			statusBarText.setText("Simulation's output not redirected to text area");
 		}
 		else {
 			reportsOutputStream = new JTextAreaOutputStream(reportsArea);
+			statusBarText.setText("Simulation's output is now redirected to text area!");
 		}
 		contr.setOutputStream(reportsOutputStream);
 	}
@@ -347,7 +352,9 @@ public class MainWindowSim extends JFrame implements Listener {
 		reports = new ReportWindow(map, time);
 		if (reports.getReport() != null) {
 			reportsArea.setText(reports.getReport());
+			statusBarText.setText("Your reports have been generated!");
 		}
+		statusBarText.setText("Operation cancelled");
 	}
 	
 	public static String readFile(File file) throws IOException {
@@ -418,30 +425,30 @@ public class MainWindowSim extends JFrame implements Listener {
 	}
 	
 	public void update(UpdateEvent ue, String error) {
-		switch (ue.getEvent()) {
-			case ADVANCED:{
-				time = ue.getCurrentTime();
-				timeViewer.setText(String.valueOf(time));
-				map = ue.getRoadMap();
-				break;
-			}
-			case RESET:{
-				timeViewer.setText("0");
-				map = ue.getRoadMap();
-				events = new ArrayList<EventIndex>();
-				break;
-			}
-			case NEWEVENT:{
-				statusBarText.setText("New event inserted");
-				break;
-			}
-			case ERROR:{
-				statusBarText.setText(error);
-				break;
-			}
-		default:
+		switch (ue.getEvent()){
+		case ADVANCED:{
+			time = ue.getCurrentTime();
+			timeViewer.setText(String.valueOf(time));
+			map = ue.getRoadMap();
 			break;
 		}
+		case RESET:{
+			timeViewer.setText("0");
+			map = ue.getRoadMap();
+			events = new ArrayList<EventIndex>();
+			break;
+		}
+		case NEWEVENT:{
+			statusBarText.setText("New event inserted");
+			break;
+		}
+		case ERROR:{
+			statusBarText.setText(error);
+			break;
+		}
+		default:
+			break;
+	}
 	}
 	
 }

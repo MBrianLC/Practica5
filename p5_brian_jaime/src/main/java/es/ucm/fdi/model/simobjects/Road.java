@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import es.ucm.fdi.util.MultiTreeMap;
-import es.ucm.fdi.view.Describable;
 
 /** 
  * La clase Road representa una carretera del simulador.

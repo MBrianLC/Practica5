@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import es.ucm.fdi.model.events.Event;
+import es.ucm.fdi.model.simobjects.Describable;
 
 public class EventIndex implements Describable{
 	

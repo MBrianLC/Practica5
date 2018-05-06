@@ -12,6 +12,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import es.ucm.fdi.model.events.Event;
+import es.ucm.fdi.model.simobjects.Describable;
 import es.ucm.fdi.model.simulator.Listener;
 import es.ucm.fdi.model.simulator.RoadMap;
 import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;

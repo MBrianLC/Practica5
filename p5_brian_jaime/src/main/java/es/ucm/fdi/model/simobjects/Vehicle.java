@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.ucm.fdi.view.Describable;
-
 /** 
  * La clase Vehicle representa un vehículo del simulador.
  * @author Jaime Fernández y Brian Leiva

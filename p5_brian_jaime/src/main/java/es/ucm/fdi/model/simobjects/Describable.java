@@ -1,4 +1,4 @@
-package es.ucm.fdi.view;
+package es.ucm.fdi.model.simobjects;
 
 import java.util.Map;
 
