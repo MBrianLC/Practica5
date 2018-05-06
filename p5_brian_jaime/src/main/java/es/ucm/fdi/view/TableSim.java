@@ -17,6 +17,11 @@ import es.ucm.fdi.model.simulator.Listener;
 import es.ucm.fdi.model.simulator.RoadMap;
 import es.ucm.fdi.model.simulator.TrafficSimulator.UpdateEvent;
 
+/** 
+ * La clase TableSim representa las tablas de la interfaz.
+ * @author Jaime Fernández y Brian Leiva
+*/
+
 public class TableSim implements Listener{
 	
 	private String[] fieldNamesQ = {"#", "Time", "Type"};
@@ -42,6 +47,12 @@ public class TableSim implements Listener{
 	private RoadMap map;
 	private List<EventIndex> events;
 	
+	/** 
+	 * Constructor de TableSim.
+	 * @param map: Mapa de carreteras
+	 * @param events: Lista de eventos
+	*/
+	
 	public TableSim(RoadMap map, List<EventIndex> events) {
 		this.map = map;
 		this.events = events;
@@ -51,21 +62,45 @@ public class TableSim implements Listener{
 		addJunctionsTable(); // tabla de cruces
 	}
 	
+	/** 
+	 * Método get para eventsPanel.
+	 * @return Panel con la cola de eventos
+	*/
+	
 	public JPanel getEventPanel() {
 		return eventsPanel;
 	}
+	
+	/** 
+	 * Método get para vehiclesPanel.
+	 * @return Panel con la tabla de vehículos
+	*/
 	
 	public JPanel getVehiclesPanel() {
 		return vehiclesPanel;
 	}
 	
+	/** 
+	 * Método get para roadsPanel.
+	 * @return Panel con la tala de carreteras
+	*/
+	
 	public JPanel getRoadsPanel() {
 		return roadsPanel;
 	}
 	
+	/** 
+	 * Método get para junctionsPanel.
+	 * @return Panel con la tabla de cruces
+	*/
+	
 	public JPanel getJunctionsPanel() {
 		return junctionsPanel;
 	}
+	
+	/** 
+	 * La clase ListOfMapsTableModel se usa para crear las tablas.
+	*/
 	
 	@SuppressWarnings("serial")
 	private class ListOfMapsTableModel extends AbstractTableModel{
@@ -100,6 +135,10 @@ public class TableSim implements Listener{
 		}
 	}
 	
+	/** 
+	 * Añade la cola de eventos.
+	*/
+	
 	private void addEventsQueue() {
 		eventsPanel = new JPanel(new BorderLayout());
 		List<Describable> objectList = new ArrayList<Describable>(events);
@@ -110,6 +149,10 @@ public class TableSim implements Listener{
 		eventsPanel.setBorder(BorderFactory.createTitledBorder("Events Queue"));
 		eventsPanel.add(sp);
 	}
+	
+	/** 
+	 * Añade la tabla de vehículos.
+	*/
 	
 	private void addVehiclesTable() {
 		vehiclesPanel = new JPanel(new BorderLayout());
@@ -122,6 +165,10 @@ public class TableSim implements Listener{
 		vehiclesPanel.add(sp);	
 	}
 	
+	/** 
+	 * Añade la tabla de carreteras.
+	*/
+	
 	private void addRoadsTable() {
 		roadsPanel = new JPanel(new BorderLayout());
 		List<Describable> objectList = new ArrayList<Describable>(map.getRoads());
@@ -132,6 +179,10 @@ public class TableSim implements Listener{
 		roadsPanel.setBorder(BorderFactory.createTitledBorder("Roads"));
 		roadsPanel.add(sp);
 	}
+	
+	/** 
+	 * Añade la tabla de cruces.
+	*/
 	
 	private void addJunctionsTable() {
 		junctionsPanel = new JPanel(new BorderLayout());
@@ -144,6 +195,12 @@ public class TableSim implements Listener{
 		junctionsPanel.add(sp);
 	}
 	
+	/** 
+	 * Crea una lista de EventIndex a partir de una lista de eventos.
+	 * @param eventos: Lista de eventos
+	 * @return La lista de eventos con índice
+	*/
+	
 	private List<EventIndex> getEvents(List<Event> eventos){
 		List<EventIndex> events = new ArrayList<>();
 		for (int i = 0; i < eventos.size(); ++i) {
@@ -152,10 +209,22 @@ public class TableSim implements Listener{
 		return events;
 	}
 	
+	/** 
+	 * Actualiza una tabla.
+	 * @param tableMaps: Tabla que se quiere actualizar
+	 * @param elements: Elementos de la nueva tabla
+	*/
+	
 	private void updateTable(ListOfMapsTableModel tableMaps, List<Describable> elements) {
 		tableMaps.update(new ArrayList<Describable>(elements));
 		tableMaps.fireTableDataChanged();
 	}
+	
+	/** 
+	 * Actualiza las tablas si se produce un evento.
+	 * @param ue: Nuevo evento
+	 * @param error: String con el tipo de error (si ue es de tipo ERROR)
+	*/
 	
 	public void update(UpdateEvent ue, String error) {
 		switch (ue.getEvent()) {

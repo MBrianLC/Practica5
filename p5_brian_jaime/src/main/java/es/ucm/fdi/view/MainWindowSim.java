@@ -36,7 +36,6 @@ import es.ucm.fdi.control.SimulatorAction;
 import es.ucm.fdi.extra.dialog.ReportWindow;
 import es.ucm.fdi.extra.graphlayout.RoadMapGraph;
 import es.ucm.fdi.extra.popupmenu.PopUpMenu;
-import es.ucm.fdi.extra.texteditor.TextEditor;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.exceptions.SimulatorException;
 import es.ucm.fdi.model.simulator.Listener;
@@ -78,28 +77,27 @@ public class MainWindowSim extends JFrame implements Listener {
 	private JTextField timeViewer;
 	private JTextArea eventsEditor; // editor de eventos
 	private JTextArea reportsArea; // zona de informes
-	
-	Action exit = new SimulatorAction(Command.Quit, "exit.png", "Exit",
+	private Action exit = new SimulatorAction(Command.Quit, "exit.png", "Exit",
 			KeyEvent.VK_E, "control shift E", () -> System.exit(0));
-	Action load = new SimulatorAction(Command.Load, "open.png", "Load a file",
+	private Action load = new SimulatorAction(Command.Load, "open.png", "Load a file",
 			KeyEvent.VK_L, "control shift L", () -> loadFile());
-	Action save = new SimulatorAction(Command.Save, "save.png", "Save a file",
+	private Action save = new SimulatorAction(Command.Save, "save.png", "Save a file",
 			KeyEvent.VK_S, "control shift S", () -> saveFile());
-	Action clear = new SimulatorAction(Command.Clear, "clear.png", "Clear events",
+	private Action clear = new SimulatorAction(Command.Clear, "clear.png", "Clear events",
 			KeyEvent.VK_C, "control shift C", () -> eventsEditor.setText(""));
-	Action checkIn = new SimulatorAction(Command.CheckIn, "events.png", "Insert an event",
+	private Action checkIn = new SimulatorAction(Command.CheckIn, "events.png", "Insert an event",
 			KeyEvent.VK_C, "control shift I", () -> checkInEvent());
-	Action run = new SimulatorAction(Command.Run, "play.png", "Run simulation",
+	private Action run = new SimulatorAction(Command.Run, "play.png", "Run simulation",
 			KeyEvent.VK_R, "control shift P", () -> runSim());	
-	Action saveReport = new SimulatorAction(Command.SaveReport, "save_report.png", "Save reports",
+	private Action saveReport = new SimulatorAction(Command.SaveReport, "save_report.png", "Save reports",
 			KeyEvent.VK_S, "control shift R", () -> saveReport());
-	Action genReport = new SimulatorAction(Command.GenReport, "report.png", "Generate reports",
+	private Action genReport = new SimulatorAction(Command.GenReport, "report.png", "Generate reports",
 			KeyEvent.VK_R, "control shift F", () -> genReport());
-	Action clearReport = new SimulatorAction(Command.ClearReport, "delete_report.png", "Clear reports",
+	private Action clearReport = new SimulatorAction(Command.ClearReport, "delete_report.png", "Clear reports",
 			KeyEvent.VK_C, "control shift M", () -> reportsArea.setText(""));
-	Action reset = new SimulatorAction(Command.Reset, "reset.png", "Reset simulation",
+	private Action reset = new SimulatorAction(Command.Reset, "reset.png", "Reset simulation",
 			KeyEvent.VK_R, "control shift N", () -> resetSim());
-	Action output = new SimulatorAction(Command.Output, null, "Redirect simulation's output to text area",
+	private Action output = new SimulatorAction(Command.Output, null, "Redirect simulation's output to text area",
 			KeyEvent.VK_R, "control shift O", () -> redirectOutput());
 	
 	/** 
@@ -126,6 +124,10 @@ public class MainWindowSim extends JFrame implements Listener {
 		this.tsim.addSimulatorListener(tableSim);
 		this.tsim.addSimulatorListener(rmGraph);
 	}
+	
+	/** 
+	 * Inicia la interfaz.
+	*/
 	
 	public void initGUI(){
 		fc = new JFileChooser();
@@ -180,6 +182,10 @@ public class MainWindowSim extends JFrame implements Listener {
 		this.setVisible(true);
 	}
 	
+	/** 
+	 * La clase JTextAreaOutputStream controla la salida de datos.
+	*/
+	
 	private class JTextAreaOutputStream extends OutputStream{
 		
 		private JTextArea textArea;
@@ -225,6 +231,10 @@ public class MainWindowSim extends JFrame implements Listener {
 		this.setJMenuBar(menuBar);
 	}
 	
+	/** 
+	 * Añade la barra de herramientas a la ventana principal.
+	*/
+	
 	private void addToolBar() {   
 		toolBar = new JToolBar();    
 		mainPanel.add(toolBar, BorderLayout.PAGE_START);  
@@ -255,7 +265,72 @@ public class MainWindowSim extends JFrame implements Listener {
 		toolBar.add(exit);
 		
 	}
-
+	
+	/** 
+	 * Añade el editor de eventos a la ventana principal.
+	*/
+	
+	private void addEventsEditor(){
+		editorPanel = new JPanel(new BorderLayout());
+		editorPanel.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
+		eventsEditor = new JTextArea("");
+		eventsEditor.setEditable(true);
+		eventsEditor.setLineWrap(true);
+		eventsEditor.setWrapStyleWord(true);
+		JScrollPane area = new JScrollPane(eventsEditor);
+		area.setPreferredSize(new Dimension(500, 500));
+		editorPanel.add(area);
+		
+		eventsEditor.getActionMap().put(Command.Load, load);
+		eventsEditor.getActionMap().put(Command.Save, save);
+		eventsEditor.getActionMap().put(Command.Clear, clear);		
+		popUpMenu = new PopUpMenu();
+		popUpMenu.addEditor(eventsEditor);
+	}
+	
+	/** 
+	 * Añade la zona de informes a la ventana principal.
+	*/
+	
+	private void addReportsArea(){
+		reportsPanel = new JPanel(new BorderLayout());
+		reportsPanel.setBorder(BorderFactory.createTitledBorder("Reports"));
+		reportsArea = new JTextArea("");
+		reportsArea.setEditable(false);
+		reportsArea.setLineWrap(true);
+		reportsArea.setWrapStyleWord(true);
+		JScrollPane area = new JScrollPane(reportsArea);
+		area.setPreferredSize(new Dimension(500, 500));
+		reportsPanel.add(area);
+	}
+	
+	/** 
+	 * Añade la barra de estado a la ventana principal.
+	*/
+	
+	private void addStatusBar() {  
+		stateBar = new JPanel(new BorderLayout());
+		statusBarText = new JLabel("Welcome to the simulator!");    
+		stateBar.add(statusBarText);
+		mainPanel.add(stateBar);
+	}
+	
+	/** 
+	 * Añade el mapa de carreteras a la ventana principal.
+	*/
+	
+	private void addMap() {  
+		mapPanel = new JPanel(new BorderLayout());
+		rmGraph = new RoadMapGraph(new RoadMap());
+		JScrollPane sp = new JScrollPane(rmGraph._graphComp);
+		sp.setPreferredSize(new Dimension(500, 500));
+		mapPanel.add(sp);
+	}
+	
+	/** 
+	 * Guarda un archivo.
+	*/
+	
 	private void saveFile() {
 		int returnVal = fc.showSaveDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -269,6 +344,10 @@ public class MainWindowSim extends JFrame implements Listener {
 		statusBarText.setText("The file have been saved!");    
 		stateBar.add(statusBarText);
 	}
+	
+	/** 
+	 * Carga un archivo.
+	*/
 	
 	private void loadFile() {
 		int returnVal = fc.showOpenDialog(null);
@@ -290,6 +369,10 @@ public class MainWindowSim extends JFrame implements Listener {
 		stateBar.add(statusBarText);
 	}
 	
+	/** 
+	 * Guarda un informe.
+	*/
+	
 	private void saveReport() {
 		int returnVal = fc.showSaveDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -303,6 +386,10 @@ public class MainWindowSim extends JFrame implements Listener {
 		statusBarText.setText("All reports have been saved!");    
 		stateBar.add(statusBarText);
 	}
+	
+	/** 
+	 * Pone en marcha el simulador.
+	*/
 	
 	private void runSim() {
 		try {
@@ -320,6 +407,10 @@ public class MainWindowSim extends JFrame implements Listener {
 		}
 	}
 	
+	/** 
+	 * Inserta los eventos de eventsEditor en el simulador.
+	*/
+	
 	private void checkInEvent() {
 		try {
 			contr.setIni(new Ini(new ByteArrayInputStream(eventsEditor.getText().getBytes())));
@@ -329,12 +420,20 @@ public class MainWindowSim extends JFrame implements Listener {
 		statusBarText.setText("Events have been inserted into the simulator!");
 	}
 	
+	/** 
+	 * Resetea el simulador.
+	*/
+	
 	private void resetSim(){
 		time = 0;
 		reportsArea.setText("");
 		tsim.resetSim();
 		statusBarText.setText("Simulation reseted!");
 	}
+	
+	/** 
+	 * Redirige la salida del simulador.
+	*/
 	
 	private void redirectOutput() {
 		if (reportsOutputStream != null) {
@@ -348,6 +447,10 @@ public class MainWindowSim extends JFrame implements Listener {
 		contr.setOutputStream(reportsOutputStream);
 	}
 	
+	/** 
+	 * Genera los informes.
+	*/
+	
 	private void genReport(){
 		reports = new ReportWindow(map, time);
 		if (reports.getReport() != null) {
@@ -356,6 +459,11 @@ public class MainWindowSim extends JFrame implements Listener {
 		}
 		statusBarText.setText("Operation cancelled");
 	}
+	
+	/** 
+	 * Lee de un archivo.
+	 * @param file : Archivo
+	*/
 	
 	public static String readFile(File file) throws IOException {
 		String s = "";
@@ -368,6 +476,12 @@ public class MainWindowSim extends JFrame implements Listener {
 		}
 		return s;
 	}
+	
+	/** 
+	 * Escribe en un archivo.
+	 * @param file: Archivo
+	 * @param contet: String con el texto que se quiere escribir
+	*/
 
 	public static void writeFile(File file, String content) throws IOException {
 		try {
@@ -379,50 +493,11 @@ public class MainWindowSim extends JFrame implements Listener {
 		}
 	}
 	
-	private void addEventsEditor(){
-		editorPanel = new JPanel(new BorderLayout());
-		editorPanel.setBorder(BorderFactory.createTitledBorder("Events: " + currentFile.getName()));
-		eventsEditor = new JTextArea("");
-		eventsEditor.setEditable(true);
-		eventsEditor.setLineWrap(true);
-		eventsEditor.setWrapStyleWord(true);
-		JScrollPane area = new JScrollPane(eventsEditor);
-		area.setPreferredSize(new Dimension(500, 500));
-		editorPanel.add(area);
-		
-		eventsEditor.getActionMap().put(Command.Load, load);
-		eventsEditor.getActionMap().put(Command.Save, save);
-		eventsEditor.getActionMap().put(Command.Clear, clear);		
-		popUpMenu = new PopUpMenu();
-		popUpMenu.addEditor(eventsEditor);
-	}
-	
-	private void addReportsArea(){
-		reportsPanel = new JPanel(new BorderLayout());
-		reportsPanel.setBorder(BorderFactory.createTitledBorder("Reports"));
-		reportsArea = new JTextArea("");
-		reportsArea.setEditable(false);
-		reportsArea.setLineWrap(true);
-		reportsArea.setWrapStyleWord(true);
-		JScrollPane area = new JScrollPane(reportsArea);
-		area.setPreferredSize(new Dimension(500, 500));
-		reportsPanel.add(area);
-	}
-	
-	private void addStatusBar() {  
-		stateBar = new JPanel(new BorderLayout());
-		statusBarText = new JLabel("Welcome to the simulator!");    
-		stateBar.add(statusBarText);
-		mainPanel.add(stateBar);
-	}
-	
-	private void addMap() {  
-		mapPanel = new JPanel(new BorderLayout());
-		rmGraph = new RoadMapGraph(new RoadMap());
-		JScrollPane sp = new JScrollPane(rmGraph._graphComp);
-		sp.setPreferredSize(new Dimension(500, 500));
-		mapPanel.add(sp);
-	}
+	/** 
+	 * Actualiza la interfaz si se produce un evento.
+	 * @param ue: Nuevo evento
+	 * @param error: String con el tipo de error (si ue es de tipo ERROR)
+	*/
 	
 	public void update(UpdateEvent ue, String error) {
 		switch (ue.getEvent()){

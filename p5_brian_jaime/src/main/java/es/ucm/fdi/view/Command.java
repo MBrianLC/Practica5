@@ -7,11 +7,20 @@ public enum Command {
 	
 	private String text;
 	
+	/** 
+	 * Constructor de command.
+	 * @param text : Texto identificador del comando
+	*/
+	
 	Command(String text) {
 		this.text = text;
 	}
 	
-	@Override
+	/** 
+	 * Devuelve el texto asociado a una acción.
+	 * @return Texto identificador de la acción
+	*/
+	
 	public String toString() {
 		return text;
 	}
