@@ -75,11 +75,19 @@ public class TrafficSimulator {
 		listeners.remove(l);
 	}
 	
+	/**
+	 * Borra todos los eventos de la simulación
+	 */
+	
 	public void resetEvents() {
 		logger.fine("Reseteando eventos de la simulación");
 		eventos = new MultiTreeMap<>();
 		eventsQueue = new ArrayList<>();
 	}
+	
+	/**
+	 * Borra todos los eventos de la simulación, el mapa de carreteras y pone el contador a cero
+	 */
 	
 	public void resetSim() {
 		logger.fine("Reseteando la simulación");
