@@ -2,6 +2,7 @@ package es.ucm.fdi.control;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 
 import es.ucm.fdi.model.events.EventBuilder;
 import es.ucm.fdi.model.events.NewJunctionEventBuilder;
@@ -26,6 +27,8 @@ public class Controller {
 	private OutputStream out;
 	private int timeLimit;
 	
+	private static final Logger logger = Logger.getLogger(Controller.class.getName());
+	
 	/** 
 	 * Constructor de la clase Controller.
 	 * @param ini : Flujo de entrada (formato ini)
@@ -36,6 +39,7 @@ public class Controller {
 		this.ini = ini;
 		this.out = out;
 		this.timeLimit = timeLimit;
+		logger.info("Creando controller");
 	}
 	
 	/** 
@@ -44,6 +48,7 @@ public class Controller {
 	*/
 	
 	public void setIni (Ini ini){
+		logger.fine("Ini modificado");
 		this.ini = ini;
 	}
 	
@@ -53,6 +58,7 @@ public class Controller {
 	*/
 	
 	public void setTime (int timeLimit){
+		logger.fine("Tiempo modificado");
 		this.timeLimit = timeLimit;
 	}
 	
@@ -62,6 +68,7 @@ public class Controller {
 	*/
 	
 	public void setOutputStream (OutputStream out){
+		logger.fine("Salida de texto modificada");
 		this.out = out;
 	}
 	
@@ -82,7 +89,7 @@ public class Controller {
 	*/
 	
 	public void execute(TrafficSimulator sim) throws IOException, SimulatorException {
-
+		logger.info("Identificando simulación");
 		for (IniSection n : ini.getSections()) {
 			boolean b = false;
 			try {
@@ -95,6 +102,7 @@ public class Controller {
 					}
 				}
 				if (!b){
+					logger.severe("Tag no identificada");
 					throw new IllegalArgumentException("Incorrect tag: " + n.getTag());
 				}
 			} catch(IllegalArgumentException e) {

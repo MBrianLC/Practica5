@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
@@ -31,11 +32,14 @@ public class TrafficSimulator {
 	private RoadMap roadMap;
 	private List<Listener> listeners = new ArrayList<>();
 	
+	private static final Logger logger = Logger.getLogger(TrafficSimulator.class.getName());
+	
 	/** 
 	 * Constructor de la clase TrafficSimulator.
 	*/
 	
 	public TrafficSimulator() {
+		logger.info("Creando simulación");
 		roadMap = new RoadMap();
 		eventos = new MultiTreeMap<>();
 		contadorTiempo = 0;
@@ -49,10 +53,12 @@ public class TrafficSimulator {
 	
 	public void insertaEvento(Event e) {
 		if (e.getTime() < 0) {
+			logger.severe("Tiempo no válido (no puede ser negativo)");
 			fireUpdateEvent(EventType.ERROR, "ERROR: Invalid time");
 			throw new IllegalArgumentException("Invalid time");
 		}
 		if (e.getTime() >= contadorTiempo) {
+			logger.finer("Evento añadido");
 			eventos.putValue(e.getTime(), e);
 			eventsQueue.add(e);
 			fireUpdateEvent(EventType.NEWEVENT, "");
@@ -70,11 +76,13 @@ public class TrafficSimulator {
 	}
 	
 	public void resetEvents() {
+		logger.fine("Reseteando eventos de la simulación");
 		eventos = new MultiTreeMap<>();
 		eventsQueue = new ArrayList<>();
 	}
 	
 	public void resetSim() {
+		logger.fine("Reseteando la simulación");
 		roadMap = new RoadMap();
 		eventos = new MultiTreeMap<>();
 		contadorTiempo = 0;
@@ -127,6 +135,7 @@ public class TrafficSimulator {
 	
 	public void execute(int pasosSimulacion, OutputStream o) throws IOException, SimulatorException {
 		int limiteTiempo = contadorTiempo + pasosSimulacion - 1;
+		logger.info("Ejecutando simulación");
 		while (contadorTiempo <= limiteTiempo) {
 			List<Event> eventActuales = eventos.get(contadorTiempo);
 			if (eventActuales != null) {

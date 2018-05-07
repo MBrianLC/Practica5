@@ -9,6 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javax.swing.SwingUtilities;
 
@@ -39,7 +45,7 @@ public class Main {
 		// define the valid command line options
 		//
 		Options cmdLineOptions = buildOptions();
-
+		
 		// parse the command line as provided in args
 		//
 		CommandLineParser parser = new DefaultParser();
@@ -205,6 +211,23 @@ public class Main {
 			System.err.println("OuputStream error");
 		}
 	}
+	
+	public static void setupLogging(Level level) {
+		Logger log = Logger.getLogger("");
+		for (Handler h : log.getHandlers()) {
+			log.removeHandler( h );
+		}
+		ConsoleHandler ch = new ConsoleHandler();
+		ch.setFormatter(new SimpleFormatter() {
+			@Override
+			public synchronized String format(LogRecord record) {
+				return record.getMessage() + "\n";
+			}
+		});
+		log.addHandler(ch);
+		log.setLevel(level);
+		ch.setLevel(level);
+	}
 
 	public static void main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
 
@@ -222,6 +245,8 @@ public class Main {
 	    //	test("resources/examples/events/basic");
 
 		// Call start to start the simulator from command line, etc.
+		setupLogging(Level.INFO);
+		
 		start(args);
 
 	}

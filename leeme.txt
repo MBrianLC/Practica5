@@ -13,3 +13,4 @@ Mejoras respecto a P4:
 - Uso de StringBuilder en los bucles de simobjects, en vez de String
 - Métodos estáticos en los Builders
 - Añadidos detalles a las excepciones de RoadMap
+- Quitados bloques try/catch de los test

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import es.ucm.fdi.model.simobjects.Junction;
 import es.ucm.fdi.model.simobjects.Road;
@@ -23,10 +24,13 @@ public class RoadMap {
 	private List<Road> roads = new ArrayList<>();
 	private List<Vehicle> vehicles = new ArrayList<>();
 	
+	private static final Logger logger = Logger.getLogger(RoadMap.class.getName());
+	
 	/** 
 	 * Constructor de la clase RoadMap.
 	*/
 	public RoadMap() {
+		logger.fine("Creando mapa de carreteras");
 		this.vehicles = new ArrayList<>();
 		this.roads = new ArrayList<>();
 		this.junctions = new ArrayList<>();
@@ -123,10 +127,12 @@ public class RoadMap {
 	*/	
 	public void addVehicle(Vehicle v) {
 		if (simObjects.containsKey(v.getID())) {
+			logger.warning("El vehículo que se trató de crear ya existe");
 			throw new IllegalArgumentException("Vehicle already exists");
 		}
 		simObjects.put(v.getID(), v);
 		vehicles.add(v);
+		logger.finer("Vehículo añadido");
 	}
 	
 	/** 
@@ -135,10 +141,12 @@ public class RoadMap {
 	*/
 	public void addRoad(Road r) {
 		if (simObjects.containsKey(r.getID())) {
+			logger.warning("La carretera que se trató de crear ya existe");
 			throw new IllegalArgumentException("Road already exists");
 		}
 		simObjects.put(r.getID(), r);
 		roads.add(r);
+		logger.finer("Carretera añadida");
 	}
 	
 	/** 
@@ -147,10 +155,12 @@ public class RoadMap {
 	*/
 	public void addJunction(Junction j) {
 		if (simObjects.containsKey(j.getID())) {
+			logger.warning("El cruce que se trató de crear ya existe");
 			throw new IllegalArgumentException("Junction already exists");
 		}
 		simObjects.put(j.getID(), j);
 		junctions.add(j);
+		logger.finer("Cruce añadido");
 	}
 	
 }
